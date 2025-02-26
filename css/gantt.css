@@ -1,0 +1,30 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    background: #fff;
+    padding: 20px;
+    margin: 70px auto;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+h2 {
+    color: #333;
+}
+
+#timeline {
+    height: 500px;
+}
+
+select {
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 16px;
+}

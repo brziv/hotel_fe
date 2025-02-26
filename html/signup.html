@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyHotel Manager - Sign Up</title>
+    <link rel="stylesheet" href="../css/login.css">
+    <style>
+        .switch-auth {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .switch-auth a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .switch-auth a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h2>Create Your Account</h2>
+            <p class="subtitle">Sign up to manage your hotel</p>
+            <form action="welcome.html" method="POST">
+                <div class="input-group">
+                    <input type="text" name="username" required>
+                    <label>Username</label>
+                </div>
+                <div class="input-group">
+                    <input type="email" name="email" required>
+                    <label>Email</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="password" required>
+                    <label>Password</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="confirm_password" required>
+                    <label>Confirm Password</label>
+                </div>
+                <div class="remember-forgot">
+                    <label class="checkbox">
+                        <input type="checkbox" name="terms" required>
+                        <span class="checkmark"></span> I agree to the <a href="#">terms & conditions</a>
+                    </label>
+                </div>
+                <button type="submit">SIGN UP</button>
+            </form>
+            <p class="switch-auth">Already have an account? <a href="#" id="loginLink">Login</a></p>
+            <script>
+                document.getElementById("loginLink").addEventListener("click", function(event) {
+                    event.preventDefault();
+                    window.parent.document.querySelector("iframe[name='contentFrame']").src = "login.html";
+                });
+            </script>
+        </div>
+    </div>
+</body>
+
+</html>

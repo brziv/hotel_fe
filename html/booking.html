@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Phòng</title>
+    <link rel="stylesheet" href="../css/booking.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Đặt Phòng Khách Sạn</h2>
+        <form action="#" method="post">
+            <label for="name">Họ và Tên:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="phone">Số Điện Thoại:</label>
+            <input type="text" id="phone" name="phone" required>
+
+            <label for="room-type">Loại Phòng:</label>
+            <select id="room-type" name="room-type">
+                <option value="standard">Tiêu chuẩn</option>
+                <option value="deluxe">Cao cấp</option>
+                <option value="suite">Suite</option>
+            </select>
+
+            <label for="checkin">Ngày Nhận Phòng:</label>
+            <input type="date" id="checkin" name="checkin" required>
+
+            <label for="checkout">Ngày Trả Phòng:</label>
+            <input type="date" id="checkout" name="checkout" required>
+
+            <button type="submit">Xác Nhận Đặt Phòng</button>
+        </form>
+    </div>
+
+    <script src="../js/booking.js"></script>
+</body>
+</html>
