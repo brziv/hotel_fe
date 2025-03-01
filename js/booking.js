@@ -32,12 +32,6 @@ document.addEventListener("DOMContentLoaded", function () {
             valid = false;
         }
 
-        // Kiểm tra nếu có trường nào bị trống
-        if (!nameInput.value || !phoneInput.value || !roomInput.value || !checkinInput.value || !checkoutInput.value) {
-            alert("Vui lòng nhập đầy đủ thông tin!");
-            valid = false;
-        }
-
         if (!valid) return;
 
         // Lấy danh sách đặt phòng từ localStorage
@@ -56,6 +50,6 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.setItem("bookings", JSON.stringify(bookings));
 
         alert("Đặt phòng thành công!");
-        window.location.href = "index.html"; // Chuyển về trang chính
+        parent.document.getElementsByName("contentFrame")[0].src = "gantt.html"; // Chuyển về trang chính trong iframe
     });
 });
