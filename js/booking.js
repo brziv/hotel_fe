@@ -24,11 +24,13 @@ document.addEventListener("DOMContentLoaded", function () {
         today.setHours(0, 0, 0, 0);
 
         if (checkinDate < today) {
-            alert("Ngày nhận phòng phải từ hôm nay trở đi.");
+            alert("Ngày nhận phòng phải từ thời điểm hiện tại trở đi.");
             valid = false;
         }
-        if (checkoutDate <= checkinDate) {
-            alert("Ngày trả phòng phải sau ngày nhận phòng.");
+
+        // Kiểm tra ngày trả phòng phải sau ngày nhận phòng ít nhất 1 giờ
+        if ((checkoutDate - checkinDate) < (60 * 60 * 1000)) {
+            alert("Ngày trả phòng phải ít nhất sau 1 giờ kể từ ngày nhận phòng.");
             valid = false;
         }
 
