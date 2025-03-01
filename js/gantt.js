@@ -36,6 +36,11 @@ function drawChart(floor = 1) {
     dataTable.addColumn({ type: "datetime", id: "Kết thúc" });
 
     var filteredData = filterDataByTimePeriod(allData[floor]);
+    if (filteredData.length === 0) {
+        document.getElementById("timeline").innerHTML = "<p>Không có dữ liệu để hiển thị.</p>";
+        return;
+    }
+
     dataTable.addRows(filteredData);
 
     var options = {
