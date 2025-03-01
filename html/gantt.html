@@ -7,97 +7,43 @@
     <title>Quản lý phòng khách sạn</title>
     <link rel="stylesheet" href="../css/gantt.css">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-        google.charts.load("current", { packages: ["timeline"] });
-        google.charts.setOnLoadCallback(drawChart);
-
-        var allData = {
-            1: [
-                ["Phòng 101", "Nguyễn Văn A", new Date(2024, 1, 14, 10, 0, 0), new Date(2024, 1, 14, 18, 0, 0)],
-                ["Phòng 101", "Trần Thị B", new Date(2024, 1, 14, 19, 0, 0), new Date(2024, 1, 15, 5, 0, 0)],
-                ["Phòng 102", "Lê Văn C", new Date(2024, 1, 14, 10, 0, 0), new Date(2024, 1, 14, 20, 0, 0)],
-                ["Phòng 102", "Phạm Thị D", new Date(2024, 1, 15, 8, 0, 0), new Date(2024, 1, 15, 16, 0, 0)],
-                ["Phòng 103", "Hoàng Văn E", new Date(2024, 1, 14, 12, 0, 0), new Date(2024, 1, 14, 22, 0, 0)],
-                ["Phòng 104", "Bùi Thị F", new Date(2024, 1, 15, 14, 0, 0), new Date(2024, 1, 15, 23, 0, 0)],
-                ["Phòng 105", "Đỗ Văn G", new Date(2024, 1, 14, 9, 0, 0), new Date(2024, 1, 14, 17, 0, 0)],
-                ["Phòng 106", "Nguyễn Văn H", new Date(2024, 1, 16, 7, 0, 0), new Date(2024, 1, 16, 15, 0, 0)],
-                ["Phòng 107", "Lê Thị I", new Date(2024, 1, 15, 10, 0, 0), new Date(2024, 1, 15, 18, 0, 0)],
-                ["Phòng 108", "Phạm Văn J", new Date(2024, 1, 14, 11, 0, 0), new Date(2024, 1, 14, 19, 0, 0)],
-                ["Phòng 109", "Trần Văn K", new Date(2024, 1, 15, 13, 0, 0), new Date(2024, 1, 15, 21, 0, 0)]
-            ],
-            2: [
-                ["Phòng 201", "Nguyễn Văn L", new Date(2024, 1, 14, 9, 30, 0), new Date(2024, 1, 14, 17, 30, 0)],
-                ["Phòng 201", "Trần Thị M", new Date(2024, 1, 14, 18, 30, 0), new Date(2024, 1, 15, 4, 30, 0)],
-                ["Phòng 202", "Lê Văn N", new Date(2024, 1, 14, 11, 0, 0), new Date(2024, 1, 14, 21, 0, 0)],
-                ["Phòng 203", "Hoàng Văn O", new Date(2024, 1, 15, 7, 0, 0), new Date(2024, 1, 15, 15, 0, 0)],
-                ["Phòng 204", "Bùi Thị P", new Date(2024, 1, 15, 13, 30, 0), new Date(2024, 1, 15, 22, 30, 0)],
-                ["Phòng 205", "Đỗ Văn Q", new Date(2024, 1, 14, 8, 0, 0), new Date(2024, 1, 14, 16, 0, 0)],
-            ],
-            3: [
-                ["Phòng 301", "Nguyễn Văn R", new Date(2024, 1, 14, 10, 30, 0), new Date(2024, 1, 14, 18, 30, 0)],
-                ["Phòng 302", "Trần Thị S", new Date(2024, 1, 14, 20, 0, 0), new Date(2024, 1, 15, 6, 0, 0)],
-                ["Phòng 303", "Lê Văn T", new Date(2024, 1, 14, 9, 0, 0), new Date(2024, 1, 14, 19, 0, 0)],
-                ["Phòng 304", "Phạm Thị U", new Date(2024, 1, 15, 9, 0, 0), new Date(2024, 1, 15, 17, 0, 0)],
-                ["Phòng 305", "Hoàng Văn V", new Date(2024, 1, 14, 11, 30, 0), new Date(2024, 1, 14, 21, 30, 0)],
-            ],
-            4: [
-                ["Phòng 401", "Bùi Thị W", new Date(2024, 1, 14, 12, 0, 0), new Date(2024, 1, 14, 20, 0, 0)],
-                ["Phòng 402", "Đỗ Văn X", new Date(2024, 1, 14, 21, 0, 0), new Date(2024, 1, 15, 5, 0, 0)],
-                ["Phòng 403", "Nguyễn Văn Y", new Date(2024, 1, 14, 8, 30, 0), new Date(2024, 1, 14, 16, 30, 0)],
-                ["Phòng 404", "Trần Thị Z", new Date(2024, 1, 15, 10, 0, 0), new Date(2024, 1, 15, 18, 0, 0)],
-            ],
-            5: [
-                ["Phòng 501", "Lê Văn AA", new Date(2024, 1, 14, 14, 0, 0), new Date(2024, 1, 14, 22, 0, 0)],
-                ["Phòng 502", "Phạm Thị BB", new Date(2024, 1, 14, 23, 0, 0), new Date(2024, 1, 15, 7, 0, 0)],
-                ["Phòng 503", "Hoàng Văn CC", new Date(2024, 1, 14, 10, 30, 0), new Date(2024, 1, 14, 18, 30, 0)],
-                ["Phòng 504", "Bùi Thị DD", new Date(2024, 1, 15, 15, 0, 0), new Date(2024, 1, 15, 23, 0, 0)],
-            ]
-
-
-        };
-
-        function drawChart(floor = 1) {
-            var container = document.getElementById("timeline");
-            var chart = new google.visualization.Timeline(container);
-            var dataTable = new google.visualization.DataTable();
-
-            dataTable.addColumn({ type: "string", id: "Phòng" });
-            dataTable.addColumn({ type: "string", id: "Khách hàng" });
-            dataTable.addColumn({ type: "datetime", id: "Bắt đầu" });
-            dataTable.addColumn({ type: "datetime", id: "Kết thúc" });
-
-            dataTable.addRows(allData[floor]);
-
-            var options = {
-                timeline: { showRowLabels: true },
-                hAxis: {
-                    format: "HH:mm dd/MM",
-                    gridlines: { count: 12 }
-                }
-            };
-
-            chart.draw(dataTable, options);
-        }
-
-        function changeFloor() {
-            var selectedFloor = document.getElementById("floorSelect").value;
-            drawChart(parseInt(selectedFloor));
-        }
-    </script>
 </head>
 
 <body>
     <div class="container">
         <h2>Quản lý phòng khách sạn</h2>
-        <label for="floorSelect">Chọn tầng:</label>
-        <select id="floorSelect" onchange="changeFloor()">
-            <option value="1">Tầng 1</option>
-            <option value="2">Tầng 2</option>
-            <option value="3">Tầng 3</option>
-            <option value="4">Tầng 4</option>
-            <option value="5">Tầng 5</option>
-        </select>
+        <div class="input-group">
+            <div class="select-group">
+                <label for="floorSelect">Chọn tầng:</label>
+                <select id="floorSelect" onchange="changeFloor()">
+                    <option value="1">Tầng 1</option>
+                    <option value="2">Tầng 2</option>
+                    <option value="3">Tầng 3</option>
+                    <option value="4">Tầng 4</option>
+                    <option value="5">Tầng 5</option>
+                </select>
+            </div>
+            <div class="select-group">
+                <label for="startDate">Từ ngày:</label>
+                <input type="datetime-local" id="startDate" onchange="changeTimePeriod()">
+                <label for="endDate">Đến:</label>
+                <input type="datetime-local" id="endDate" onchange="changeTimePeriod()">
+            </div>
+        </div>
         <div id="timeline"></div>
+        <script src="../js/gantt.js"></script>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="modal" id="modal">
+        <h3>Chi tiết đặt phòng</h3>
+        <p><strong>Khách hàng:</strong> <span id="cust-name"></span></p>
+        <p><strong>Điện thoại:</strong> <span id="cust-phone"></span></p>
+        <p><strong>Thời gian đặt:</strong> <span id="cust-time"></span> giờ</p>
+        <p><strong>Tổng hóa đơn:</strong> <span id="cust-bill"></span> VND</p>
+        <button onclick="bookService()">🛒 <b>Đặt dịch vụ</b></button>
+        <button onclick="checkout()">💳 <b>Trả phòng</b></button>
+        <button onclick="closeModal()"><b>Đóng</b></button>
     </div>
 </body>
 
