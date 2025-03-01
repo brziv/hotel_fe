@@ -9,22 +9,21 @@
 <body>
     <div class="container">
         <h2>Đặt Phòng Khách Sạn</h2>
-        <form action="#" method="post">
+        <form id="booking-form" action="#" method="post">
+
             <label for="name">Họ và Tên:</label>
             <input type="text" id="name" name="name" required>
 
             <label for="phone">Số Điện Thoại:</label>
             <input type="text" id="phone" name="phone" required>
 
-            <label for="room-type">Loại Phòng:</label>
-            <select id="room-type" name="room-type">
-                <option value="standard">Tiêu chuẩn</option>
-                <option value="deluxe">Cao cấp</option>
-                <option value="suite">Suite</option>
+            <label for="room-number">Số Phòng:</label>
+            <input type="text" id="room-number" name="room-number" required>
+                
             </select>
 
             <label for="checkin">Ngày Nhận Phòng:</label>
-            <input type="date" id="checkin" name="checkin" required>
+            <input type="datetime-local" id="checkin" name="checkin" required>
 
             <label for="checkout">Ngày Trả Phòng:</label>
             <input type="date" id="checkout" name="checkout" required>
