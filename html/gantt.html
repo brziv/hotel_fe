@@ -12,14 +12,24 @@
 <body>
     <div class="container">
         <h2>Quản lý phòng khách sạn</h2>
-        <label for="floorSelect">Chọn tầng:</label>
-        <select id="floorSelect" onchange="changeFloor()">
-            <option value="1">Tầng 1</option>
-            <option value="2">Tầng 2</option>
-            <option value="3">Tầng 3</option>
-            <option value="4">Tầng 4</option>
-            <option value="5">Tầng 5</option>
-        </select>
+        <div class="input-group">
+            <div class="select-group">
+                <label for="floorSelect">Chọn tầng:</label>
+                <select id="floorSelect" onchange="changeFloor()">
+                    <option value="1">Tầng 1</option>
+                    <option value="2">Tầng 2</option>
+                    <option value="3">Tầng 3</option>
+                    <option value="4">Tầng 4</option>
+                    <option value="5">Tầng 5</option>
+                </select>
+            </div>
+            <div class="select-group">
+                <label for="startDate">Từ ngày:</label>
+                <input type="datetime-local" id="startDate" onchange="changeTimePeriod()">
+                <label for="endDate">Đến:</label>
+                <input type="datetime-local" id="endDate" onchange="changeTimePeriod()">
+            </div>
+        </div>
         <div id="timeline"></div>
         <script src="../js/gantt.js"></script>
     </div>

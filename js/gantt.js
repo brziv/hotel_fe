@@ -2,30 +2,28 @@ google.charts.load("current", { packages: ["timeline"] });
 google.charts.setOnLoadCallback(drawChart);
 
 var allData = {
-
     1: [
-        ["Phòng 101", "Nguyễn Văn A", new Date(2025, 0, 3, 10, 0, 0), new Date(2025, 0, 3, 18, 0, 0)],
-        ["Phòng 101", "Trần Thị B", new Date(2025, 0, 3, 19, 0, 0), new Date(2025, 0, 4, 5, 0, 0)],
-        ["Phòng 102", "Lê Văn C", new Date(2025, 0, 3, 10, 0, 0), new Date(2025, 0, 3, 20, 0, 0)],
-        ["Phòng 102", "Phạm Thị D", new Date(2025, 0, 4, 8, 0, 0), new Date(2025, 0, 4, 16, 0, 0)],
-        ["Phòng 103", "Hoàng Văn E", new Date(2025, 0, 3, 12, 0, 0), new Date(2025, 0, 3, 22, 0, 0)],
-        ["Phòng 104", "Bùi Thị F", new Date(2025, 0, 4, 14, 0, 0), new Date(2025, 0, 4, 23, 0, 0)],
-        ["Phòng 105", "Đỗ Văn G", new Date(2025, 0, 3, 9, 0, 0), new Date(2025, 0, 3, 17, 0, 0)],
-        ["Phòng 106", "Nguyễn Văn H", new Date(2025, 0, 5, 7, 0, 0), new Date(2025, 0, 5, 15, 0, 0)],
-        ["Phòng 107", "Lê Thị I", new Date(2025, 0, 4, 10, 0, 0), new Date(2025, 0, 4, 18, 0, 0)],
-        ["Phòng 108", "Phạm Văn J", new Date(2025, 0, 3, 11, 0, 0), new Date(2025, 0, 3, 19, 0, 0)],
-        ["Phòng 109", "Trần Văn K", new Date(2025, 0, 4, 13, 0, 0), new Date(2025, 0, 4, 21, 0, 0)]
+        ["Phòng 101", "Nguyễn Văn A", new Date(2025, 2, 3, 10, 0, 0), new Date(2025, 2, 3, 18, 0, 0)],
+        ["Phòng 101", "Trần Thị B", new Date(2025, 2, 3, 19, 0, 0), new Date(2025, 2, 4, 5, 0, 0)],
+        ["Phòng 102", "Lê Văn C", new Date(2025, 2, 3, 10, 0, 0), new Date(2025, 2, 3, 20, 0, 0)],
+        ["Phòng 102", "Phạm Thị D", new Date(2025, 2, 4, 8, 0, 0), new Date(2025, 2, 4, 16, 0, 0)],
+        ["Phòng 103", "Hoàng Văn E", new Date(2025, 2, 3, 12, 0, 0), new Date(2025, 2, 3, 22, 0, 0)],
+        ["Phòng 104", "Bùi Thị F", new Date(2025, 2, 4, 14, 0, 0), new Date(2025, 2, 4, 23, 0, 0)],
+        ["Phòng 105", "Đỗ Văn G", new Date(2025, 2, 3, 9, 0, 0), new Date(2025, 2, 3, 17, 0, 0)],
+        ["Phòng 106", "Nguyễn Văn H", new Date(2025, 2, 5, 7, 0, 0), new Date(2025, 2, 5, 15, 0, 0)],
+        ["Phòng 107", "Lê Thị I", new Date(2025, 2, 4, 10, 0, 0), new Date(2025, 2, 4, 18, 0, 0)],
+        ["Phòng 108", "Phạm Văn J", new Date(2025, 2, 3, 11, 0, 0), new Date(2025, 2, 3, 19, 0, 0)],
+        ["Phòng 109", "Trần Văn K", new Date(2025, 2, 4, 13, 0, 0), new Date(2025, 2, 4, 21, 0, 0)]
     ],
     2: [
-        ["Phòng 201", "Nguyễn Văn L", new Date(2025, 0, 3, 9, 30, 0), new Date(2025, 0, 3, 17, 30, 0)],
-        ["Phòng 201", "Trần Thị M", new Date(2025, 0, 3, 18, 30, 0), new Date(2025, 0, 4, 4, 30, 0)],
-        ["Phòng 202", "Lê Văn N", new Date(2025, 0, 3, 11, 0, 0), new Date(2025, 0, 3, 21, 0, 0)],
-        ["Phòng 203", "Hoàng Văn O", new Date(2025, 0, 4, 7, 0, 0), new Date(2025, 0, 4, 15, 0, 0)],
-        ["Phòng 204", "Bùi Thị P", new Date(2025, 0, 4, 13, 30, 0), new Date(2025, 0, 4, 22, 30, 0)],
-        ["Phòng 205", "Đỗ Văn Q", new Date(2025, 0, 3, 8, 0, 0), new Date(2025, 0, 3, 16, 0, 0)]
+        ["Phòng 201", "Nguyễn Văn L", new Date(2025, 2, 3, 9, 30, 0), new Date(2025, 2, 3, 17, 30, 0)],
+        ["Phòng 201", "Trần Thị M", new Date(2025, 2, 3, 18, 30, 0), new Date(2025, 2, 4, 4, 30, 0)],
+        ["Phòng 202", "Lê Văn N", new Date(2025, 2, 3, 11, 0, 0), new Date(2025, 2, 3, 21, 0, 0)],
+        ["Phòng 203", "Hoàng Văn O", new Date(2025, 2, 4, 7, 0, 0), new Date(2025, 2, 4, 15, 0, 0)],
+        ["Phòng 204", "Bùi Thị P", new Date(2025, 2, 4, 13, 30, 0), new Date(2025, 2, 4, 22, 30, 0)],
+        ["Phòng 205", "Đỗ Văn Q", new Date(2025, 2, 3, 8, 0, 0), new Date(2025, 2, 3, 16, 0, 0)]
     ]
 };
-
 
 function drawChart(floor = 1) {
     var container = document.getElementById("timeline");
@@ -37,7 +35,8 @@ function drawChart(floor = 1) {
     dataTable.addColumn({ type: "datetime", id: "Bắt đầu" });
     dataTable.addColumn({ type: "datetime", id: "Kết thúc" });
 
-    dataTable.addRows(allData[floor]);
+    var filteredData = filterDataByTimePeriod(allData[floor]);
+    dataTable.addRows(filteredData);
 
     var options = {
         timeline: { showRowLabels: true },
@@ -73,6 +72,21 @@ function drawChart(floor = 1) {
     });
 }
 
+function filterDataByTimePeriod(data) {
+    var startDate = new Date(document.getElementById("startDate").value);
+    var endDate = new Date(document.getElementById("endDate").value);
+
+    if (isNaN(startDate) || isNaN(endDate)) {
+        return data; // If no dates are selected, return the original data
+    }
+
+    return data.filter(function (booking) {
+        var bookingStart = booking[2];
+        var bookingEnd = booking[3];
+        return (bookingStart >= startDate && bookingEnd <= endDate);
+    });
+}
+
 function showModal(name, phone, time, bill) {
     document.getElementById('cust-name').textContent = name;
     document.getElementById('cust-phone').textContent = phone;
@@ -103,6 +117,11 @@ function changeFloor() {
     var selectedFloor = document.getElementById("floorSelect").value;
     drawChart(parseInt(selectedFloor));
 }
+
+function changeTimePeriod() {
+    drawChart(parseInt(document.getElementById("floorSelect").value));
+}
+
 function loadBookings() {
     var bookings = JSON.parse(localStorage.getItem("bookings")) || [];
 
