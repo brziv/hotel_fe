@@ -97,11 +97,37 @@ function showModal(name, phone, time, bill) {
     document.getElementById('cust-phone').textContent = phone;
     document.getElementById('cust-time').textContent = time;
     document.getElementById('cust-bill').textContent = bill;
+
+    // Lấy dữ liệu dịch vụ từ LocalStorage
+    let bookingServices = JSON.parse(localStorage.getItem("bookingServices")) || {};
+    let booking = bookingServices[phone];
+
+    if (booking) {
+        if (booking.services.includes("Dịch vụ ăn uống")) {
+            document.getElementById('service-food').checked = true;
+        }
+        if (booking.services.includes("Giặt ủi")) {
+            document.getElementById('service-laundry').checked = true;
+        }
+        if (booking.services.includes("Spa")) {
+            document.getElementById('service-spa').checked = true;
+        }
+        document.getElementById('cust-bill').textContent = booking.totalCost;
+    } else {
+        // Bỏ chọn nếu không có dữ liệu dịch vụ
+        document.getElementById('service-food').checked = false;
+        document.getElementById('service-laundry').checked = false;
+        document.getElementById('service-spa').checked = false;
+    }
+
     document.getElementById('modal').style.display = 'block';
     document.getElementById('overlay').style.display = 'block';
 
     document.body.classList.add("modal-open");
 }
+
+
+
 
 function closeModal() {
     document.getElementById('modal').style.display = 'none';
@@ -109,10 +135,45 @@ function closeModal() {
 
     document.body.classList.remove("modal-open");
 }
-
 function bookService() {
-    alert("Chức năng đặt dịch vụ đang phát triển!");
+    let services = [];
+    let totalCost = parseInt(document.getElementById('cust-bill').textContent);
+    let name = document.getElementById('cust-name').textContent;
+    let phone = document.getElementById('cust-phone').textContent;
+
+    if (document.getElementById('service-food').checked) {
+        services.push("Dịch vụ ăn uống");
+        totalCost += 100000;
+    }
+    if (document.getElementById('service-laundry').checked) {
+        services.push("Giặt ủi");
+        totalCost += 50000;
+    }
+    if (document.getElementById('service-spa').checked) {
+        services.push("Spa");
+        totalCost += 200000;
+    }
+
+    if (services.length === 0) {
+        alert("Bạn chưa chọn dịch vụ nào!");
+        return;
+    }
+
+    // Lưu dữ liệu vào LocalStorage
+    let bookingServices = JSON.parse(localStorage.getItem("bookingServices")) || {};
+    bookingServices[phone] = { services, totalCost };
+    localStorage.setItem("bookingServices", JSON.stringify(bookingServices));
+
+    alert(
+        "Bạn đã đặt các dịch vụ: " + services.join(", ") +
+        "\nTổng tiền mới: " + totalCost.toLocaleString() + " VND"
+    );
+
+    // Cập nhật tổng hóa đơn trong modal
+    document.getElementById('cust-bill').textContent = totalCost;
 }
+
+
 
 function checkout() {
     alert("Chức năng trả phòng đang phát triển!");
