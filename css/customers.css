@@ -3,54 +3,63 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    padding-top: 50px;
 }
 
 .container {
     padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 60%;
+    min-height: 100px;
+}
+
+h2 {
+    font-size: 24px;
     text-align: center;
 }
 
-button {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    margin-bottom: 20px;
-    border-radius: 5px;
-}
-
-button:hover {
-    background: #0056b3;
-}
-
 table {
-    width: 80%;
+    width: 100%;
     border-collapse: collapse;
-    margin-top: 5%;
-    margin-left: 10%;
-    background: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
 }
 
 th, td {
-    padding: 1%;
-    border: 1px solid #ddd;
+    padding: 10px;
     text-align: left;
+    border-bottom: 1px solid #ddd;
 }
 
 th {
-    background: #007bff;
+    background-color: #007bff;
     color: white;
 }
 
-td {
-    background: #f9f9f9;
+button {
+    padding: 10px 15px;
+    background: #ff8009;
+    font-size: 15px;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 20px;
 }
-.button-group {
-    display: flex;
-    gap: 10px; /* Giữ khoảng cách giữa nút */
+
+button:hover {
+    background: #c96e00;
 }
-#updateBtn {
-    display: none; /* Ẩn ban đầu */
+
+input[type="text"],
+input[type="email"] {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
 }

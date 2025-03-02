@@ -3,40 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Khách Hàng và Đối Tác</title>
+    <title>Khách Hàng</title>
     <link rel="stylesheet" href="../css/customers.css">
 </head>
 <body>
     <div class="container">
-        <h1>Khách Hàng và Đối Tác</h1>
-        <button onclick="loadCustomers()">Tải Danh Sách Khách Hàng</button>
-        <table id="customer-table">
+        <h2>Khách Hàng</h2>
+        <form id="customerForm">
+            <input type="text" id="name" placeholder="Tên Khách Hàng" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="text" id="phone" placeholder="Số Điện Thoại" required>
+            <button type="submit">Thêm</button>
+            <button type="button" id="updateBtn" style="display:none;">Cập nhật</button>
+        </form>
+        <table>
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Tên Khách Hàng</th>
                     <th>Email</th>
                     <th>Số Điện Thoại</th>
+                    <th>Hành Động</th>
                 </tr>
             </thead>
-            <tbody>
-
+            <tbody id="customerTable">
+                <!-- Customer rows will be rendered here -->
             </tbody>
-            <form id="customerForm">
-                <input type="text" id="name" placeholder="Tên Khách Hàng" required>
-                <input type="email" id="email" placeholder="Email" required>
-                <input type="text" id="phone" placeholder="Số Điện Thoại" required>
-                
-                <div class="button-group">
-                    <button type="button" id="addBtn" onclick="addCustomer()">Thêm</button>
-                    <button type="button" id="updateBtn" style="display:none;">Cập nhật</button>
-                </div>
-            </form>
-            
-            
         </table>
     </div>
-
     <script src="../js/customers.js"></script>
 </body>
 </html>
