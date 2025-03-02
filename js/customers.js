@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function() {
-    console.log("Trang Khách Hàng và Đối Tác đã tải!");
     renderCustomers();
 });
 
@@ -65,9 +64,8 @@ function editCustomer(index) {
     document.querySelector("#email").value = customer.email;
     document.querySelector("#phone").value = customer.phone;
     
-    document.querySelector("#addBtn").style.display = "none";
-    document.querySelector("#updateBtn").style.display = "block";
-
+    document.querySelector("#addBtn").style.visibility = "hidden";
+    document.querySelector("#updateBtn").style.visibility = "visible";
     document.querySelector("#updateBtn").onclick = function() {
         updateCustomer(index);
     };
@@ -93,8 +91,8 @@ function updateCustomer(index) {
     renderCustomers();
     clearForm();
 
-    document.querySelector("#addBtn").style.display = "block";
-    document.querySelector("#updateBtn").style.display = "none";
+    document.querySelector("#addBtn").style.visibility = "visible";
+    document.querySelector("#updateBtn").style.visibility = "hidden";
 }
 
 function deleteCustomer(index) {

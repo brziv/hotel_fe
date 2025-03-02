@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
+    margin-top: 20px;
     padding: 0;
     background-color: #f4f4f4;
 }
@@ -11,23 +11,23 @@ body {
 }
 
 button {
-    background: #007bff;
+    background: #ff8009;
+    font-size: 15px;
     color: white;
     border: none;
     padding: 10px 20px;
     cursor: pointer;
-    margin-bottom: 20px;
     border-radius: 5px;
 }
 
 button:hover {
-    background: #0056b3;
+    background: #c96e00;
 }
 
 table {
     width: 80%;
     border-collapse: collapse;
-    margin-top: 5%;
+    margin-top: 3%;
     margin-left: 10%;
     background: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -47,10 +47,12 @@ th {
 td {
     background: #f9f9f9;
 }
-.button-group {
-    display: flex;
-    gap: 10px; /* Giữ khoảng cách giữa nút */
-}
-#updateBtn {
-    display: none; /* Ẩn ban đầu */
+
+input[type="text"],
+input[type="email"] {
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 15px;
 }
