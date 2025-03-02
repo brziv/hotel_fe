@@ -8,30 +8,28 @@
 </head>
 <body>
     <div class="container">
-        <h1>Khách Hàng</h1>
-        <table id="customer-table">
+        <h2>Khách Hàng</h2>
+        <form id="customerForm">
+            <input type="text" id="name" placeholder="Tên Khách Hàng" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="text" id="phone" placeholder="Số Điện Thoại" required>
+            <button type="submit">Thêm</button>
+            <button type="button" id="updateBtn" style="display:none;">Cập nhật</button>
+        </form>
+        <table>
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Tên Khách Hàng</th>
                     <th>Email</th>
                     <th>Số Điện Thoại</th>
                     <th>Hành Động</th>
                 </tr>
             </thead>
-            <tbody>
-
+            <tbody id="customerTable">
+                <!-- Customer rows will be rendered here -->
             </tbody>
-            <form id="customerForm">
-                <input type="text" id="name" placeholder="Tên Khách Hàng" required>
-                <input type="email" id="email" placeholder="Email" required>
-                <input type="text" id="phone" placeholder="Số Điện Thoại" required>
-                <button type="button" id="addBtn" onclick="addCustomer()">Thêm</button>
-                <button type="button" id="updateBtn" style="visibility: hidden;">Cập nhật</button>
-            </form>
         </table>
     </div>
-
     <script src="../js/customers.js"></script>
 </body>
 </html>
