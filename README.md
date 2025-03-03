@@ -6,18 +6,19 @@ The system provides a visual representation of rooms using a Gantt chart and all
 
 ### Implemented:  
 ✅ View booked rooms using a **Gantt chart**.  
-✅ Click on booked rooms to **call services** or **return the room**.  
-✅ Modal to **book a room** (no function yet).  
+✅ Choose a **time period** to display rooms in the Gantt chart.  
+✅ Modal to **book a room**.  
+✅ Implement **CRUD operations** for customers and employees.  
 ✅ UI for **login and signup**.  
 
 ### In Progress:  
 🔄 **API and database integration** (currently not connected).  
 
 ### Planned Features:  
-➕ Choose a **time period** to display rooms in the Gantt chart.  
+➕ Create the **services tab** to show and add services.  
+➕ Create the **inventory tab** to track goods in the warehouse.  
+➕ Open the **services tab** after clicking the button in the modal.  
 ➕ Add a **dashed line** to indicate the current time.  
-➕ Open the **services tab** after clicking a button in the modal.  
-➕ Implement **CRUD operations** for customers and employees.  
 
 ## Tech Stack  
 - **Frontend:** HTML, CSS, JavaScript  
