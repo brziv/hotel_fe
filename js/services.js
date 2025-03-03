@@ -1,11 +1,11 @@
 function loadValidFloors() {
     let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
     let floorSelect = document.getElementById("floorSelect");
-    floorSelect.innerHTML = "<option value=''>Chọn tầng</option>"; // Reset danh sách
+    floorSelect.innerHTML = "<option value=''>Chọn tầng</option>";
 
     let uniqueFloors = new Set();
     bookings.forEach(booking => {
-        let floor = booking.room.toString().slice(0, 1); // Lấy số tầng (VD: 101 → tầng 1)
+        let floor = booking.room.toString().slice(0, 1);
         uniqueFloors.add(floor);
     });
 
@@ -16,11 +16,12 @@ function loadValidFloors() {
         floorSelect.appendChild(option);
     });
 }
+
 document.getElementById("floorSelect").addEventListener("change", function () {
     let selectedFloor = this.value;
     let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
     let roomSelect = document.getElementById("roomSelect");
-    roomSelect.innerHTML = "<option value=''>Chọn phòng</option>"; 
+    roomSelect.innerHTML = "<option value=''>Chọn phòng</option>";
 
     bookings.forEach(booking => {
         let floor = booking.room.toString().slice(0, 1);
@@ -32,6 +33,7 @@ document.getElementById("floorSelect").addEventListener("change", function () {
         }
     });
 });
+
 document.getElementById("roomSelect").addEventListener("change", function () {
     let selectedRoom = this.value;
     let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
@@ -45,3 +47,24 @@ document.getElementById("roomSelect").addEventListener("change", function () {
         alert("Số điện thoại không hợp lệ! Vui lòng chọn lại.");
     }
 });
+
+document.getElementById("addServiceBtn").addEventListener("click", function () {
+    let selectedRoom = document.getElementById("roomSelect").value;
+    let phone = document.getElementById("phoneInput").value;
+    let date = document.getElementById("dateInput").value;
+    let service = document.getElementById("serviceSelect").value;
+
+    if (!selectedRoom || phone === "Không hợp lệ" || !date) {
+        alert("Vui lòng chọn thông tin hợp lệ!");
+        return;
+    }
+
+    let serviceData = JSON.parse(localStorage.getItem("services")) || [];
+    serviceData.push({ room: selectedRoom, phone, date, service });
+    localStorage.setItem("services", JSON.stringify(serviceData));
+
+    alert("Dịch vụ đã được thêm thành công!");
+});
+
+// Load dữ liệu tầng khi trang mở
+loadValidFloors();
