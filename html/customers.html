@@ -3,32 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Khách Hàng</title>
+    <title>Khách Hàng và Đối Tác</title>
     <link rel="stylesheet" href="../css/customers.css">
 </head>
 <body>
     <div class="container">
-        <h2>Khách Hàng</h2>
-        <form id="customerForm">
-            <input type="text" id="name" placeholder="Tên Khách Hàng" required>
-            <input type="email" id="email" placeholder="Email" required>
-            <input type="text" id="phone" placeholder="Số Điện Thoại" required>
-            <button type="submit">Thêm</button>
-            <button type="button" id="updateBtn" style="display:none;">Cập nhật</button>
-        </form>
-        <table>
-            <thead>
-                <tr>
-                    <th>Tên Khách Hàng</th>
-                    <th>Email</th>
-                    <th>Số Điện Thoại</th>
-                    <th>Hành Động</th>
-                </tr>
-            </thead>
-            <tbody id="customerTable">
-                <!-- Customer rows will be rendered here -->
-            </tbody>
-        </table>
+        <div class="section">
+            <h2>Khách Hàng</h2>
+            <form id="customerForm">
+                <input type="text" id="name" placeholder="Tên Khách Hàng" required>
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="text" id="phone" placeholder="Số Điện Thoại" required>
+                <button type="submit">Thêm</button>
+                <button type="button" id="updateBtn" style="display:none;">Cập nhật</button>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tên</th>
+                        <th>Email</th>
+                        <th>Số Điện Thoại</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody id="customerTable">
+                    <!-- Customer rows will be rendered here -->
+                </tbody>
+            </table>
+        </div>
+        <div class="section">
+            <h2>Đối Tác</h2>
+            <form id="partnerForm">
+                <input type="text" id="partnerName" placeholder="Tên Đối Tác" required>
+                <input type="email" id="partnerEmail" placeholder="Email" required>
+                <input type="text" id="partnerPhone" placeholder="Số Điện Thoại" required>
+                <button type="submit">Thêm</button>
+                <button type="button" id="partnerUpdateBtn" style="display:none;">Cập nhật</button>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tên</th>
+                        <th>Email</th>
+                        <th>Số Điện Thoại</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody id="partnerTable">
+                    <!-- Partner rows will be rendered here -->
+                </tbody>
+            </table>
+        </div>
     </div>
     <script src="../js/customers.js"></script>
 </body>
