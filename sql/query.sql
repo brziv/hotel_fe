@@ -21,8 +21,8 @@ CREATE TABLE tbl_Rooms (
     r_PricePerHour DECIMAL(10,2) NOT NULL,
     r_Status NVARCHAR(20) NOT NULL,
     FOREIGN KEY (r_FloorID) REFERENCES tbl_Floors(f_FloorID),
-	CONSTRAINT chk_PricePerNight CHECK (r_PricePerHour >= 0),
-    CONSTRAINT chk_RoomStatus CHECK (r_Status IN ('Available', 'Occupied', 'Maintenance'))
+	CONSTRAINT chk_PricePerHour CHECK (r_PricePerHour >= 0),
+    CONSTRAINT chk_RoomStatus CHECK (r_Status IN ('Available', 'Occupied'))
 );
 go
 -- Table: tbl_Bookings
@@ -137,18 +137,18 @@ INSERT INTO tbl_Guests (g_FirstName, g_LastName, g_Email, g_PhoneNumber) VALUES
 ('Michael', 'Wilson', 'michael.wilson@example.com', '0932109876');
 
 INSERT INTO tbl_Floors (f_Floor) VALUES
-('Floor 1'),
-('Floor 2'),
-('Floor 3'),
-('Floor 4'),
-('Floor 5');
+('1'),
+('2'),
+('3'),
+('4'),
+('5');
 
 INSERT INTO tbl_Rooms (r_RoomNumber, r_FloorID, r_RoomType, r_PricePerHour, r_Status) VALUES
-('101', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = 'Floor 1'), 'Single', 100000, 'Available'),
-('102', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = 'Floor 1'), 'Double', 150000, 'Occupied'),
-('201', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = 'Floor 2'), 'Suite', 250000, 'Available'),
-('301', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = 'Floor 3'), 'Single', 100000, 'Maintenance'),
-('401', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = 'Floor 4'), 'Double', 150000, 'Available');
+('101', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = '1'), 'Single', 100000, 'Available'),
+('102', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = '1'), 'Double', 150000, 'Occupied'),
+('103', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = '1'), 'Suite', 250000, 'Available'),
+('104', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = '1'), 'Single', 100000, 'Maintenance'),
+('105', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = '1'), 'Double', 150000, 'Available');
 
 INSERT INTO tbl_Bookings (b_GuestID, b_CheckInDate, b_CheckOutDate, b_BookingStatus, b_TotalMoney, b_Deposit) VALUES
 ((SELECT g_GuestID FROM tbl_Guests WHERE g_FirstName = 'John'), '2025-03-01', '2025-03-03', 'Confirmed', 300000, 50000),
@@ -201,104 +201,30 @@ INSERT INTO tbl_BookingRooms (br_BookingID, br_RoomID) VALUES
 
 
 ---------------------------------Procedure, Fuction, Trigger
-go
-create or alter procedure Create_Guest
-	@g_FirstName NVARCHAR(50) ,
-    @g_LastName NVARCHAR(50) ,
-    @g_Email NVARCHAR(100) ,
-    @g_PhoneNumber NVARCHAR(15)
-	as
-	begin
-		INSERT INTO tbl_Guests (g_FirstName, g_LastName, g_Email,g_PhoneNumber )
-			VALUES
-			 (@g_FirstName, @g_LastName, @g_Email,@g_PhoneNumber);				
-	end
-go
-create or alter procedure Create_Room
-	@r_RoomNumber NVARCHAR(10) ,
-    @r_RoomType NVARCHAR(50) ,
-    @r_PricePerNight DECIMAL(10,2) ,
-    @r_Status NVARCHAR(20) 
-	as
-	begin
-		INSERT INTO tbl_Rooms(r_RoomNumber, r_RoomType, r_PricePerNight,r_Status )
-			VALUES
-			 (@r_RoomNumber, @r_RoomType, @r_PricePerNight,@r_Status);				
-	end
-go
-CREATE OR ALTER PROCEDURE Create_Employee
-    @e_FirstName NVARCHAR(50),
-    @e_LastName NVARCHAR(50),
-    @e_Email NVARCHAR(100),
-    @e_PhoneNumber NVARCHAR(15),
-    @e_Position NVARCHAR(50),
-    @e_Salary DECIMAL(10,2)
-	AS
-	BEGIN
-		INSERT INTO tbl_Employees (e_FirstName, e_LastName, e_Email, e_PhoneNumber, e_Position, e_Salary)
-		VALUES (@e_FirstName, @e_LastName, @e_Email, @e_PhoneNumber, @e_Position, @e_Salary);
-	END;
-go
-CREATE OR ALTER PROCEDURE Create_Service
-    @s_ServiceName NVARCHAR(100),
-    @s_ServicePrice DECIMAL(10,2)
-	AS
-	BEGIN
-		INSERT INTO tbl_Services (s_ServiceName, s_ServicePrice)
-		VALUES (@s_ServiceName, @s_ServicePrice);
-	END;
-go
-CREATE OR ALTER PROCEDURE Create_Booking
-    @b_GuestID UNIQUEIDENTIFIER,
-    @b_RoomID UNIQUEIDENTIFIER,
-    @b_CheckInDate DATETIME,
-    @b_CheckOutDate DATETIME,
-    @b_BookingStatus NVARCHAR(20)
-	AS
-	BEGIN
-		INSERT INTO tbl_Bookings (b_GuestID, b_RoomID, b_CheckInDate, b_CheckOutDate, b_BookingStatus)
-		VALUES (@b_GuestID, @b_RoomID, @b_CheckInDate, @b_CheckOutDate, @b_BookingStatus);
-	END;
-go
-CREATE OR ALTER PROCEDURE Create_Payment
-    @p_BookingID UNIQUEIDENTIFIER,
-    @p_PaymentDate DATETIME,
-    @p_AmountPaid DECIMAL(10,2),
-    @p_PaymentMethod NVARCHAR(50)
-	AS
-	BEGIN
-		INSERT INTO tbl_Payments (p_BookingID, p_PaymentDate, p_AmountPaid, p_PaymentMethod)
-		VALUES (@p_BookingID, @p_PaymentDate, @p_AmountPaid, @p_PaymentMethod);
-	END;
-go
-CREATE OR ALTER PROCEDURE Create_BookingService
-    @bs_BookingID UNIQUEIDENTIFIER,
-    @bs_ServiceID UNIQUEIDENTIFIER,
-    @bs_Quantity INT,
-    @bs_TotalPrice DECIMAL(10,2)
-	AS
-	BEGIN
-		INSERT INTO tbl_BookingServices (bs_BookingID, bs_ServiceID, bs_Quantity, bs_TotalPrice)
-		VALUES (@bs_BookingID, @bs_ServiceID, @bs_Quantity, @bs_TotalPrice);
-	END;
 
-INSERT INTO tbl_Guests (g_FirstName, g_LastName, g_Email, g_PhoneNumber) 
-VALUES ('Thanh', 'Le Xuan', 'xuanthanhle@gmail.com', '0988718567');
-select * from tbl_Guests
-----------cai dong code ben tren nay thi ke no
---1) Nhan phong(chua hoan thanh, check trong word)
+--1) Nhan phong(finished)
 go
-CREATE OR ALTER PROCEDURE pro_check_in
+CREATE PROCEDURE pro_check_in
     @BookingID UNIQUEIDENTIFIER
 AS
 BEGIN
     UPDATE tbl_Bookings
     SET b_BookingStatus = 'Checked In'
     WHERE b_BookingID = @BookingID;
+
+    UPDATE tbl_Rooms
+    SET r_Status = 'Occupied'
+    WHERE r_RoomID IN (
+        SELECT br_RoomID
+        FROM tbl_BookingRooms
+        WHERE br_BookingID = @BookingID
+    );
 END;
 go
---2) Tra phong(chua hoan thanh)
-CREATE OR ALTER PROCEDURE pro_check_out
+exec pro_check_in '6063325b-c01b-4e9d-8a8c-4a4e6dc0fd1b';
+go
+--2) Tra phong(finished)
+CREATE PROCEDURE pro_check_out
     @BookingID UNIQUEIDENTIFIER,
     @PaymentMethod NVARCHAR(50)
 AS
@@ -314,11 +240,21 @@ BEGIN
     INSERT INTO tbl_Payments (p_BookingID, p_AmountPaid, p_PaymentMethod)
     VALUES (@BookingID, @TotalMoney, @PaymentMethod);
 
-    -- Update Booking "Paid"
+    -- Update Booking to "Paid"
     UPDATE tbl_Bookings
     SET b_BookingStatus = 'Paid'
     WHERE b_BookingID = @BookingID;
+
+    -- Update Room status to "Available"
+    UPDATE tbl_Rooms
+    SET r_Status = 'Available'
+    WHERE r_RoomID IN (
+        SELECT br_RoomID
+        FROM tbl_BookingRooms
+        WHERE br_BookingID = @BookingID
+    );
 END;
+exec pro_check_out '6063325b-c01b-4e9d-8a8c-4a4e6dc0fd1b','cashhhhhh';
 go
 --3) edit service(finished)
 CREATE PROCEDURE pro_edit_services
@@ -335,9 +271,9 @@ go
 select * from tbl_BookingServices
 go
 EXEC pro_edit_services '9A734537-0955-4A33-9277-1F572E7EE3BE', 'CFBD0209-8188-455E-9391-05FAAB388E87', 3;
---4)Find booking for index graph
+--4)Find booking for index graph(finished)
 GO
-CREATE OR ALTER PROCEDURE pro_find_bookings
+CREATE PROCEDURE pro_find_bookings
     @CheckInDate DATETIME,
     @CheckOutDate DATETIME,
     @Floor NVARCHAR(10)
@@ -356,4 +292,20 @@ BEGIN
 END;
 GO
 select * from tbl_Bookings
-exec pro_find_bookings '2025-03-03 00:00:00.000','2025-03-07 00:00:00.000',1;
+exec pro_find_bookings '2025-03-04 00:00:00.000','2025-03-05 00:00:00.000','1';
+--5) Create User --hoac la dung curd
+INSERT INTO tbl_Guests (g_FirstName, g_LastName, g_Email, g_PhoneNumber) 
+VALUES ('Thanh', 'Le Xuan', 'xuanthanhle@gmail.com', '0988718567');
+select * from tbl_Guests
+--6) 
+--7)
+--8) dung curd
+--9)
+--10) dung curd
+--11) dung curd
+--12) 
+--13)
+--14) 
+--15)
+--16) 
+--17)
