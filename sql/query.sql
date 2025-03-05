@@ -293,19 +293,12 @@ END;
 GO
 select * from tbl_Bookings
 exec pro_find_bookings '2025-03-04 00:00:00.000','2025-03-05 00:00:00.000','1';
---5) Create User --hoac la dung curd
+--5) Create User -- Insert or crud
 INSERT INTO tbl_Guests (g_FirstName, g_LastName, g_Email, g_PhoneNumber) 
 VALUES ('Thanh', 'Le Xuan', 'xuanthanhle@gmail.com', '0988718567');
 select * from tbl_Guests
 --6) 
 --7)
---8) dung curd
---9)
---10) dung curd
---11) dung curd
---12) 
---13)
---14) 
---15)
---16) 
---17)
+--8) -> 12) dung crud
+
+--13) -> 17)  
