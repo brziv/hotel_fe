@@ -301,4 +301,4 @@ select * from tbl_Guests
 --7)
 --8) -> 12) dung crud
 
---13) -> 17)  
+--13) -> 17) get data then calculate
