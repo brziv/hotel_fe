@@ -14,28 +14,42 @@ document.addEventListener("DOMContentLoaded", function() {
     const partnerSubmitBtn = document.querySelector("#partnerForm button[type='submit']");
     const partnerUpdateBtn = document.querySelector("#partnerUpdateBtn");
 
-    let customers = [
-        { name: "Nguyễn Văn A", email: "nguyenvana@gmail.com", phone: "0912345678" },
-        { name: "Trần Thị B", email: "tranthib@gmail.com", phone: "0987654321" },
-        { name: "Lê Văn C", email: "levanc@gmail.com", phone: "0971122334" }
-    ];
-
-    let partners = [
-        { name: "Công ty ABC", email: "abc@company.com", phone: "0901234567" },
-        { name: "Công ty XYZ", email: "xyz@company.com", phone: "0907654321" }
-    ];
+    let customers = [];
+    let partners = [];
 
     let editIndex = null;
     let editPartnerIndex = null;
+
+    async function fetchCustomers() {
+        try {
+            const response = await fetch("http://localhost:5222/api/Guest/GetGuestList");
+            const data = await response.json();
+            customers = data.data;
+            renderCustomers();
+        } catch (error) {
+            console.error("Error fetching customers:", error);
+        }
+    }
+
+    async function fetchPartners() {
+        try {
+            const response = await fetch("http://localhost:5222/api/Partner/GetPartnerList");
+            const data = await response.json();
+            partners = data.data;
+            renderPartners();
+        } catch (error) {
+            console.error("Error fetching partners:", error);
+        }
+    }
 
     function renderCustomers() {
         customerTable.innerHTML = "";
         customers.forEach((customer, index) => {
             let row = `
                 <tr>
-                    <td>${customer.name}</td>
-                    <td>${customer.email}</td>
-                    <td>${customer.phone}</td>
+                    <td>${customer.gFirstName} ${customer.gLastName}</td>
+                    <td>${customer.gEmail}</td>
+                    <td>${customer.gPhoneNumber}</td>
                     <td>
                         <button onclick="editCustomer(${index})">Sửa</button>
                         <button onclick="deleteCustomer(${index})">Xóa</button>
@@ -51,9 +65,9 @@ document.addEventListener("DOMContentLoaded", function() {
         partners.forEach((partner, index) => {
             let row = `
                 <tr>
-                    <td>${partner.name}</td>
-                    <td>${partner.email}</td>
-                    <td>${partner.phone}</td>
+                    <td>${partner.pPartnerName}</td>
+                    <td>${partner.pEmail}</td>
+                    <td>${partner.pPhoneNumber}</td>
                     <td>
                         <button onclick="editPartner(${index})">Sửa</button>
                         <button onclick="deletePartner(${index})">Xóa</button>
@@ -64,10 +78,106 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    function checkDuplicate(email, phone, excludeIndex = null, list = customers) {
-        return list.some((item, index) => 
-            (item.email === email || item.phone === phone) && index !== excludeIndex
-        );
+    async function addCustomer(customer) {
+        try {
+            const response = await fetch("http://localhost:5222/api/Guest/InsertTblGuest", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(customer)
+            });
+            const data = await response.json();
+            customers.push(data.data);
+            renderCustomers();
+        } catch (error) {
+            console.error("Error adding customer:", error);
+        }
+    }
+
+    async function updateCustomer(customer) {
+        try {
+            const response = await fetch("http://localhost:5222/api/Guest/UpdateTblGuest", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(customer)
+            });
+            const data = await response.json();
+            customers[editIndex] = data.data;
+            renderCustomers();
+        } catch (error) {
+            console.error("Error updating customer:", error);
+        }
+    }
+
+    async function deleteCustomer(index) {
+        try {
+            const customer = customers[index];
+            await fetch(`http://localhost:5222/api/Guest/XoaTblGuest`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ gGuestId: customer.gGuestId })
+            });
+            customers.splice(index, 1);
+            renderCustomers();
+        } catch (error) {
+            console.error("Error deleting customer:", error);
+        }
+    }
+
+    async function addPartner(partner) {
+        try {
+            const response = await fetch("http://localhost:5222/api/Partner/InsertTblPartner", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(partner)
+            });
+            const data = await response.json();
+            partners.push(data.data);
+            renderPartners();
+        } catch (error) {
+            console.error("Error adding partner:", error);
+        }
+    }
+
+    async function updatePartner(partner) {
+        try {
+            const response = await fetch("http://localhost:5222/api/Partner/UpdateTblPartner", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(partner)
+            });
+            const data = await response.json();
+            partners[editPartnerIndex] = data.data;
+            renderPartners();
+        } catch (error) {
+            console.error("Error updating partner:", error);
+        }
+    }
+
+    async function deletePartner(index) {
+        try {
+            const partner = partners[index];
+            await fetch(`http://localhost:5222/api/Partner/XoaTblPartner`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ pPartnerId: partner.pPartnerId })
+            });
+            partners.splice(index, 1);
+            renderPartners();
+        } catch (error) {
+            console.error("Error deleting partner:", error);
+        }
     }
 
     customerForm.addEventListener("submit", function(event) {
@@ -81,8 +191,16 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        customers.push({ name, email, phone });
-        renderCustomers();
+        const [firstName, ...lastName] = name.split(" ");
+        const customer = {
+            gGuestId: crypto.randomUUID(),
+            gFirstName: firstName,
+            gLastName: lastName.join(" "),
+            gEmail: email,
+            gPhoneNumber: phone
+        };
+
+        addCustomer(customer);
         customerForm.reset();
     });
 
@@ -97,16 +215,22 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        partners.push({ name, email, phone });
-        renderPartners();
+        const partner = {
+            pPartnerId: crypto.randomUUID(),
+            pPartnerName: name,
+            pEmail: email,
+            pPhoneNumber: phone
+        };
+
+        addPartner(partner);
         partnerForm.reset();
     });
 
     window.editCustomer = function(index) {
         let customer = customers[index];
-        nameInput.value = customer.name;
-        emailInput.value = customer.email;
-        phoneInput.value = customer.phone;
+        nameInput.value = `${customer.gFirstName} ${customer.gLastName}`;
+        emailInput.value = customer.gEmail;
+        phoneInput.value = customer.gPhoneNumber;
 
         editIndex = index;
         submitBtn.style.display = "none";
@@ -115,9 +239,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
     window.editPartner = function(index) {
         let partner = partners[index];
-        partnerNameInput.value = partner.name;
-        partnerEmailInput.value = partner.email;
-        partnerPhoneInput.value = partner.phone;
+        partnerNameInput.value = partner.pPartnerName;
+        partnerEmailInput.value = partner.pEmail;
+        partnerPhoneInput.value = partner.pPhoneNumber;
 
         editPartnerIndex = index;
         partnerSubmitBtn.style.display = "none";
@@ -134,8 +258,16 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        customers[editIndex] = { name, email, phone };
-        renderCustomers();
+        const [firstName, ...lastName] = name.split(" ");
+        const customer = {
+            gGuestId: customers[editIndex].gGuestId,
+            gFirstName: firstName,
+            gLastName: lastName.join(" "),
+            gEmail: email,
+            gPhoneNumber: phone
+        };
+
+        updateCustomer(customer);
         customerForm.reset();
         submitBtn.style.display = "inline-block";
         updateBtn.style.display = "none";
@@ -152,8 +284,14 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        partners[editPartnerIndex] = { name, email, phone };
-        renderPartners();
+        const partner = {
+            pPartnerId: partners[editPartnerIndex].pPartnerId,
+            pPartnerName: name,
+            pEmail: email,
+            pPhoneNumber: phone
+        };
+
+        updatePartner(partner);
         partnerForm.reset();
         partnerSubmitBtn.style.display = "inline-block";
         partnerUpdateBtn.style.display = "none";
@@ -162,18 +300,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
     window.deleteCustomer = function(index) {
         if (confirm("Bạn có chắc chắn muốn xóa khách hàng này không?")) {
-            customers.splice(index, 1);
-            renderCustomers();
+            deleteCustomer(index);
         }
     };
 
     window.deletePartner = function(index) {
         if (confirm("Bạn có chắc chắn muốn xóa đối tác này không?")) {
-            partners.splice(index, 1);
-            renderPartners();
+            deletePartner(index);
         }
     };
 
-    renderCustomers();
-    renderPartners();
+    fetchCustomers();
+    fetchPartners();
 });
