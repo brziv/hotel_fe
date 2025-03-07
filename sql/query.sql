@@ -31,7 +31,7 @@ CREATE TABLE tbl_Bookings (
     b_GuestID UNIQUEIDENTIFIER NOT NULL,
     b_CheckInDate DATETIME NOT NULL,
     b_CheckOutDate DATETIME NOT NULL,
-    b_BookingStatus NVARCHAR(20) NOT NULL,
+    b_BookingStatus NVARCHAR(20) NOT NULL,--Pending, Confirmed, paid
 	b_TotalMoney DECIMAL(10,2) DEFAULT 0,
 	b_Deposit DECIMAL(10,2),
     b_CreatedAt DATETIME DEFAULT GETDATE(),
@@ -44,7 +44,7 @@ CREATE TABLE tbl_Payments (
     p_PaymentID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     p_BookingID UNIQUEIDENTIFIER NOT NULL,
     p_AmountPaid DECIMAL(10,2) NOT NULL,
-    p_PaymentMethod NVARCHAR(50) NOT NULL,
+    p_PaymentMethod NVARCHAR(50) NOT NULL,--cash, visa, 
 	p_PaymentDate DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (p_BookingID) REFERENCES tbl_Bookings(b_BookingID)
 );
@@ -110,7 +110,7 @@ CREATE TABLE tbl_Goods (
 );
 go
 CREATE TABLE tbl_ServiceGoods (
-	tsg_ServiceGoodsID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),  
+	sg_ServiceGoodsID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),  
     sg_ServiceID UNIQUEIDENTIFIER NOT NULL,
     sg_GoodsID UNIQUEIDENTIFIER NOT NULL,
     sg_Quantity INT NOT NULL,
@@ -119,97 +119,134 @@ CREATE TABLE tbl_ServiceGoods (
 );
 go
 CREATE TABLE tbl_ImportGoods (
-    ig_ImportID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),  
-    ig_GoodsID UNIQUEIDENTIFIER NOT NULL,  
-    ig_Quantity INT NOT NULL,  
-    ig_CostPrice DECIMAL(10,2) NOT NULL,  
+    ig_ImportID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),   
+    ig_SumPrice DECIMAL(10,2) NOT NULL,  
     ig_Currency NVARCHAR(30) NOT NULL,  
     ig_ImportDate DATETIME DEFAULT GETDATE(),  
     ig_Supplier NVARCHAR(200),  
-    FOREIGN KEY (ig_GoodsID) REFERENCES tbl_Goods(g_GoodsID)
 );
--------------------------------data
-INSERT INTO tbl_Guests (g_FirstName, g_LastName, g_Email, g_PhoneNumber) VALUES
-('John', 'Doe', 'johndoe@example.com', '0123456789'),
-('Alice', 'Smith', 'alice.smith@example.com', '0987654321'),
-('Robert', 'Brown', 'robert.brown@example.com', '0912345678'),
-('Emily', 'Davis', 'emily.davis@example.com', '0965432109'),
-('Michael', 'Wilson', 'michael.wilson@example.com', '0932109876');
+go
+CREATE TABLE tbl_ImportGoodsDetails (
+    igd_ID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    igd_ImportID UNIQUEIDENTIFIER NOT NULL,
+    igd_GoodsID UNIQUEIDENTIFIER NOT NULL,
+    igd_Quantity INT NOT NULL,
+    igd_CostPrice DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (igd_ImportID) REFERENCES tbl_ImportGoods(ig_ImportID),
+    FOREIGN KEY (igd_GoodsID) REFERENCES tbl_Goods(g_GoodsID)
+);
 
-INSERT INTO tbl_Floors (f_Floor) VALUES
+
+-------------------------------data
+-- tbl_Guests
+INSERT INTO tbl_Guests (g_FirstName, g_LastName, g_Email, g_PhoneNumber)
+VALUES 
+('John', 'Doe', 'john.doe@example.com', '123456789'),
+('Jane', 'Smith', 'jane.smith@example.com', '987654321'),
+('Alice', 'Brown', 'alice.brown@example.com', '555123456');
+
+-- tbl_Floors
+INSERT INTO tbl_Floors (f_Floor) 
+VALUES 
 ('1'),
 ('2'),
-('3'),
-('4'),
-('5');
+('3');
 
-INSERT INTO tbl_Rooms (r_RoomNumber, r_FloorID, r_RoomType, r_PricePerHour, r_Status) VALUES
-('101', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = '1'), 'Single', 100000, 'Available'),
-('102', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = '1'), 'Double', 150000, 'Occupied'),
-('103', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = '1'), 'Suite', 250000, 'Available'),
-('104', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = '1'), 'Single', 100000, 'Maintenance'),
-('105', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = '1'), 'Double', 150000, 'Available');
+-- tbl_Rooms
+INSERT INTO tbl_Rooms (r_RoomNumber, r_FloorID, r_RoomType, r_PricePerHour, r_Status)
+VALUES 
+('101', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = '1'), 'Standard', 50.00, 'Available'),
+('102', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = '1'), 'Deluxe', 80.00, 'Available'),
+('301', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = '3'), 'Suite', 120.00, 'Occupied');
 
-INSERT INTO tbl_Bookings (b_GuestID, b_CheckInDate, b_CheckOutDate, b_BookingStatus, b_TotalMoney, b_Deposit) VALUES
-((SELECT g_GuestID FROM tbl_Guests WHERE g_FirstName = 'John'), '2025-03-01', '2025-03-03', 'Confirmed', 300000, 50000),
-((SELECT g_GuestID FROM tbl_Guests WHERE g_FirstName = 'Alice'), '2025-03-02', '2025-03-05', 'Pending', 450000, 100000),
-((SELECT g_GuestID FROM tbl_Guests WHERE g_FirstName = 'Robert'), '2025-03-03', '2025-03-07', 'Confirmed', 600000, 150000),
-((SELECT g_GuestID FROM tbl_Guests WHERE g_FirstName = 'Emily'), '2025-03-04', '2025-03-06', 'Cancelled', 200000, 0),
-((SELECT g_GuestID FROM tbl_Guests WHERE g_FirstName = 'Michael'), '2025-03-05', '2025-03-08', 'Confirmed', 500000, 100000);
+-- tbl_Bookings
+INSERT INTO tbl_Bookings (b_GuestID, b_CheckInDate, b_CheckOutDate, b_BookingStatus, b_TotalMoney, b_Deposit)
+VALUES 
+((SELECT g_GuestID FROM tbl_Guests WHERE g_Email = 'john.doe@example.com'), '2025-03-01', '2025-03-05', 'Confirmed', 200.00, 50.00),
+((SELECT g_GuestID FROM tbl_Guests WHERE g_Email = 'jane.smith@example.com'), '2025-03-02', '2025-03-06', 'Pending', 320.00, 100.00),
+((SELECT g_GuestID FROM tbl_Guests WHERE g_Email = 'alice.brown@example.com'), '2025-03-03', '2025-03-07', 'Paid', 480.00, 200.00);
 
-INSERT INTO tbl_Payments (p_BookingID, p_AmountPaid, p_PaymentMethod) VALUES
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 300000), 50000, 'Credit Card'),
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 450000), 100000, 'Cash'),
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 600000), 200000, 'Bank Transfer'),
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 200000), 0, 'N/A'),
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 500000), 100000, 'Credit Card');
+-- tbl_Payments
+INSERT INTO tbl_Payments (p_BookingID, p_AmountPaid, p_PaymentMethod)
+VALUES 
+((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 200.00), 50.00, 'Cash'),
+((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 320.00), 100.00, 'Visa'),
+((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 480.00), 200.00, 'Cash');
 
-INSERT INTO tbl_Employees (e_FirstName, e_LastName, e_Email, e_PhoneNumber, e_Position, e_Salary) VALUES
-('David', 'Lee', 'david.lee@example.com', '0123456789', 'Receptionist', 7000000),
-('Sophia', 'White', 'sophia.white@example.com', '0987654321', 'Housekeeping', 6000000),
-('Daniel', 'Taylor', 'daniel.taylor@example.com', '0912345678', 'Manager', 15000000),
-('Olivia', 'Moore', 'olivia.moore@example.com', '0965432109', 'Security', 5000000),
-('James', 'Harris', 'james.harris@example.com', '0932109876', 'Chef', 8000000);
+-- tbl_Employees
+INSERT INTO tbl_Employees (e_FirstName, e_LastName, e_Email, e_PhoneNumber, e_Position, e_Salary)
+VALUES 
+('Michael', 'Johnson', 'michael.j@example.com', '111222333', 'Manager', 1500.00),
+('Emily', 'Davis', 'emily.d@example.com', '222333444', 'Receptionist', 800.00),
+('David', 'Wilson', 'david.w@example.com', '333444555', 'Housekeeping', 600.00);
 
-INSERT INTO tbl_Services (s_ServiceName, s_ServiceCostPrice, s_ServiceSellPrice) VALUES
-('Laundry', 50000, 70000),
-('Room Cleaning', 30000, 50000),
-('Breakfast', 60000, 90000),
-('Airport Pickup', 100000, 150000),
-('Spa', 150000, 200000);
+-- tbl_Services
+INSERT INTO tbl_Services (s_ServiceName, s_ServiceCostPrice, s_ServiceSellPrice)
+VALUES 
+('Laundry', 10.00, 15.00),
+('Breakfast', 5.00, 10.00),
+('Spa', 20.00, 30.00);
 
-INSERT INTO tbl_BookingServices (bs_BookingID, bs_ServiceID, bs_Quantity) VALUES
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 300000), (SELECT s_ServiceID FROM tbl_Services WHERE s_ServiceName = 'Laundry'), 1),
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 450000), (SELECT s_ServiceID FROM tbl_Services WHERE s_ServiceName = 'Room Cleaning'), 2),
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 600000), (SELECT s_ServiceID FROM tbl_Services WHERE s_ServiceName = 'Breakfast'), 1),
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 200000), (SELECT s_ServiceID FROM tbl_Services WHERE s_ServiceName = 'Airport Pickup'), 1),
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 500000), (SELECT s_ServiceID FROM tbl_Services WHERE s_ServiceName = 'Spa'), 1);
+-- tbl_BookingServices
+INSERT INTO tbl_BookingServices (bs_BookingID, bs_ServiceID, bs_Quantity)
+VALUES 
+((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 200.00), (SELECT s_ServiceID FROM tbl_Services WHERE s_ServiceName = 'Laundry'), 2),
+((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 320.00), (SELECT s_ServiceID FROM tbl_Services WHERE s_ServiceName = 'Breakfast'), 3),
+((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 480.00), (SELECT s_ServiceID FROM tbl_Services WHERE s_ServiceName = 'Spa'), 1);
 
-INSERT INTO tbl_Partner (p_PartnerName, p_PartnerType, p_PhoneNumber, p_Email, p_Address) VALUES
-('ABC Travel', 'Travel Agency', '0123456789', 'abc.travel@example.com', 'Hanoi'),
-('XYZ Suppliers', 'Supplier', '0987654321', 'xyz.supplier@example.com', 'Ho Chi Minh City'),
-('Luxury Transport', 'Transport Service', '0912345678', 'luxury.transport@example.com', 'Da Nang'),
-('Gourmet Catering', 'Food Supplier', '0965432109', 'gourmet.catering@example.com', 'Hue'),
-('Wellness Spa', 'Wellness Services', '0932109876', 'wellness.spa@example.com', 'Nha Trang');
+-- tbl_Partner
+INSERT INTO tbl_Partner (p_PartnerName, p_PartnerType, p_PhoneNumber, p_Email, p_Address)
+VALUES 
+('ABC Travel Agency', 'Travel Agency', '123123123', 'contact@abctravel.com', '123 Main St'),
+('XYZ Suppliers', 'Supplier', '456456456', 'info@xyzsuppliers.com', '456 Market St'),
+('Luxury Car Rentals', 'Car Rental', '789789789', 'support@luxurycarrentals.com', '789 Auto St');
 
-INSERT INTO tbl_BookingRooms (br_BookingID, br_RoomID) VALUES
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 300000), (SELECT r_RoomID FROM tbl_Rooms WHERE r_RoomNumber = '101')),
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 450000), (SELECT r_RoomID FROM tbl_Rooms WHERE r_RoomNumber = '102')),
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 600000), (SELECT r_RoomID FROM tbl_Rooms WHERE r_RoomNumber = '201')),
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 200000), (SELECT r_RoomID FROM tbl_Rooms WHERE r_RoomNumber = '301')),
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 500000), (SELECT r_RoomID FROM tbl_Rooms WHERE r_RoomNumber = '401'));
+-- tbl_BookingRooms
+INSERT INTO tbl_BookingRooms (br_BookingID, br_RoomID)
+VALUES 
+((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 200.00), (SELECT r_RoomID FROM tbl_Rooms WHERE r_RoomNumber = '101')),
+((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 320.00), (SELECT r_RoomID FROM tbl_Rooms WHERE r_RoomNumber = '102')),
+((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 480.00), (SELECT r_RoomID FROM tbl_Rooms WHERE r_RoomNumber = '301'));
+
+-- tbl_Goods
+INSERT INTO tbl_Goods (g_GoodsName, g_Category, g_Quantity, g_Unit, g_CostPrice, g_SellingPrice, g_Currency)
+VALUES 
+('Shampoo', 'Toiletries', 100, 'Bottle', 2.00, 5.00, 'VND'),
+('Towel', 'Linen', 50, 'Piece', 10.00, 20.00, 'VND'),
+('Water Bottle', 'Beverages', 200, 'Bottle', 1.00, 3.00, 'VND');
+
+-- tbl_ServiceGoods
+INSERT INTO tbl_ServiceGoods (sg_ServiceID, sg_GoodsID, sg_Quantity)
+VALUES 
+((SELECT s_ServiceID FROM tbl_Services WHERE s_ServiceName = 'Laundry'), (SELECT g_GoodsID FROM tbl_Goods WHERE g_GoodsName = 'Shampoo'), 2),
+((SELECT s_ServiceID FROM tbl_Services WHERE s_ServiceName = 'Breakfast'), (SELECT g_GoodsID FROM tbl_Goods WHERE g_GoodsName = 'Water Bottle'), 3),
+((SELECT s_ServiceID FROM tbl_Services WHERE s_ServiceName = 'Spa'), (SELECT g_GoodsID FROM tbl_Goods WHERE g_GoodsName = 'Towel'), 1);
+
+-- tbl_ImportGoods
+INSERT INTO tbl_ImportGoods (ig_SumPrice, ig_Currency, ig_Supplier)
+VALUES 
+(500.00, 'VND', 'XYZ Suppliers'),
+(300.00, 'VND', 'ABC Travel Agency'),
+(700.00, 'VND', 'Luxury Car Rentals');
+
+-- tbl_ImportGoodsDetails
+INSERT INTO tbl_ImportGoodsDetails (igd_ImportID, igd_GoodsID, igd_Quantity, igd_CostPrice)
+VALUES 
+((SELECT ig_ImportID FROM tbl_ImportGoods WHERE ig_Supplier = 'XYZ Suppliers'), (SELECT g_GoodsID FROM tbl_Goods WHERE g_GoodsName = 'Shampoo'), 50, 2.00),
+((SELECT ig_ImportID FROM tbl_ImportGoods WHERE ig_Supplier = 'ABC Travel Agency'), (SELECT g_GoodsID FROM tbl_Goods WHERE g_GoodsName = 'Water Bottle'), 100, 1.00),
+((SELECT ig_ImportID FROM tbl_ImportGoods WHERE ig_Supplier = 'Luxury Car Rentals'), (SELECT g_GoodsID FROM tbl_Goods WHERE g_GoodsName = 'Towel'), 30, 10.00);
 
 
 ---------------------------------Procedure, Fuction, Trigger
 
 --1) Nhan phong(finished)
 go
-CREATE PROCEDURE pro_check_in
+CREATE or alter PROCEDURE pro_check_in
     @BookingID UNIQUEIDENTIFIER
 AS
 BEGIN
     UPDATE tbl_Bookings
-    SET b_BookingStatus = 'Checked In'
+    SET b_BookingStatus = 'Confirmed'
     WHERE b_BookingID = @BookingID;
 
     UPDATE tbl_Rooms
@@ -224,7 +261,7 @@ go
 exec pro_check_in '6063325b-c01b-4e9d-8a8c-4a4e6dc0fd1b';
 go
 --2) Tra phong(finished)
-CREATE PROCEDURE pro_check_out
+CREATE or alter PROCEDURE pro_check_out
     @BookingID UNIQUEIDENTIFIER,
     @PaymentMethod NVARCHAR(50)
 AS
@@ -257,15 +294,27 @@ END;
 exec pro_check_out '6063325b-c01b-4e9d-8a8c-4a4e6dc0fd1b','cashhhhhh';
 go
 --3) edit service(finished)
-CREATE PROCEDURE pro_edit_services
+CREATE or alter PROCEDURE pro_edit_services
     @BookingID UNIQUEIDENTIFIER,
     @ServiceID UNIQUEIDENTIFIER,
     @Quantity INT
 AS
 BEGIN
-    -- add to BookingServices
+    DECLARE @ServicePrice DECIMAL(10,2);
+
+    -- take service sell price
+    SELECT @ServicePrice = s_ServiceSellPrice 
+    FROM tbl_Services 
+    WHERE s_ServiceID = @ServiceID;
+
+    -- add to bookingservices
     INSERT INTO tbl_BookingServices (bs_BookingID, bs_ServiceID, bs_Quantity)
     VALUES (@BookingID, @ServiceID, @Quantity);
+
+    -- update totalmoney in bookings
+    UPDATE tbl_Bookings
+    SET b_TotalMoney = b_TotalMoney + (@ServicePrice * @Quantity)
+    WHERE b_BookingID = @BookingID;
 END;
 go
 select * from tbl_BookingServices
@@ -273,7 +322,7 @@ go
 EXEC pro_edit_services '9A734537-0955-4A33-9277-1F572E7EE3BE', 'CFBD0209-8188-455E-9391-05FAAB388E87', 3;
 --4)Find booking for index graph(finished)
 GO
-CREATE PROCEDURE pro_find_bookings
+CREATE or alter PROCEDURE pro_find_bookings
     @CheckInDate DATETIME,
     @CheckOutDate DATETIME,
     @Floor NVARCHAR(10)
@@ -286,19 +335,56 @@ BEGIN
     JOIN tbl_Rooms r ON br.br_RoomID = r.r_RoomID
     JOIN tbl_Floors f ON r.r_FloorID = f.f_FloorID
     WHERE 
-        (b.b_CheckInDate BETWEEN @CheckInDate AND @CheckOutDate 
-         OR b.b_CheckOutDate BETWEEN @CheckInDate AND @CheckOutDate)
+        (@CheckInDate < b.b_CheckOutDate AND @CheckOutDate > b.b_CheckInDate)
         AND f.f_Floor = @Floor;
 END;
 GO
 select * from tbl_Bookings
 exec pro_find_bookings '2025-03-04 00:00:00.000','2025-03-05 00:00:00.000','1';
---5) Create User -- Insert or crud
+--5) Create User --hoac la dung curd
 INSERT INTO tbl_Guests (g_FirstName, g_LastName, g_Email, g_PhoneNumber) 
 VALUES ('Thanh', 'Le Xuan', 'xuanthanhle@gmail.com', '0988718567');
 select * from tbl_Guests
---6) 
---7)
---8) -> 12) dung crud
+--6) Find emty rooms(Room is available 1 hour after previous guest checked out)
+go
+alter PROCEDURE pro_FindAvailableRooms
+    @CheckInDate DATETIME,
+    @CheckOutDate DATETIME
+AS
+BEGIN
+    -- find rooms are occupied
+    WITH BookedRooms AS (
+        SELECT DISTINCT br.br_RoomID
+        FROM tbl_Bookings b
+        JOIN tbl_BookingRooms br ON b.b_BookingID = br.br_BookingID
+        WHERE 
+            (@CheckInDate < DATEADD(HOUR, 1, b.b_CheckOutDate)  AND @CheckOutDate > b.b_CheckInDate) 
+    )
+    
+    -- get room list not occupied
+    SELECT r.r_RoomID, r.r_RoomNumber, r.r_RoomType, r.r_PricePerHour
+    FROM tbl_Rooms r
+    WHERE r.r_RoomID NOT IN (SELECT br_RoomID FROM BookedRooms)
+END;
+go
+select b_CheckInDate,b_CheckOutDate, r_RoomNumber from tbl_Bookings
+join tbl_BookingRooms on b_BookingID=br_BookingID
+join tbl_Rooms on br_RoomID = r_RoomID
+go
+EXEC pro_FindAvailableRooms '2025-03-05 01:00:00.000', '2025-03-08 00:00:00.000';
+go
+--7.1)
 
---13) -> 17) get data then calculate
+--7.2)
+--8) dung curd
+--9) 
+
+--10) dung curd
+--11) dung curd
+--12) 
+
+--13)
+--14) 
+--15)
+--16) 
+--17)
