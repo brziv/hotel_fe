@@ -57,8 +57,7 @@ button:hover {
 }
 
 input[type="text"],
-input[type="email"],
-input[type="number"] {
+input[type="email"] {
     width: 15%;
     padding: 10px;
     border: 1px solid #ddd;

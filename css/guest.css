@@ -5,8 +5,8 @@ body {
     background-color: #f4f4f4;
     display: flex;
     justify-content: center;
-    text-align: center;
     padding-top: 50px;
+    text-align: center;
 }
 
 .container {
@@ -14,13 +14,8 @@ body {
     background: white;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    display: flex;
-    justify-content: space-between;
-}
-
-.section {
-    width: 48%;
+    width: 60%;
+    min-height: 100px;
 }
 
 h2 {
@@ -63,9 +58,9 @@ button:hover {
 
 input[type="text"],
 input[type="email"] {
+    width: 15%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 14px;
-    margin-bottom: 10px;
 }
