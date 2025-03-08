@@ -1,7 +1,8 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const guestTable = document.querySelector("#guestTable");
     const guestForm = document.querySelector("#guestForm");
-    const guestNameInput = document.querySelector("#guestName");
+    const guestFirstNameInput = document.querySelector("#guestFirstName");
+    const guestLastNameInput = document.querySelector("#guestLastName");
     const guestEmailInput = document.querySelector("#guestEmail");
     const guestPhoneInput = document.querySelector("#guestPhone");
     const guestSubmitBtn = document.querySelector("button[type='submit']");
@@ -26,7 +27,8 @@ document.addEventListener("DOMContentLoaded", function() {
         guests.forEach((guest, index) => {
             let row = `
                 <tr>
-                    <td>${guest.gFirstName} ${guest.gLastName}</td>
+                    <td>${guest.gFirstName}</td>
+                    <td>${guest.gLastName}</td>
                     <td>${guest.gEmail}</td>
                     <td>${guest.gPhoneNumber}</td>
                     <td>
@@ -59,15 +61,15 @@ document.addEventListener("DOMContentLoaded", function() {
     async function updateGuest(guest) {
         try {
             const response = await fetch("http://localhost:5222/api/Guest/UpdateTblGuest", {
-                method: "POST",
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(guest)
             });
-            const data = await response.json();
-            guests[editGuestIndex] = data.data;
-            renderGuests();
+            if (!response.ok) throw new Error("Failed to update guest");
+
+            await fetchGuests();
         } catch (error) {
             console.error("Error updating guest:", error);
         }
@@ -76,31 +78,30 @@ document.addEventListener("DOMContentLoaded", function() {
     async function deleteGuest(index) {
         try {
             const guest = guests[index];
-            await fetch(`http://localhost:5222/api/Guest/XoaTblGuest`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ gGuestId: guest.gGuestId })
+    
+            const response = await fetch(`http://localhost:5222/api/Guest/XoaTblGuest?gGuestId=${guest.gGuestId}`, {
+                method: "DELETE",
             });
-            guests.splice(index, 1);
-            renderGuests();
+    
+            if (!response.ok) throw new Error("Failed to delete guest");
+    
+            await fetchGuests();
         } catch (error) {
             console.error("Error deleting guest:", error);
         }
     }
-
-    guestForm.addEventListener("submit", function(event) {
+    
+    guestForm.addEventListener("submit", function (event) {
         event.preventDefault();
-        let name = guestNameInput.value.trim();
+        let firstName = guestFirstNameInput.value.trim();
+        let lastName = guestLastNameInput.value.trim();
         let email = guestEmailInput.value.trim();
         let phone = guestPhoneInput.value.trim();
 
-        const [firstName, ...lastName] = name.split(" ");
         const guest = {
             gGuestId: crypto.randomUUID(),
             gFirstName: firstName,
-            gLastName: lastName.join(" "),
+            gLastName: lastName,
             gEmail: email,
             gPhoneNumber: phone
         };
@@ -109,9 +110,10 @@ document.addEventListener("DOMContentLoaded", function() {
         guestForm.reset();
     });
 
-    window.editGuest = function(index) {
+    window.editGuest = function (index) {
         let guest = guests[index];
-        guestNameInput.value = `${guest.gFirstName} ${guest.gLastName}`;
+        guestFirstNameInput.value = guest.gFirstName;
+        guestLastNameInput.value = guest.gLastName;
         guestEmailInput.value = guest.gEmail;
         guestPhoneInput.value = guest.gPhoneNumber;
 
@@ -120,16 +122,16 @@ document.addEventListener("DOMContentLoaded", function() {
         guestUpdateBtn.style.display = "inline-block";
     };
 
-    guestUpdateBtn.addEventListener("click", function() {
-        let name = guestNameInput.value.trim();
+    guestUpdateBtn.addEventListener("click", function () {
+        let firstName = guestFirstNameInput.value.trim();
+        let lastName = guestLastNameInput.value.trim();
         let email = guestEmailInput.value.trim();
         let phone = guestPhoneInput.value.trim();
 
-        const [firstName, ...lastName] = name.split(" ");
         const guest = {
             gGuestId: guests[editGuestIndex].gGuestId,
             gFirstName: firstName,
-            gLastName: lastName.join(" "),
+            gLastName: lastName,
             gEmail: email,
             gPhoneNumber: phone
         };
@@ -141,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function() {
         editGuestIndex = null;
     });
 
-    window.deleteGuest = function(index) {
+    window.deleteGuest = function (index) {
         if (confirm("Bạn có chắc chắn muốn xóa khách hàng này không?")) {
             deleteGuest(index);
         }
