@@ -9,30 +9,31 @@ body {
     text-align: center;
 }
 
+h2 {
+    font-size: 28px !important;
+    margin-bottom: 25px !important;
+}
+
+h4 {
+    text-align: center;
+}
+
 .container {
     padding: 20px;
     background: white;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 60%;
+    width: 60% !important;
     min-height: 100px;
 }
 
-h2 {
-    font-size: 24px;
-    text-align: center;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+#importModal {
+    margin-top: 120px;
 }
 
 th, td {
     padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+    text-align: center !important;
 }
 
 th {
@@ -41,27 +42,14 @@ th {
 }
 
 button {
-    padding: 10px 15px;
-    background: #ff8009;
-    font-size: 15px;
-    border: none;
+    background-color: #ff8009;
+    padding: 5px 10px;
     color: white;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-    margin-bottom: 20px;
+    border: none;
+    border-radius: 5px !important;
+    margin: 0 3px !important;
 }
 
 button:hover {
-    background: #c96e00;
-}
-
-input[type="text"],
-input[type="number"] {
-    width: 15%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 14px;
-    margin-bottom: 10px;
+    background-color: #c96e00;
 }
