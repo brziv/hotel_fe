@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const addImportDetailBtn = document.querySelector("#addImportDetailBtn");
     const finalizeImportBtn = document.querySelector("#finalizeImportBtn");
     const importDetailsTable = document.querySelector("#importDetailsTable");
+    const importDetailViewTable = document.querySelector("#importDetailViewTable");
 
     let goods = [];
     let editGoodIndex = null;
@@ -328,7 +329,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td>${importGood.igCurrency}</td>
                 <td>${new Date(importGood.igImportDate).toLocaleDateString()}</td>
                 <td>
-                    <button class="view-details-btn" data-import-id="${importGood.igImportId}" data-bs-toggle="modal" data-bs-target="#importDetailsModal">
+                    <button class="view-details-btn" data-import-id="${importGood.igImportId}" data-bs-toggle="modal" data-bs-target="#importDetailModal">
                         View Details
                     </button>
                 </td>
@@ -353,4 +354,16 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error fetching import details:", error);
         }
     }
-});
+
+    function renderImportDetails(imports) {
+        importDetailViewTable.innerHTML = "";
+        imports.forEach(importGood => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${importGood.goodsName}</td>
+                <td>${importGood.quantity}</td>
+                <td>${importGood.costPrice}</td>
+            `;
+            importGoodsTableBody.appendChild(row);
+        });
+}});
