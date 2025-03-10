@@ -10,18 +10,20 @@
     <div class="container">
         <h2>Quản lý Nhân Viên</h2>
         <form id="employeeForm">
-            <input type="text" id="name" placeholder="Họ và Tên" required>
-            <input type="text" id="role" placeholder="Chức Vụ" required>
-            <input type="email" id="email" placeholder="Email" required>
-            <input type="text" id="phone" placeholder="Số Điện Thoại" required>
-            <input type="number" id="salary" placeholder="Lương" required>
+            <input type="text" id="employeeFirstName" placeholder="Tên" required>
+            <input type="text" id="employeeLastName" placeholder="Họ" required>
+            <input type="text" id="employeeRole" placeholder="Chức Vụ" required>
+            <input type="email" id="employeeEmail" placeholder="Email" required>
+            <input type="text" id="employeePhone" placeholder="Số Điện Thoại" required>
+            <input type="number" id="employeeSalary" placeholder="Lương" required>
             <button type="submit">Thêm</button>
-            <button type="button" id="updateBtn" style="display:none;">Cập nhật</button>
+            <button type="button" id="employeeUpdateBtn" style="display:none;">Cập nhật</button>
         </form>
         <table>
             <thead>
                 <tr>
-                    <th>Họ và Tên</th>
+                    <th>Tên</th>
+                    <th>Họ</th>
                     <th>Chức Vụ</th>
                     <th>Email</th>
                     <th>Số Điện Thoại</th>
@@ -30,7 +32,7 @@
                 </tr>
             </thead>
             <tbody id="employeeTable">
-
+                <!-- Data will be populated here -->
             </tbody>
         </table>
     </div>

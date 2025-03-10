@@ -103,10 +103,10 @@ CREATE TABLE tbl_Goods (
     g_GoodsName NVARCHAR(255) NOT NULL,         
     g_Category NVARCHAR(100),                   
     g_Quantity INT DEFAULT 0,                  
-    g_Unit NVARCHAR(30),                        --a bottle, a case, a pack...
+    g_Unit NVARCHAR(30),                        
 	g_CostPrice DECIMAL(10,2) NOT NULL,
 	g_SellingPrice DECIMAL(10,2) NOT NULL,
-	g_Currency NVARCHAR(30) NOT NULL                      ---- VND,USD                         
+	g_Currency NVARCHAR(30) NOT NULL                    
 );
 go
 CREATE TABLE tbl_ServiceGoods (

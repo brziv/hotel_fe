@@ -53,3 +53,7 @@ button {
 button:hover {
     background-color: #c96e00;
 }
+
+#importDetailsModal {
+    top: 15%;
+}

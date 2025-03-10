@@ -12,14 +12,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const goodUpdateBtn = document.querySelector("#goodUpdateBtn");
 
     const importGoodsTableBody = document.querySelector("#importGoodsTableBody");
-    const importDetailsTableBody = document.querySelector("#importDetailsTableBody");
     const supplierInput = document.querySelector("#supplier");
     const goodsSelect = document.querySelector("#goodsSelect");
     const quantityInput = document.querySelector("#quantity");
+    const addImportDetailBtn = document.querySelector("#addImportDetailBtn");
+    const finalizeImportBtn = document.querySelector("#finalizeImportBtn");
+    const importDetailsTable = document.querySelector("#importDetailsTable");
 
     let goods = [];
     let editGoodIndex = null;
     let importDetails = [];
+
+    addGoodsForm.addEventListener("submit", addGood);
+    fetchGoods();
+    fetchImportGoods();
 
     async function fetchGoods() {
         try {
@@ -35,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function renderGoodsTable() {
         goodsTableBody.innerHTML = "";
-        goods.forEach((good, index) => {
+        goods.forEach((good) => {
             let row = `
                 <tr>
                     <td>${good.gGoodsName}</td>
@@ -55,7 +61,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function populateGoodsDropdown(goods) {
-        const goodsSelect = document.querySelector("#goodsSelect");
         goodsSelect.innerHTML = "<option value=''>Select a good</option>";
         goods.forEach(good => {
             goodsSelect.innerHTML += `<option value="${good.gGoodsId}" data-cost="${good.gCostPrice}">${good.gGoodsName}</option>`;
@@ -99,6 +104,12 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    window.deleteGood = function (id) {
+        if (confirm("Bạn có chắc chắn muốn xóa hàng này không?")) {
+            deleteGood(id);
+        }
+    };
+
     async function deleteGood(id) {
         try {
             await fetch(`${API_BASE_URL}/Good/XoaTblGood?gGoodsId=${id}`, { method: "DELETE" });
@@ -123,34 +134,179 @@ document.addEventListener("DOMContentLoaded", function () {
         goodUpdateBtn.style.display = "inline-block";
     };
 
-    goodUpdateBtn.addEventListener("click", function () {
+    goodUpdateBtn.addEventListener("click", async function () {
         let goodsName = goodsNameInput.value.trim();
         let goodCategory = categoryInput.value.trim();
         let goodUnit = unitInput.value.trim();
         let goodCost = costPriceInput.value.trim();
         let goodSell = sellingPriceInput.value.trim();
 
-        const good = {
-            gGuestId: goods[editGoodIndex].gGoodsId,
-            gGoodsName: goodsName,
-            gCategory: goodCategory,
-            gUnit: goodUnit,
-            gCostPrice: goodCost,
-            gSellingPrice: goodSell
-        };
+        let good = goods.find(g => g.gGoodsId === editGoodIndex);
+        if (!good) return;
 
-        updateGood(good);
+        good.gGoodsName = goodsName;
+        good.gCategory = goodCategory;
+        good.gUnit = goodUnit;
+        good.gCostPrice = parseFloat(goodCost);
+        good.gSellingPrice = parseFloat(goodSell);
+        good.gCurrency = "VND";
+
+        await updateGood(good);
         addGoodsForm.reset();
         addGoodBtn.style.display = "inline-block";
         goodUpdateBtn.style.display = "none";
         editGoodIndex = null;
     });
 
-    window.deleteGood = function (index) {
-        if (confirm("Bạn có chắc chắn muốn xóa hàng này không?")) {
-            deleteGood(index);
+    addImportDetailBtn.addEventListener("click", addImportDetail);
+    finalizeImportBtn.addEventListener("click", finalizeImport);
+
+    function addImportDetail() {
+        const goodsId = goodsSelect.value;
+        const quantity = parseInt(quantityInput.value);
+        const selectedOption = goodsSelect.selectedOptions[0];
+        const costPrice = parseFloat(selectedOption.dataset.cost);
+        const goodName = selectedOption.text;
+
+        if (!goodsId || !quantity || quantity <= 0) {
+            alert("Please select a good and enter a valid quantity");
+            return;
         }
+
+        // Check if good already exists in import details
+        const existingDetail = importDetails.find(detail => detail.goodsId === goodsId);
+        if (existingDetail) {
+            alert("This good is already added to the import");
+            return;
+        }
+
+        const detail = {
+            goodsId: goodsId,
+            quantity: quantity,
+            costPrice: costPrice,
+            goodName: goodName
+        };
+
+        importDetails.push(detail);
+        renderImportDetailsTable();
+        quantityInput.value = ""; // Reset quantity input
+    }
+
+    function renderImportDetailsTable() {
+        importDetailsTable.innerHTML = "";
+        importDetails.forEach((detail, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${detail.goodName}</td>
+                <td>${detail.quantity}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" onclick="removeImportDetail(${index})">Remove</button>
+                </td>
+            `;
+            importDetailsTable.appendChild(row);
+        });
+    }
+
+    window.removeImportDetail = function(index) {
+        importDetails.splice(index, 1);
+        renderImportDetailsTable();
     };
+
+    async function finalizeImport() {
+        if (importDetails.length === 0) {
+            alert("Please add at least one good to the import");
+            return;
+        }
+    
+        const supplier = supplierInput.value.trim();
+        if (!supplier) {
+            alert("Please enter a supplier");
+            return;
+        }
+    
+        const totalPrice = importDetails.reduce((sum, detail) => 
+            sum + (detail.quantity * detail.costPrice), 0);
+    
+        const importData = {
+            IgSupplier: supplier,
+            IgSumPrice: totalPrice,
+            IgCurrency: "VND",
+            IgImportDate: new Date().toISOString()
+        };
+    
+        console.log("Sending importData:", JSON.stringify(importData));
+    
+        try {
+            const importResponse = await fetch(`${API_BASE_URL}/ImportGood/InsertTblImportGood`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(importData)
+            });
+    
+            if (!importResponse.ok) {
+                const errorData = await importResponse.json();
+                console.error("Import error:", errorData);
+                throw new Error("Failed to save import");
+            }
+    
+            const importResult = await importResponse.json();
+            console.log("Full importResult:", JSON.stringify(importResult));
+            const importId = importResult.data.igImportId; // Fixed to match response key
+            console.log("Received importId from server:", importId);
+    
+            if (!importId || !/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(importId)) {
+                throw new Error("Invalid or missing import ID from server");
+            }
+    
+            const detailPromises = importDetails.map(async detail => {
+                const detailData = {
+                    IgdImportId: importId,
+                    IgdGoodsId: detail.goodsId,
+                    IgdQuantity: detail.quantity,
+                    IgdCostPrice: detail.costPrice
+                };
+                console.log("Sending detailData:", JSON.stringify(detailData));
+                const response = await fetch(`${API_BASE_URL}/ImportGoodsDetail/InsertTblImportGoodsDetail`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(detailData)
+                });
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        console.error("Detail insert error:", errorData);
+                        throw new Error("Failed to save detail");
+                    });
+                }
+                return response;
+            });
+    
+            const quantityPromises = importDetails.map(detail => {
+                const good = goods.find(g => g.gGoodsId === detail.goodsId);
+                good.gQuantity += detail.quantity;
+                return fetch(`${API_BASE_URL}/Good/UpdateTblGood`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(good)
+                });
+            });
+    
+            await Promise.all([...detailPromises, ...quantityPromises]);
+    
+            importDetails = [];
+            supplierInput.value = "";
+            renderImportDetailsTable();
+            fetchGoods();
+            fetchImportGoods();
+    
+            const modal = bootstrap.Modal.getInstance(document.getElementById('importModal'));
+            modal.hide();
+    
+            alert("Import saved successfully!");
+        } catch (error) {
+            console.error("Error finalizing import:", error);
+            alert("Error saving import. Please try again.");
+        }
+    }
 
     async function fetchImportGoods() {
         try {
@@ -165,133 +321,36 @@ document.addEventListener("DOMContentLoaded", function () {
     function renderImportGoodsTable(imports) {
         importGoodsTableBody.innerHTML = "";
         imports.forEach(importGood => {
-            const row = `
-                <tr>
-                    <td>${importGood.igSupplier}</td>
-                    <td>${importGood.igSumPrice}</td>
-                    <td>${importGood.igCurrency}</td>
-                    <td>${new Date(importGood.igImportDate).toLocaleDateString()}</td>
-                    <td><button onclick="viewImportDetails('${importGood.igImportId}')">View Details</button></td>
-                </tr>`;
-            importGoodsTableBody.innerHTML += row;
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${importGood.igSupplier}</td>
+                <td>${importGood.igSumPrice}</td>
+                <td>${importGood.igCurrency}</td>
+                <td>${new Date(importGood.igImportDate).toLocaleDateString()}</td>
+                <td>
+                    <button class="view-details-btn" data-import-id="${importGood.igImportId}" data-bs-toggle="modal" data-bs-target="#importDetailsModal">
+                        View Details
+                    </button>
+                </td>
+            `;
+            importGoodsTableBody.appendChild(row);
+        });
+
+        document.querySelectorAll(".view-details-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                const importId = this.getAttribute("data-import-id");
+                fetchImportGoodsDetails(importId);
+            });
         });
     }
-
-    async function viewImportDetails(importId) {
+    
+    async function fetchImportGoodsDetails(importId) {
         try {
-            const response = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailList`);
+            const response = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailList/${importId}`);
             const data = await response.json();
-            const details = data.data.filter(detail => detail.igdImportId === importId);
-            renderImportDetails(details);
+            renderImportDetails(data.data);
         } catch (error) {
             console.error("Error fetching import details:", error);
         }
     }
-
-    function renderImportDetails(details) {
-        importDetailsTableBody.innerHTML = "";
-        details.forEach(detail => {
-            const row = `
-                <tr>
-                    <td>${detail.igdGoodsId}</td>
-                    <td>${detail.igdQuantity}</td>
-                    <td>${detail.igdCostPrice}</td>
-                </tr>`;
-            importDetailsTableBody.innerHTML += row;
-        });
-    }
-
-    function addImportDetail() {
-        const quantity = parseInt(quantityInput.value);
-        const goodId = goodsSelect.value;
-        const goodName = goodsSelect.options[goodsSelect.selectedIndex].text;
-        const costPrice = parseFloat(goodsSelect.options[goodsSelect.selectedIndex].getAttribute("data-cost"));
-
-        if (!goodId || !quantity || quantity <= 0) {
-            alert("Please select a valid good and quantity.");
-            return;
-        }
-
-        importDetails.push({ igdGoodsId: goodId, igdQuantity: quantity, igdCostPrice: costPrice });
-
-        renderImportDetailsTable();
-        quantityInput.value = "";
-    }
-
-    function renderImportDetailsTable() {
-        const tableBody = document.querySelector("#importDetailsTable");
-        tableBody.innerHTML = "";
-        importDetails.forEach(detail => {
-            const goodName = document.querySelector(`#goodsSelect option[value="${detail.igdGoodsId}"]`).text;
-            tableBody.innerHTML += `
-                <tr>
-                    <td>${goodName}</td>
-                    <td>${detail.igdQuantity}</td>
-                    <td>
-                        <button class="btn btn-danger" onclick="removeImportDetail('${detail.igdGoodsId}')">Remove</button>
-                    </td>
-                </tr>`;
-        });
-    }
-
-    function removeImportDetail(goodId) {
-        importDetails = importDetails.filter(detail => detail.igdGoodsId !== goodId);
-        renderImportDetailsTable();
-    }
-
-    async function finalizeImport() {
-        const supplier = supplierInput.value;
-        const totalSum = importDetails.reduce((sum, detail) => sum + (detail.igdCostPrice * detail.igdQuantity), 0);
-
-        const newImport = {
-            igSupplier: supplier,
-            igSumPrice: totalSum,
-            igCurrency: "VND",
-            igImportDate: new Date().toISOString()
-        };
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/ImportGood/InsertTblImportGood`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newImport)
-            });
-            const data = await response.json();
-            const currentImportId = data.data.igImportId;
-
-            for (const detail of importDetails) {
-                detail.igdImportId = currentImportId;
-                await fetch(`${API_BASE_URL}/ImportGoodsDetail/InsertTblImportGoodsDetail`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(detail)
-                });
-            }
-
-            fetchGoods();
-            fetchImportGoods();
-            fetchImportGoodsDetails();
-            document.querySelector("#importForm").reset();
-            document.querySelector("#importDetailsTable").innerHTML = "";
-            importDetails = [];
-            document.querySelector("a[href='#goods']").click();
-        } catch (error) {
-            console.error("Error finalizing import:", error);
-        }
-    }
-
-    async function fetchImportGoodsDetails() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailList`);
-            const data = await response.json();
-            renderImportDetails(data.data);
-        } catch (error) {
-            console.error("Error fetching import goods details:", error);
-        }
-    }
-
-    addGoodsForm.addEventListener("submit", addGood);
-    fetchGoods();
-    fetchImportGoods();
-    fetchImportGoodsDetails();
 });
