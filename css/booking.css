@@ -199,7 +199,10 @@ td {
     padding: 10px;
 }
 
-/* Responsive Design */
+.small-input {
+    width: 60px;
+}
+
 @media (max-width: 768px) {
     .input-group, .findrooms {
         flex-direction: column;

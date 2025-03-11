@@ -1,6 +1,17 @@
-/////////////them khach
 let cusid = "";
+let availableroomfound = [];
 
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+function isValidPhone(phone) {
+    const phoneRegex = /^\d{10}$/; // 10-digit phone number
+    return phoneRegex.test(phone);
+}
+
+// Add Customer
 document.getElementById("add-customer").addEventListener("click", function () {
     document.getElementById("customer-modal").style.display = "flex";
 });
@@ -9,100 +20,106 @@ document.getElementById("cancel-customer").addEventListener("click", function ()
     document.getElementById("customer-modal").style.display = "none";
 });
 
-document.getElementById("confirm-customer").addEventListener("click", function () {
-    let firstName = document.getElementById("first-name").value.trim();
-    let lastName = document.getElementById("last-name").value.trim();
-    let email = document.getElementById("customer-email").value.trim();
-    let phoneNumber = document.getElementById("customer-phone").value.trim();
+document.getElementById("confirm-customer").addEventListener("click", async function () {
+    const firstName = document.getElementById("first-name").value.trim();
+    const lastName = document.getElementById("last-name").value.trim();
+    const email = document.getElementById("customer-email").value.trim();
+    const phoneNumber = document.getElementById("customer-phone").value.trim();
 
     if (!firstName || !lastName || !email || !phoneNumber) {
-        alert("Vui lòng nhập đầy đủ thông tin khách hàng.");
+        alert("Please fill in all customer details.");
         return;
     }
 
-    fetch("http://localhost:5222/api/Booking/AddGuest?fistname=" + firstName + "&lastname=" + lastName + "&email=" + email + "&phonenum=" + phoneNumber, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-    })
-        .then(response => response.json())
-        .then(data => {
-            alert("Add customer successfully!");
-            // Gán dữ liệu trả về vào các input
-            document.getElementById("cid").value = data.data; // ID khách hàng mới
-            document.getElementById("name").value =
-                document.getElementById("first-name").value + " " +
-                document.getElementById("last-name").value;
-            document.getElementById("phonenum").value = document.getElementById("customer-phone").value;
-            cusid = data.data;
-            document.getElementById("customer-modal").style.display = "none";
-        })
-        .catch(error => {
-            console.error("Lỗi:", error);
-            alert("Có lỗi xảy ra khi thêm khách hàng.");
-        });
-});
-//////////////////////////// tim phong
-let availableroomfound = [];
+    if (!isValidEmail(email)) {
+        alert("Please enter a valid email address.");
+        return;
+    }
 
-// Hiển thị modal tìm phòng
+    if (!isValidPhone(phoneNumber)) {
+        alert("Please enter a valid 10-digit phone number.");
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `https://hotel-bed.onrender.com/api/Booking/AddGuest?firstname=${encodeURIComponent(firstName)}&lastname=${encodeURIComponent(lastName)}&email=${encodeURIComponent(email)}&phonenum=${encodeURIComponent(phoneNumber)}`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+            }
+        );
+
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+        const data = await response.json();
+
+        document.getElementById("cid").value = data.data;
+        document.getElementById("name").value = `${firstName} ${lastName}`;
+        document.getElementById("phonenum").value = phoneNumber;
+        cusid = data.data;
+
+        alert("Customer added successfully!");
+        document.getElementById("customer-modal").style.display = "none";
+    } catch (error) {
+        console.error("Error adding customer:", error);
+        alert(`Failed to add customer: ${error.message}`);
+    }
+});
+
+// Find Available Rooms
 document.getElementById("bt_findroom").addEventListener("click", function () {
     document.getElementById("find-room-modal").style.display = "flex";
 });
 
-// Khi bấm "Cancel" ẩn modal và làm rỗng dữ liệu
 document.getElementById("cancel-findroom").addEventListener("click", function () {
-    availableroomfound = []; // Làm rỗng danh sách phòng trống
-    document.getElementById("search-room-body").innerHTML = ""; // Xóa danh sách phòng hiển thị
+    availableroomfound = [];
+    document.getElementById("search-room-body").innerHTML = "";
     document.getElementById("checkin").value = "";
     document.getElementById("checkout").value = "";
     document.getElementById("floor").value = "";
     document.getElementById("find-room-modal").style.display = "none";
 });
 
-// Xử lý tìm phòng available
-document.getElementById("bt_search").addEventListener("click", function () {
-    let checkinDate = document.getElementById("checkin").value;
-    let checkoutDate = document.getElementById("checkout").value;
-    let floor = document.getElementById("floor").value;
+document.getElementById("bt_search").addEventListener("click", async function () {
+    const checkinDate = document.getElementById("checkin").value;
+    const checkoutDate = document.getElementById("checkout").value;
+    const floor = document.getElementById("floor").value.trim();
 
     if (!checkinDate || !checkoutDate) {
-        alert("Vui lòng chọn ngày nhận và ngày trả.");
+        alert("Please select both check-in and check-out dates.");
         return;
     }
 
-    // Chuyển đổi định dạng ngày tháng
-    let formattedCheckin = encodeURIComponent(checkinDate + ":00.000");
-    let formattedCheckout = encodeURIComponent(checkoutDate + ":00.000");
+    if (new Date(checkinDate) >= new Date(checkoutDate)) {
+        alert("Check-out date must be after check-in date.");
+        return;
+    }
 
-    let apiUrl = `http://localhost:5222/api/Booking/FindAvailableRooms?indate=${formattedCheckin}&outdate=${formattedCheckout}&floor=${floor}`;
+    const formattedCheckin = encodeURIComponent(`${checkinDate}:00.000`);
+    const formattedCheckout = encodeURIComponent(`${checkoutDate}:00.000`);
+    const apiUrl = `https://hotel-bed.onrender.com/api/Booking/FindAvailableRooms?indate=${formattedCheckin}&outdate=${formattedCheckout}&floor=${encodeURIComponent(floor)}`;
 
-    fetch(apiUrl, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json"
+    try {
+        const response = await fetch(apiUrl, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+
+        if (!response.ok) throw new Error("Failed to fetch available rooms");
+        const data = await response.json();
+
+        const searchRoomBody = document.getElementById("search-room-body");
+        searchRoomBody.innerHTML = "";
+        availableroomfound = data || [];
+
+        if (availableroomfound.length === 0) {
+            alert("No rooms available for the selected time and floor.");
+            return;
         }
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Lỗi khi lấy dữ liệu từ server");
-            }
-            return response.json();
-        })
-        .then(data => {
-            let searchRoomBody = document.getElementById("search-room-body");
-            searchRoomBody.innerHTML = ""; // Xóa dữ liệu cũ trước khi thêm dữ liệu mới
-            availableroomfound = data.$values || []; // Đảm bảo nếu data.$values undefined thì gán []
 
-            if (availableroomfound.length === 0) {
-                alert("Không có phòng nào trống trong khoảng thời gian đã chọn.");
-                return;
-            }
-
-            availableroomfound.forEach((room, index) => {
-                let row = document.createElement("tr");
-                row.innerHTML = `
+        availableroomfound.forEach((room, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
                 <td>${room.roomId}</td>
                 <td>${room.roomNumber}</td>
                 <td>${room.floor}</td>
@@ -110,149 +127,172 @@ document.getElementById("bt_search").addEventListener("click", function () {
                 <td>${room.pricePerHour}</td>
                 <td><input type="checkbox" class="room-select" data-index="${index}"></td>
             `;
-                searchRoomBody.appendChild(row);
-            });
-        })
-        .catch(error => {
-            console.error("Lỗi khi tìm phòng:", error);
-            alert("Có lỗi xảy ra khi tìm phòng.");
+            searchRoomBody.appendChild(row);
         });
+    } catch (error) {
+        console.error("Error finding rooms:", error);
+        alert("An error occurred while searching for rooms.");
+    }
 });
 
-// Xử lý chọn phòng
 document.getElementById("choose-room").addEventListener("click", function () {
-    let newlySelectedRooms = [];
-    let checkinDate = document.getElementById("checkin").value;
-    let checkoutDate = document.getElementById("checkout").value;
+    const newlySelectedRooms = [];
+    const checkinDate = document.getElementById("checkin").value;
+    const checkoutDate = document.getElementById("checkout").value;
 
     document.querySelectorAll(".room-select:checked").forEach(checkbox => {
-        let index = checkbox.getAttribute("data-index");
-        let room = availableroomfound[index];
+        const index = checkbox.getAttribute("data-index");
+        const room = availableroomfound[index];
 
-        // Kiểm tra xem roomId có tồn tại trong bảng room-table-body không
-        let isAlreadySelected = Array.from(document.querySelectorAll("#room-table-body tr")).some(row => {
-            return row.cells[0].querySelector("input").value === room.roomId;
-        });
+        const isAlreadySelected = Array.from(document.querySelectorAll("#room-table-body tr")).some(
+            row => row.cells[0].querySelector("input").value === room.roomId
+        );
 
         if (!isAlreadySelected) {
             newlySelectedRooms.push(room);
         } else {
-            alert("Room " + room.roomNumber + " is already selected");
+            alert(`Room ${room.roomNumber} is already selected.`);
         }
     });
 
-    // Cập nhật danh sách phòng đã chọn vào bảng chính
-    let tableBody = document.getElementById("room-table-body");
-
+    const tableBody = document.getElementById("room-table-body");
     newlySelectedRooms.forEach(room => {
-        let row = document.createElement("tr");
+        const row = document.createElement("tr");
         row.innerHTML = `
             <td><input type="text" class="small-input" value="${room.roomId}" readonly></td>
             <td><input type="text" class="small-input" value="${room.roomNumber}" readonly></td>
             <td><input type="text" class="small-input" value="${room.floor}" readonly></td>
             <td><input type="text" class="small-input" value="${room.roomType}" readonly></td>
             <td><input type="text" class="small-input" value="${room.pricePerHour}" readonly></td>
-            <td><input type="datetime-local" id="checkin-${room.roomId}" class="large-input" value="${checkinDate}"></td>
-            <td><input type="datetime-local" id="checkout-${room.roomId}" class="large-input" value="${checkoutDate}"></td>
-            <td><button class="delete-room">Xóa</button></td>
+            <td><input type="datetime-local" id="checkin-${room.roomId}" class="large-input" value="${checkinDate}" required></td>
+            <td><input type="datetime-local" id="checkout-${room.roomId}" class="large-input" value="${checkoutDate}" required></td>
+            <td><button class="delete-room">Delete</button></td>
         `;
         tableBody.appendChild(row);
 
-        // Xóa phòng khi ấn nút "Xóa"
-        row.querySelector(".delete-room").addEventListener("click", function () {
-            row.remove();
-        });
+        row.querySelector(".delete-room").addEventListener("click", () => row.remove());
     });
 
-    // Dọn dẹp dữ liệu sau khi chọn xong
     availableroomfound = [];
     document.getElementById("search-room-body").innerHTML = "";
     document.getElementById("checkin").value = "";
     document.getElementById("checkout").value = "";
     document.getElementById("floor").value = "";
-
-    // Ẩn modal sau khi chọn xong
     document.getElementById("find-room-modal").style.display = "none";
 });
 
-//////Ấn nút booking
-document.getElementById("book-room").addEventListener("click", function () {
+// Book Immediately
+document.getElementById("book-room").addEventListener("click", async function () {
     if (!cusid) {
-        alert("Không tìm thấy ID khách hàng. Vui lòng kiểm tra lại.");
+        alert("No customer ID found. Please add a customer first.");
         return;
     }
 
-    let requestBody = {
-        GuestId: cusid,  // Thay guestId thành GuestId
-        BRdto: Array.from(document.querySelectorAll("#room-table-body tr")).map(row => ({
-            RoomId: row.cells[0].querySelector("input").value,  // Thay roomId thành RoomId
-            CheckInDate: new Date(row.cells[5].querySelector("input").value).toISOString(),  // Thay checkInDate thành CheckInDate
-            CheckOutDate: new Date(row.cells[6].querySelector("input").value).toISOString()  // Thay checkOutDate thành CheckOutDate
-        }))
-    };
-
-    console.log("Dữ liệu gửi đi:", requestBody);
-
-    fetch("http://localhost:5222/api/Booking/BookImmediately", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(requestBody)
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            alert("Đặt phòng thành công!");
-            console.log("Phản hồi từ server:", data);
-        })
-        .catch(error => {
-            console.error("Lỗi khi đặt phòng:", error);
-            alert(`Có lỗi xảy ra khi đặt phòng: ${error.message}`);
-        });
-});
-//////Ấn nút Pre-book
-document.getElementById("pre-book").addEventListener("click", function () {
-    if (!cusid) {
-        alert("Không tìm thấy ID khách hàng. Vui lòng kiểm tra lại.");
+    const rows = document.querySelectorAll("#room-table-body tr");
+    if (rows.length === 0) {
+        alert("Please select at least one room to book.");
         return;
     }
 
-    let requestBody = {
+    const requestBody = {
         GuestId: cusid,
-        Deposit: parseFloat(document.getElementById("deposit").value) || 0, // Lấy tiền đặt cọc từ input
-        BRdto: Array.from(document.querySelectorAll("#room-table-body tr")).map(row => ({
-            RoomId: row.cells[0].querySelector("input").value,
-            CheckInDate: new Date(row.cells[5].querySelector("input").value).toISOString(),
-            CheckOutDate: new Date(row.cells[6].querySelector("input").value).toISOString()
-        }))
+        BRdto: Array.from(rows).map(row => {
+            const checkInDate = row.cells[5].querySelector("input").value;
+            const checkOutDate = row.cells[6].querySelector("input").value;
+
+            if (!checkInDate || !checkOutDate) {
+                throw new Error("Check-in and check-out dates are required for all rooms.");
+            }
+
+            return {
+                RoomId: row.cells[0].querySelector("input").value,
+                CheckInDate: new Date(checkInDate).toISOString(),
+                CheckOutDate: new Date(checkOutDate).toISOString(),
+            };
+        }),
     };
 
-    console.log("Dữ liệu gửi đi:", requestBody);
+    console.log("Booking request:", requestBody);
 
-    fetch("http://localhost:5222/api/Booking/BookInAdvance", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(requestBody)
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            alert("Pre-order succesfully");
-            console.log("Phản hồi từ server:", data);
-        })
-        .catch(error => {
-            console.error("Lỗi khi đặt phòng:", error);
-            alert(`Có lỗi xảy ra khi đặt phòng: ${error.message}`);
+    try {
+        const response = await fetch("https://hotel-bed.onrender.com/api/Booking/BookImmediately", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestBody),
         });
+
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+        const data = await response.json();
+
+        alert("Room booked successfully!");
+        console.log("Booking response:", data);
+        document.getElementById("room-table-body").innerHTML = ""; // Clear table after booking
+        cusid = ""; // Reset customer ID
+        document.getElementById("cid").value = "";
+        document.getElementById("name").value = "";
+        document.getElementById("phonenum").value = "";
+    } catch (error) {
+        console.error("Booking error:", error);
+        alert(`Failed to book room: ${error.message}`);
+    }
+});
+
+// Pre-Book
+document.getElementById("pre-book").addEventListener("click", async function () {
+    if (!cusid) {
+        alert("No customer ID found. Please add a customer first.");
+        return;
+    }
+
+    const rows = document.querySelectorAll("#room-table-body tr");
+    if (rows.length === 0) {
+        alert("Please select at least one room to pre-book.");
+        return;
+    }
+
+    const deposit = parseFloat(document.getElementById("deposit").value) || 0;
+    if (deposit <= 0) {
+        alert("Please enter a valid deposit amount.");
+        return;
+    }
+
+    const requestBody = {
+        GuestId: cusid,
+        Deposit: deposit,
+        BRdto: Array.from(rows).map(row => {
+            const checkInDate = row.cells[5].querySelector("input").value;
+            const checkOutDate = row.cells[6].querySelector("input").value;
+
+            if (!checkInDate || !checkOutDate) {
+                throw new Error("Check-in and check-out dates are required for all rooms.");
+            }
+
+            return {
+                RoomId: row.cells[0].querySelector("input").value,
+                CheckInDate: new Date(checkInDate).toISOString(),
+                CheckOutDate: new Date(checkOutDate).toISOString(),
+            };
+        }),
+    };
+
+    console.log("Pre-booking request:", requestBody);
+
+    try {
+        const response = await fetch("https://hotel-bed.onrender.com/api/Booking/BookInAdvance", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+        const data = await response.json();
+
+        alert("Room pre-booked successfully!");
+        console.log("Pre-booking response:", data);
+        document.getElementById("room-table-body").innerHTML = ""; // Clear table after pre-booking
+        document.getElementById("deposit").value = ""; // Clear deposit input
+    } catch (error) {
+        console.error("Pre-booking error:", error);
+        alert(`Failed to pre-book room: ${error.message}`);
+    }
 });

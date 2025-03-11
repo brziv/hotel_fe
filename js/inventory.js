@@ -1,5 +1,5 @@
 // Constants
-const API_BASE_URL = "http://localhost:5222/api";
+const API_BASE_URL = "https://hotel-bed.onrender.com/api";
 
 // Main execution
 document.addEventListener("DOMContentLoaded", initializeApp);
@@ -473,19 +473,25 @@ function renderGoodsTable() {
             <td>${good.gSellingPrice}</td>
             <td>${good.gCurrency}</td>
             <td>
-                <button onclick="editGood('${good.gGoodsId}')">Update</button>
-                <button onclick="deleteGood('${good.gGoodsId}')">Delete</button>
-                <button class="btn btn-sm btn-info view-history-btn" 
+                <button class="history-btn btn btn-sm btn-info" 
                     data-good-id="${good.gGoodsId}" 
                     data-good-name="${good.gGoodsName}"
                     data-bs-toggle="modal" 
-                    data-bs-target="#importHistoryModal">History</button>
+                    data-bs-target="#importHistoryModal">
+                    History
+                </button>
+                <button class="update-good-btn btn btn-sm btn-primary" onclick="editGood('${good.gGoodsId}')">
+                    Update
+                </button>
+                <button class="delete-good-btn btn btn-sm btn-danger" onclick="deleteGood('${good.gGoodsId}')">
+                    Delete
+                </button>
             </td>
         `;
         elements.goodsTableBody.appendChild(row);
     });
 
-    document.querySelectorAll(".view-history-btn").forEach(button => {
+    document.querySelectorAll(".history-btn").forEach(button => {
         button.addEventListener("click", async function () {
             const goodId = this.getAttribute("data-good-id");
             const goodName = this.getAttribute("data-good-name");

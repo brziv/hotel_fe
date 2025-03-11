@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function fetchGuests() {
         try {
-            const response = await fetch("http://localhost:5222/api/Guest/GetGuestList");
+            const response = await fetch("https://hotel-bed.onrender.com/api/Guest/GetGuestList");
             const data = await response.json();
             guests = data.data;
             renderGuests();
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function addGuest(guest) {
         try {
-            const response = await fetch("http://localhost:5222/api/Guest/InsertTblGuest", {
+            const response = await fetch("https://hotel-bed.onrender.com/api/Guest/InsertTblGuest", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function updateGuest(guest) {
         try {
-            const response = await fetch("http://localhost:5222/api/Guest/UpdateTblGuest", {
+            const response = await fetch("https://hotel-bed.onrender.com/api/Guest/UpdateTblGuest", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             const guest = guests[index];
 
-            const response = await fetch(`http://localhost:5222/api/Guest/XoaTblGuest?gGuestId=${guest.gGuestId}`, {
+            const response = await fetch(`https://hotel-bed.onrender.com/api/Guest/XoaTblGuest?gGuestId=${guest.gGuestId}`, {
                 method: "DELETE",
             });
 
