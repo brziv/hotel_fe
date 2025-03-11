@@ -20,7 +20,7 @@ document.getElementById("confirm-customer").addEventListener("click", function (
         return;
     }
 
-    fetch("https://localhost:7133/Bookings/addguest?fistname=" + firstName + "&lastname=" + lastName + "&email=" + email + "&phonenum=" + phoneNumber, {
+    fetch("http://localhost:5222/api/Booking/AddGuest?fistname=" + firstName + "&lastname=" + lastName + "&email=" + email + "&phonenum=" + phoneNumber, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -76,7 +76,7 @@ document.getElementById("bt_search").addEventListener("click", function () {
     let formattedCheckin = encodeURIComponent(checkinDate + ":00.000");
     let formattedCheckout = encodeURIComponent(checkoutDate + ":00.000");
 
-    let apiUrl = `https://localhost:7133/Bookings/findavailablerooms?indate=${formattedCheckin}&outdate=${formattedCheckout}&floor=${floor}`;
+    let apiUrl = `http://localhost:5222/api/Booking/FindAvailableRooms?indate=${formattedCheckin}&outdate=${formattedCheckout}&floor=${floor}`;
 
     fetch(apiUrl, {
         method: "GET",
@@ -193,7 +193,7 @@ document.getElementById("book-room").addEventListener("click", function () {
 
     console.log("Dữ liệu gửi đi:", requestBody);
 
-    fetch("https://localhost:7133/Bookings/BookRoomUseImmediately", {
+    fetch("http://localhost:5222/api/Booking/BookImmediately", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -234,7 +234,7 @@ document.getElementById("pre-book").addEventListener("click", function () {
 
     console.log("Dữ liệu gửi đi:", requestBody);
 
-    fetch("https://localhost:7133/Bookings/BookInAdvance", {
+    fetch("http://localhost:5222/api/Booking/BookInAdvance", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

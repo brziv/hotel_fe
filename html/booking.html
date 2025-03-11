@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đặt Phòng Khách Sạn</title>
     <link rel="stylesheet" href="../css/booking.css">
 </head>
+
 <body>
     <div class="container">
         <h2>Booking Rooms</h2>
@@ -21,7 +23,7 @@
             <input type="text" id="phonenum" name="phonenum" required>
             <button type="button" id="add-customer" style="width: 30px;">+</button>
         </div>
-        
+
         <div id="room_list">
             <h3>Room List</h3>
             <table>
@@ -52,7 +54,7 @@
             <button type="button" id="exit">Exit</button>
         </div>
     </div>
-    
+
 
     <!-- Modal Add New Customer -->
     <div id="customer-modal" class="modal">
@@ -79,14 +81,14 @@
             <div class="findrooms">
                 <label for="checkin">CheckIn:</label>
                 <input type="datetime-local" id="checkin" required>
-                
+
                 <label for="checkout">CheckOut:</label>
                 <input type="datetime-local" id="checkout" required>
 
                 <label for="floor">Floor:</label>
                 <input type="text" id="floor" required>
-                
-                <button type="button" id="bt_search">Search</button> 
+
+                <button type="button" id="bt_search">Search</button>
             </div>
 
             <table id="room-search-table">
@@ -112,13 +114,7 @@
         </div>
     </div>
 
-<script>
-    
-
-
-
-
-
-</script>
+    <script src="../js/booking.js"></script>
 </body>
+
 </html>
