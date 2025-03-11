@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const bookedRoomsElement = document.getElementById("booked-rooms");
     const availableRoomsElement = document.getElementById("available-rooms");
     const totalRevenueElement = document.getElementById("total-revenue");

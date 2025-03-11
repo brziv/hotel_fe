@@ -1,12 +1,10 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 95vh;
+    height: 100vh;
+    background-color: #f4f4f4;
 }
 
 .container {
@@ -14,77 +12,128 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 350px;
+    width: 90%;
+    max-width: 1200px;
 }
 
-h2 {
-    text-align: center;
-    color: #333;
-}
-
-form {
+.findrooms {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
-label {
-    margin: 10px 0 5px;
-    font-weight: bold;
+#room_list {
+    border: 2px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 15px;
 }
 
-input, select {
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table,
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 5px;
+    text-align: center;
+}
+
+th,
+td {
+    width: auto;
+    max-width: 150px;
+    word-wrap: break-word;
+}
+
+.button-group button,
+#addroom,
+#bt_findroom {
+    margin-top: 10px;
     padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
 }
 
-button {
+#addroom,
+#bt_findroom {
     background-color: #007bff;
     color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s;
 }
 
-button:hover {
-    background-color: #0056b3;
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
 }
-/* Căn giữa và làm đẹp form */
-.container {
-    width: 400px;
-    margin: 50px auto;
-    padding: 30px;
+
+.modal-content-addcus {
     background: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Định dạng input và select */
-input, select {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+.modal-content-findroom {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 1200px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Nút đặt phòng */
-button {
-    width: 100%;
-    padding: 12px;
-    background: #28a745;
-    color: white;
+.modal-buttons {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.modal-buttons button {
+    padding: 8px;
     border: none;
-    font-size: 16px;
     cursor: pointer;
-    transition: 0.3s;
-    border-radius: 5px;
+    border-radius: 4px;
 }
 
-button:hover {
-    background: #218838;
+#cancel-customer {
+    background-color: red;
+    color: white;
+}
+
+#confirm-customer {
+    background-color: green;
+    color: white;
+}
+
+.small-input {
+    width: 60px;
+}
+
+.large-input {
+    width: 170px;
+}
+
+/* Định dạng bảng trong modal tìm phòng */
+#room-search-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+#room-search-table th,
+#room-search-table td {
+    border: 1px solid #ddd;
+    padding: 5px;
+    text-align: center;
 }

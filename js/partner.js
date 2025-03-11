@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const partnerTable = document.querySelector("#partnerTable");
     const partnerForm = document.querySelector("#partnerForm");
     const partnerNameInput = document.querySelector("#partnerName");
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    partnerForm.addEventListener("submit", function(event) {
+    partnerForm.addEventListener("submit", function (event) {
         event.preventDefault();
         let name = partnerNameInput.value.trim();
         let type = partnerTypeInput.value.trim();
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function() {
         partnerForm.reset();
     });
 
-    window.editPartner = function(index) {
+    window.editPartner = function (index) {
         let partner = partners[index];
         partnerNameInput.value = partner.pPartnerName;
         partnerTypeInput.value = partner.pPartnerType;
@@ -128,7 +128,7 @@ document.addEventListener("DOMContentLoaded", function() {
         partnerUpdateBtn.style.display = "inline-block";
     };
 
-    partnerUpdateBtn.addEventListener("click", function() {
+    partnerUpdateBtn.addEventListener("click", function () {
         let name = partnerNameInput.value.trim();
         let type = partnerTypeInput.value.trim();
         let email = partnerEmailInput.value.trim();
@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function() {
         editPartnerIndex = null;
     });
 
-    window.deletePartner = function(index) {
+    window.deletePartner = function (index) {
         if (confirm("Bạn có chắc chắn muốn xóa đối tác này không?")) {
             deletePartner(index);
         }

@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const serviceTable = document.querySelector("#serviceTable");
     const form = document.querySelector("#serviceForm");
     const floorSelect = document.querySelector("#floorSelect");
@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function() {
         form.reset();
     });
 
-    window.deleteService = function(index) {
+    window.deleteService = function (index) {
         if (confirm("Bạn có chắc chắn muốn xóa dịch vụ này không?")) {
             services.splice(index, 1);
             localStorage.setItem("services", JSON.stringify(services));

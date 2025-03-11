@@ -3,35 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đặt Phòng</title>
+    <title>Đặt Phòng Khách Sạn</title>
     <link rel="stylesheet" href="../css/booking.css">
 </head>
 <body>
     <div class="container">
-        <h2>Đặt Phòng Khách Sạn</h2>
-        <form id="booking-form" action="#" method="post">
+        <h2>Booking Rooms</h2>
 
-            <label for="name">Họ và Tên:</label>
+        <!-- Họ và Tên + Nút tạo khách hàng -->
+        <label for="input-group">Find Customer:</label>
+        <div class="input-group">
+            <label for="cid">Cid:</label>
+            <input type="text" id="cid" name="cid" required>
+            <label for="name">Name:</label>
             <input type="text" id="name" name="name" required>
+            <label for="phonenum">PhoneNumber:</label>
+            <input type="text" id="phonenum" name="phonenum" required>
+            <button type="button" id="add-customer" style="width: 30px;">+</button>
+        </div>
+        
+        <div id="room_list">
+            <h3>Room List</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 90px;">RoomID</th>
+                        <th style="width: 90px;">Room Number</th>
+                        <th style="width: 90px;">Floor</th>
+                        <th style="width: 90px;">Room Type</th>
+                        <th style="width: 90px;">Price Per Hour</th>
+                        <th style=>CheckIn</th>
+                        <th style=> CheckOut</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="room-table-body">
+                </tbody>
+            </table>
+            <button type="button" id="bt_findroom">Find Room</button>
+        </div>
+        <div>
+            <label for="deposit">Deposit:</label>
+            <input type="text" id="deposit" name="deposit" required>
+        </div>
+        <div class="button-group">
+            <button type="button" id="book-room">Booking Room</button>
+            <button type="button" id="pre-book">Pre-Book</button>
+            <button type="button" id="exit">Exit</button>
+        </div>
+    </div>
+    
 
-            <label for="phone">Số Điện Thoại:</label>
-            <input type="text" id="phone" name="phone" required>
-
-            <label for="room-number">Số Phòng:</label>
-            <input type="text" id="room-number" name="room-number" required>
+    <!-- Modal Add New Customer -->
+    <div id="customer-modal" class="modal">
+        <div class="modal-content-addcus">
+            <h3>Add New Customer</h3>
+            <label>First Name:</label>
+            <input type="text" id="first-name"><br>
+            <label>Last Name:</label>
+            <input type="text" id="last-name"><br>
+            <label>Phone Number:</label>
+            <input type="text" id="customer-phone"><br>
+            <label>Email:</label>
+            <input type="email" id="customer-email"><br>
+            <div class="modal-buttons">
+                <button id="cancel-customer">Cancel</button>
+                <button id="confirm-customer">Add</button>
+            </div>
+        </div>
+    </div>
+    <!-- Modal tìm phòng -->
+    <div id="find-room-modal" class="modal">
+        <div class="modal-content-findroom">
+            <h3>Tìm Phòng</h3>
+            <div class="findrooms">
+                <label for="checkin">CheckIn:</label>
+                <input type="datetime-local" id="checkin" required>
                 
-            </select>
+                <label for="checkout">CheckOut:</label>
+                <input type="datetime-local" id="checkout" required>
 
-            <label for="checkin">Ngày Nhận Phòng:</label>
-            <input type="datetime-local" id="checkin" name="checkin" required>
+                <label for="floor">Floor:</label>
+                <input type="text" id="floor" required>
+                
+                <button type="button" id="bt_search">Search</button> 
+            </div>
 
-            <label for="checkout">Ngày Trả Phòng:</label>
-            <input type="datetime-local" id="checkout" name="checkout" required>
+            <table id="room-search-table">
+                <thead>
+                    <tr>
+                        <th>RoomID</th>
+                        <th>RoomNum</th>
+                        <th>Floor</th>
+                        <th>RoomType</th>
+                        <th>Price</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="search-room-body">
+                    <!-- Dữ liệu phòng sẽ được thêm vào đây -->
+                </tbody>
+            </table>
 
-            <button type="submit">Xác Nhận Đặt Phòng</button>
-        </form>
+            <div class="modal-buttons">
+                <button id="cancel-findroom">Cancel</button>
+                <button id="choose-room">Choose</button>
+            </div>
+        </div>
     </div>
 
-    <script src="../js/booking.js"></script>
+<script>
+    
+
+
+
+
+
+</script>
 </body>
 </html>

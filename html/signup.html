@@ -56,7 +56,7 @@
             </form>
             <p class="switch-auth">Already have an account? <a href="#" id="loginLink">Login</a></p>
             <script>
-                document.getElementById("loginLink").addEventListener("click", function(event) {
+                document.getElementById("loginLink").addEventListener("click", function (event) {
                     event.preventDefault();
                     window.parent.document.querySelector("iframe[name='contentFrame']").src = "login.html";
                 });

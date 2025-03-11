@@ -22,7 +22,7 @@ var allData = {
         ["Phòng 203", "Hoàng Văn O", new Date(2025, 2, 4, 7, 0, 0), new Date(2025, 2, 4, 15, 0, 0)],
         ["Phòng 204", "Bùi Thị P", new Date(2025, 2, 4, 13, 30, 0), new Date(2025, 2, 4, 22, 30, 0)],
         ["Phòng 205", "Đỗ Văn Q", new Date(2025, 2, 3, 8, 0, 0), new Date(2025, 2, 3, 16, 0, 0)]
-    ] ,
+    ],
     3: [
         ["Phòng 301", "Nguyễn Văn R", new Date(2025, 2, 3, 9, 0, 0), new Date(2025, 2, 3, 17, 0, 0)],
         ["Phòng 301", "Trần Thị S", new Date(2025, 2, 3, 18, 0, 0), new Date(2025, 2, 4, 4, 0, 0)],
@@ -31,7 +31,7 @@ var allData = {
         ["Phòng 304", "Bùi Thị V", new Date(2025, 2, 4, 13, 0, 0), new Date(2025, 2, 4, 22, 0, 0)],
         ["Phòng 305", "Đỗ Văn W", new Date(2025, 2, 3, 8, 0, 0), new Date(2025, 2, 3, 16, 0, 0)]
     ]
-    
+
 };
 
 function drawChart(floor = 1) {

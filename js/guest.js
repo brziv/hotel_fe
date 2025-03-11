@@ -136,13 +136,13 @@ document.addEventListener("DOMContentLoaded", function () {
     async function deleteGuest(index) {
         try {
             const guest = guests[index];
-    
+
             const response = await fetch(`http://localhost:5222/api/Guest/XoaTblGuest?gGuestId=${guest.gGuestId}`, {
                 method: "DELETE",
             });
-    
+
             if (!response.ok) throw new Error("Failed to delete guest");
-    
+
             await fetchGuests();
         } catch (error) {
             console.error("Error deleting guest:", error);
