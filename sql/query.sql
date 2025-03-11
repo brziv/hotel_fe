@@ -29,14 +29,22 @@ go
 CREATE TABLE tbl_Bookings (
     b_BookingID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     b_GuestID UNIQUEIDENTIFIER NOT NULL,
-    b_CheckInDate DATETIME NOT NULL,
-    b_CheckOutDate DATETIME NOT NULL,
     b_BookingStatus NVARCHAR(20) NOT NULL,--Pending, Confirmed, paid
 	b_TotalMoney DECIMAL(10,2) DEFAULT 0,
 	b_Deposit DECIMAL(10,2),
     b_CreatedAt DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (b_GuestID) REFERENCES tbl_Guests(g_GuestID),
-	CONSTRAINT chk_CheckOutDate CHECK (b_CheckOutDate > b_CheckInDate)
+    FOREIGN KEY (b_GuestID) REFERENCES tbl_Guests(g_GuestID)
+);
+go
+CREATE TABLE tbl_BookingRooms (
+	br_BookingRoomsID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),  
+    br_BookingID UNIQUEIDENTIFIER NOT NULL,
+    br_RoomID UNIQUEIDENTIFIER NOT NULL,    
+	br_CheckInDate DATETIME NOT NULL,
+    br_CheckOutDate DATETIME NOT NULL,
+    FOREIGN KEY (br_BookingID) REFERENCES tbl_Bookings(b_BookingID),
+    FOREIGN KEY (br_RoomID) REFERENCES tbl_Rooms(r_RoomID),
+	CONSTRAINT chk_CheckOutDate CHECK (br_CheckOutDate > br_CheckInDate)
 );
 go
 -- Table: tbl_Payments
@@ -89,24 +97,17 @@ CREATE TABLE tbl_Partner (
     p_Email NVARCHAR(255) UNIQUE,             
     p_Address NVARCHAR(50)                           
 );
-go
-CREATE TABLE tbl_BookingRooms (
-	br_BookingRoomsID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),  
-    br_BookingID UNIQUEIDENTIFIER NOT NULL,
-    br_RoomID UNIQUEIDENTIFIER NOT NULL,
-    FOREIGN KEY (br_BookingID) REFERENCES tbl_Bookings(b_BookingID),
-    FOREIGN KEY (br_RoomID) REFERENCES tbl_Rooms(r_RoomID)
-);
+
 go
 CREATE TABLE tbl_Goods (
     g_GoodsID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),  
     g_GoodsName NVARCHAR(255) NOT NULL,         
     g_Category NVARCHAR(100),                   
     g_Quantity INT DEFAULT 0,                  
-    g_Unit NVARCHAR(30),                        
+    g_Unit NVARCHAR(30),                        --a bottle, a case, a pack...
 	g_CostPrice DECIMAL(10,2) NOT NULL,
 	g_SellingPrice DECIMAL(10,2) NOT NULL,
-	g_Currency NVARCHAR(30) NOT NULL                    
+	g_Currency NVARCHAR(30) NOT NULL                      ---- VND,USD                         
 );
 go
 CREATE TABLE tbl_ServiceGoods (
@@ -160,11 +161,18 @@ VALUES
 ('301', (SELECT f_FloorID FROM tbl_Floors WHERE f_Floor = '3'), 'Suite', 120.00, 'Occupied');
 
 -- tbl_Bookings
-INSERT INTO tbl_Bookings (b_GuestID, b_CheckInDate, b_CheckOutDate, b_BookingStatus, b_TotalMoney, b_Deposit)
+INSERT INTO tbl_Bookings (b_GuestID, b_BookingStatus, b_TotalMoney, b_Deposit)
 VALUES 
-((SELECT g_GuestID FROM tbl_Guests WHERE g_Email = 'john.doe@example.com'), '2025-03-01', '2025-03-05', 'Confirmed', 200.00, 50.00),
-((SELECT g_GuestID FROM tbl_Guests WHERE g_Email = 'jane.smith@example.com'), '2025-03-02', '2025-03-06', 'Pending', 320.00, 100.00),
-((SELECT g_GuestID FROM tbl_Guests WHERE g_Email = 'alice.brown@example.com'), '2025-03-03', '2025-03-07', 'Paid', 480.00, 200.00);
+((SELECT g_GuestID FROM tbl_Guests WHERE g_Email = 'john.doe@example.com'), 'Confirmed', 200.00, 50.00),
+((SELECT g_GuestID FROM tbl_Guests WHERE g_Email = 'jane.smith@example.com'), 'Pending', 320.00, 100.00),
+((SELECT g_GuestID FROM tbl_Guests WHERE g_Email = 'alice.brown@example.com'), 'Paid', 480.00, 200.00);
+
+-- tbl_BookingRooms
+INSERT INTO tbl_BookingRooms (br_BookingID, br_RoomID, br_CheckInDate, br_CheckOutDate)
+VALUES 
+((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 200.00), (SELECT r_RoomID FROM tbl_Rooms WHERE r_RoomNumber = '101'), '2025-03-01', '2025-03-05'),
+((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 320.00), (SELECT r_RoomID FROM tbl_Rooms WHERE r_RoomNumber = '102'), '2025-03-02', '2025-03-06'),
+((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 480.00), (SELECT r_RoomID FROM tbl_Rooms WHERE r_RoomNumber = '301'), '2025-03-03', '2025-03-07');
 
 -- tbl_Payments
 INSERT INTO tbl_Payments (p_BookingID, p_AmountPaid, p_PaymentMethod)
@@ -201,12 +209,6 @@ VALUES
 ('XYZ Suppliers', 'Supplier', '456456456', 'info@xyzsuppliers.com', '456 Market St'),
 ('Luxury Car Rentals', 'Car Rental', '789789789', 'support@luxurycarrentals.com', '789 Auto St');
 
--- tbl_BookingRooms
-INSERT INTO tbl_BookingRooms (br_BookingID, br_RoomID)
-VALUES 
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 200.00), (SELECT r_RoomID FROM tbl_Rooms WHERE r_RoomNumber = '101')),
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 320.00), (SELECT r_RoomID FROM tbl_Rooms WHERE r_RoomNumber = '102')),
-((SELECT b_BookingID FROM tbl_Bookings WHERE b_TotalMoney = 480.00), (SELECT r_RoomID FROM tbl_Rooms WHERE r_RoomNumber = '301'));
 
 -- tbl_Goods
 INSERT INTO tbl_Goods (g_GoodsName, g_Category, g_Quantity, g_Unit, g_CostPrice, g_SellingPrice, g_Currency)
@@ -252,7 +254,7 @@ BEGIN
     UPDATE tbl_Rooms
     SET r_Status = 'Occupied'
     WHERE r_RoomID IN (
-        SELECT br_RoomID
+        SELECT  br_RoomID
         FROM tbl_BookingRooms
         WHERE br_BookingID = @BookingID
     );
@@ -329,18 +331,19 @@ CREATE or alter PROCEDURE pro_find_bookings
 AS
 BEGIN
     -- FIND booking with date and floor
-    SELECT DISTINCT b.*
+    SELECT r.*,b.*,br_CheckInDate,br_CheckOutDate
     FROM tbl_Bookings b
     JOIN tbl_BookingRooms br ON b.b_BookingID = br.br_BookingID
     JOIN tbl_Rooms r ON br.br_RoomID = r.r_RoomID
     JOIN tbl_Floors f ON r.r_FloorID = f.f_FloorID
     WHERE 
-        (@CheckInDate < b.b_CheckOutDate AND @CheckOutDate > b.b_CheckInDate)
+        (@CheckInDate < br_CheckOutDate AND @CheckOutDate > br_CheckInDate)
         AND f.f_Floor = @Floor;
 END;
 GO
-select * from tbl_Bookings
+select * from tbl_Bookings b
 exec pro_find_bookings '2025-03-04 00:00:00.000','2025-03-05 00:00:00.000','1';
+
 --5) Create User --hoac la dung curd
 INSERT INTO tbl_Guests (g_FirstName, g_LastName, g_Email, g_PhoneNumber) 
 VALUES ('Thanh', 'Le Xuan', 'xuanthanhle@gmail.com', '0988718567');
@@ -349,29 +352,32 @@ select * from tbl_Guests
 go
 alter PROCEDURE pro_FindAvailableRooms
     @CheckInDate DATETIME,
-    @CheckOutDate DATETIME
+    @CheckOutDate DATETIME,
+	@floor Nvarchar(10)
 AS
 BEGIN
     -- find rooms are occupied
     WITH BookedRooms AS (
-        SELECT DISTINCT br.br_RoomID
-        FROM tbl_Bookings b
-        JOIN tbl_BookingRooms br ON b.b_BookingID = br.br_BookingID
-        WHERE 
-            (@CheckInDate < DATEADD(HOUR, 1, b.b_CheckOutDate)  AND @CheckOutDate > b.b_CheckInDate) 
-    )
-    
-    -- get room list not occupied
-    SELECT r.r_RoomID, r.r_RoomNumber, r.r_RoomType, r.r_PricePerHour
-    FROM tbl_Rooms r
-    WHERE r.r_RoomID NOT IN (SELECT br_RoomID FROM BookedRooms)
+		SELECT DISTINCT br.br_RoomID
+		FROM tbl_Bookings b
+		JOIN tbl_BookingRooms br ON b.b_BookingID = br.br_BookingID
+		WHERE (@CheckInDate < DATEADD(HOUR, 1, br.br_CheckOutDate) 
+			AND @CheckOutDate > br.br_CheckInDate) 
+	)
+	SELECT r.r_RoomID, r.r_RoomNumber, f.f_Floor, r.r_RoomType, r.r_PricePerHour
+	FROM tbl_Rooms r
+	JOIN tbl_Floors f ON r.r_FloorID = f.f_FloorID
+	WHERE r.r_RoomID NOT IN (SELECT br_RoomID FROM BookedRooms) 
+	AND f.f_Floor = @floor;
+
 END;
 go
-select b_CheckInDate,b_CheckOutDate, r_RoomNumber from tbl_Bookings
+select br_CheckInDate,br_CheckOutDate, r_RoomNumber from tbl_Bookings
 join tbl_BookingRooms on b_BookingID=br_BookingID
 join tbl_Rooms on br_RoomID = r_RoomID
 go
-EXEC pro_FindAvailableRooms '2025-03-05 01:00:00.000', '2025-03-08 00:00:00.000';
+EXEC pro_FindAvailableRooms '2025-03-05 01:00:00.000', '2025-03-08 00:00:00.000','1';
+
 go
 --7.1)
 
