@@ -351,14 +351,14 @@ async function finalizeImport() {
             }
 
             const importResult = await importResponse.json();
-            const importId = importResult.data.igImportId;
+            const newImportId = importResult.data.igImportId;
 
             const detailPromises = state.importDetails.map(async detail => {
                 const detailData = {
-                    IgdImportId: importId,
-                    IgdGoodsId: detail.goodsId,
-                    IgdQuantity: detail.quantity,
-                    IgdCostPrice: detail.costPrice
+                    igdImportId: newImportId,
+                    igdGoodsId: detail.goodsId,
+                    igdQuantity: detail.quantity,
+                    igdCostPrice: detail.costPrice
                 };
                 const response = await api.insertImportDetail(detailData);
                 if (!response.ok) {
@@ -376,10 +376,17 @@ async function finalizeImport() {
 
             await Promise.all([...detailPromises, ...quantityPromises]);
 
+            // Reset form and state
             state.importDetails = [];
             elements.supplierInput.value = "";
             renderImportDetailAddTable();
-            await Promise.all([api.fetchGoods(), api.fetchImportGoods()]);
+
+            // Refresh all tables
+            await Promise.all([
+                api.fetchGoods(),
+                api.fetchImportGoods(),
+                api.fetchImportHistory()
+            ]);
 
             const modal = bootstrap.Modal.getInstance(document.getElementById('importModal'));
             modal?.hide();
@@ -416,15 +423,18 @@ async function editImport(importId) {
         const imports = await response.json();
         const importData = imports.data.find(i => i.igImportId === importId);
 
-        await api.fetchImportGoodsDetails(importId);
-        state.editingImportId = importId;
+        const detailsResponse = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailListByImport/${importId}`);
+        const detailsData = await detailsResponse.json();
 
+        state.editingImportId = importId;
         elements.supplierInput.value = importData.igSupplier;
-        state.importDetails = imports.data.map(detail => ({
+
+        // Properly map the import details
+        state.importDetails = detailsData.data.map(detail => ({
             goodsId: detail.igdGoodsId,
             quantity: detail.igdQuantity,
             costPrice: detail.igdCostPrice,
-            goodName: detail.goodsName
+            goodName: state.goods.find(g => g.gGoodsId === detail.igdGoodsId)?.gGoodsName || 'Unknown'
         }));
 
         renderImportDetailAddTable();
@@ -440,7 +450,6 @@ async function editImport(importId) {
 async function deleteImport(importId) {
     if (confirm("Are you sure you want to delete this import?")) {
         try {
-            // First adjust quantities
             const detailsResponse = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailListByImport/${importId}`);
             const details = await detailsResponse.json();
 
@@ -451,10 +460,21 @@ async function deleteImport(importId) {
             });
 
             await Promise.all(quantityPromises);
-            await api.deleteImport(importId);
-            await Promise.all([api.fetchGoods(), api.fetchImportGoods(), api.fetchImportHistory()]);
+            const deleteResponse = await api.deleteImport(importId);
+
+            if (!deleteResponse.ok) {
+                throw new Error("Failed to delete import");
+            }
+
+            // Refresh all tables after successful deletion
+            await Promise.all([
+                api.fetchGoods(),
+                api.fetchImportGoods(),
+                api.fetchImportHistory()
+            ]);
         } catch (error) {
             console.error("Error deleting import:", error);
+            alert("Error deleting import: " + error.message);
         }
     }
 }
