@@ -1,46 +1,65 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Management - Đăng nhập</title>
-    <link rel="stylesheet" href="../css/login.css">
+    <title>SkyHotel - Login</title>
+    <link rel="stylesheet" href="../css/auth.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-
 <body>
-    <div class="login-container">
-        <div class="login-box">
-            <h2>Welcome to Hotel Management</h2>
-            <p class="subtitle">Please log in to continue</p>
-            <form action="dashboard.html" method="POST">
-                <div class="input-group">
-                    <input type="text" name="username" required>
-                    <label>Username</label>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Welcome Back</h1>
+                <p>Please enter your credentials to continue</p>
+            </div>
+            
+            <form class="auth-form" id="loginForm">
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="email" id="email" required placeholder=" ">
+                        <label for="email">Email Address</label>
+                        <span class="input-highlight"></span>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <input type="password" name="password" required>
-                    <label>Password</label>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="password" id="password" required placeholder=" ">
+                        <label for="password">Password</label>
+                        <span class="input-highlight"></span>
+                    </div>
                 </div>
-                <div class="remember-forgot">
-                    <label class="checkbox">
-                        <input type="checkbox" name="remember">
-                        <span class="checkmark"></span> Remember me
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember">
+                        <span class="checkmark"></span>
+                        Remember me
                     </label>
-                    <a href="#" id="signupLink" style="font-weight: bold;">No account?</a>
+                    <a href="#" class="forgot-password">Forgot Password?</a>
                 </div>
-                <button type="submit">LOGIN</button>
+
+                <button type="submit" class="auth-button">Sign In</button>
             </form>
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="#" id="signupLink">Create Account</a></p>
+            </div>
         </div>
-        <p class="support">Need help? Call <a href="tel:0999999999">0999.999.999</a></p>
     </div>
 
     <script>
-        document.getElementById("signupLink").addEventListener("click", function (event) {
+        document.getElementById("signupLink").addEventListener("click", function(event) {
             event.preventDefault();
-            window.parent.document.querySelector("iframe[name='contentFrame']").src = "signup.html";
+            window.parent.document.querySelector("iframe[name='contentFrame']").src = "html/signup.html";
+        });
+
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            // Add login logic here
         });
     </script>
 </body>
-
 </html>

@@ -23,6 +23,14 @@ h2 {
     text-align: center;
 }
 
+.search-container {
+    margin: 10px;
+}
+
+#partnerSearch {
+    width: 20%;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -59,7 +67,7 @@ button:hover {
 
 input[type="text"],
 input[type="email"] {
-    width: 15%;
+    width: 12%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;

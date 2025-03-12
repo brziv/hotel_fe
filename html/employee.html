@@ -11,6 +11,11 @@
 <body>
     <div class="container">
         <h2>Quản lý Nhân Viên</h2>
+
+        <div class="search-container">
+            <input type="text" id="employeeSearch" placeholder="Tìm kiếm" class="form-control">
+        </div>
+
         <form id="employeeForm">
             <input type="text" id="employeeFirstName" placeholder="Tên" required>
             <input type="text" id="employeeLastName" placeholder="Họ" required>
@@ -21,6 +26,7 @@
             <button type="submit">Thêm</button>
             <button type="button" id="employeeUpdateBtn" style="display:none;">Cập nhật</button>
         </form>
+        
         <table>
             <thead>
                 <tr>

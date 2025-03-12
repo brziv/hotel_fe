@@ -20,6 +20,8 @@
             <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#goods">Goods</a></li>
             <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#importGoods">Import Goods</a></li>
             <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#importHistory">Import History</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#service">Services</a></li>
+
         </ul>
 
         <!-- Goods Tab -->
@@ -109,6 +111,28 @@
                         </tr>
                     </thead>
                     <tbody id="importHistoryTableBody">
+                        <!-- Data from API -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- Service Tab -->
+            <div id="service" class="tab-pane fade">
+                <h4 id="serviceHeader">Services</h4>
+                <div class="text-center">
+                    <button class="btn btn-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#serviceModal"
+                        style="text-align: center;">New Service</button>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Service Name</th>
+                            <th>Service Details</th>
+                            <th>Cost Price</th>
+                            <th>Sell Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="serviceTableBody">
                         <!-- Data from API -->
                     </tbody>
                 </table>

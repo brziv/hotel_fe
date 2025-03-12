@@ -45,6 +45,46 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    const employeeSearchInput = document.querySelector("#employeeSearch");
+
+    // Add search function
+    async function searchEmployees(searchTerm) {
+        try {
+            const response = await fetch(`http://localhost:5222/api/Employee/SearchTblEmployee?s=${encodeURIComponent(searchTerm)}`);
+            const data = await response.json();
+            employees = data.data;
+            renderEmployees();
+        } catch (error) {
+            console.error("Error searching employees:", error);
+        }
+    }
+
+    // Add debounce function to limit API calls
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Wait 300ms after user stops typing to search
+    const debouncedSearch = debounce((searchTerm) => {
+        if (searchTerm.trim() === "") {
+            fetchEmployees();
+        } else {
+            searchEmployees(searchTerm);
+        }
+    }, 300);
+
+    employeeSearchInput.addEventListener("input", (e) => {
+        debouncedSearch(e.target.value);
+    });
+
     employeeUpdateBtn.addEventListener("click", function () {
         let firstName = employeeFirstNameInput.value.trim();
         let lastName = employeeLastNameInput.value.trim();
@@ -126,16 +166,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function updateEmployee(employee) {
         try {
-            const response = await fetch("http://localhost:5222/api/Employee/UpdateTblEmployee", {
+            await fetch("http://localhost:5222/api/Employee/UpdateTblEmployee", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(employee)
             });
-            if (!response.ok) throw new Error("Failed to update employee");
-
             await fetchEmployees();
+
         } catch (error) {
             console.error("Error updating employee:", error);
         }
@@ -150,14 +189,11 @@ document.addEventListener("DOMContentLoaded", function () {
     async function deleteEmployee(index) {
         try {
             const employee = employees[index];
-
-            const response = await fetch(`http://localhost:5222/api/Employee/XoaTblEmployee?eEmployeeId=${employee.eEmployeeId}`, {
+            await fetch(`http://localhost:5222/api/Employee/XoaTblEmployee?eEmployeeId=${employee.eEmployeeId}`, {
                 method: "DELETE",
             });
-
-            if (!response.ok) throw new Error("Failed to delete employee");
-
             await fetchEmployees();
+
         } catch (error) {
             console.error("Error deleting employee:", error);
         }

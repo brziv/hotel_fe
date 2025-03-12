@@ -43,6 +43,46 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    const partnerSearchInput = document.querySelector("#partnerSearch");
+
+    // Add search function
+    async function searchPartners(searchTerm) {
+        try {
+            const response = await fetch(`http://localhost:5222/api/Partner/SearchTblPartner?s=${encodeURIComponent(searchTerm)}`);
+            const data = await response.json();
+            partners = data.data;
+            renderPartners();
+        } catch (error) {
+            console.error("Error searching partners:", error);
+        }
+    }
+
+    // Add debounce function to limit API calls
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Wait 300ms after user stops typing to search
+    const debouncedSearch = debounce((searchTerm) => {
+        if (searchTerm.trim() === "") {
+            fetchPartners();
+        } else {
+            searchPartners(searchTerm);
+        }
+    }, 300);
+
+    partnerSearchInput.addEventListener("input", (e) => {
+        debouncedSearch(e.target.value);
+    });
+
     async function addPartner(partner) {
         try {
             const response = await fetch("http://localhost:5222/api/Partner/InsertTblPartner", {
@@ -63,15 +103,14 @@ document.addEventListener("DOMContentLoaded", function () {
     async function updatePartner(partner) {
         try {
             const response = await fetch("http://localhost:5222/api/Partner/UpdateTblPartner", {
-                method: "POST",
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(partner)
             });
-            const data = await response.json();
-            partners[editPartnerIndex] = data.data;
-            renderPartners();
+            await fetchPartners();
+
         } catch (error) {
             console.error("Error updating partner:", error);
         }
@@ -80,15 +119,15 @@ document.addEventListener("DOMContentLoaded", function () {
     async function deletePartner(index) {
         try {
             const partner = partners[index];
-            await fetch(`http://localhost:5222/api/Partner/XoaTblPartner`, {
-                method: "POST",
+            await fetch(`http://localhost:5222/api/Partner/XoaTblPartner?pPartnerId=${partner.pPartnerId}`, {
+                method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({ pPartnerId: partner.pPartnerId })
             });
-            partners.splice(index, 1);
-            renderPartners();
+            await fetchPartners();
+
         } catch (error) {
             console.error("Error deleting partner:", error);
         }

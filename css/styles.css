@@ -22,7 +22,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(to right, #007bff, #00c853);
+    background: linear-gradient(135deg, #388e3c, #1976d2, #7b1fa2);
     padding: 15px;
     color: white;
 }

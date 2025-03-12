@@ -12,6 +12,11 @@
     <div class="container">
         <div class="section">
             <h2>Quản lý Đối Tác</h2>
+
+            <div class="search-container">
+                <input type="text" id="partnerSearch" placeholder="Tìm kiếm" class="form-control">
+            </div>
+
             <form id="partnerForm">
                 <input type="text" id="partnerName" placeholder="Tên Đối Tác" required>
                 <input type="text" id="partnerType" placeholder="Loại Đối Tác" required>
@@ -21,6 +26,7 @@
                 <button type="submit">Thêm</button>
                 <button type="button" id="partnerUpdateBtn" style="display:none;">Cập nhật</button>
             </form>
+
             <table>
                 <thead>
                     <tr>

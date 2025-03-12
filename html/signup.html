@@ -1,68 +1,80 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyHotel Manager - Sign Up</title>
-    <link rel="stylesheet" href="../css/login.css">
-    <style>
-        .switch-auth {
-            margin-top: 15px;
-            font-size: 14px;
-        }
-
-        .switch-auth a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .switch-auth a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <title>SkyHotel - Create Account</title>
+    <link rel="stylesheet" href="../css/auth.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-
 <body>
-    <div class="login-container">
-        <div class="login-box">
-            <h2>Create Your Account</h2>
-            <p class="subtitle">Sign up to manage your hotel</p>
-            <form action="welcome.html" method="POST">
-                <div class="input-group">
-                    <input type="text" name="username" required>
-                    <label>Username</label>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Create Account</h1>
+                <p>Join us to start managing your hotel</p>
+            </div>
+            
+            <form class="auth-form" id="signupForm">
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="text" id="fullname" required placeholder=" ">
+                        <label for="fullname">Full Name</label>
+                        <span class="input-highlight"></span>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <input type="email" name="email" required>
-                    <label>Email</label>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="email" id="email" required placeholder=" ">
+                        <label for="email">Email Address</label>
+                        <span class="input-highlight"></span>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <input type="password" name="password" required>
-                    <label>Password</label>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="password" id="password" required placeholder=" ">
+                        <label for="password">Password</label>
+                        <span class="input-highlight"></span>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <input type="password" name="confirm_password" required>
-                    <label>Confirm Password</label>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="password" id="confirmPassword" required placeholder=" ">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <span class="input-highlight"></span>
+                    </div>
                 </div>
-                <div class="remember-forgot">
-                    <label class="checkbox">
-                        <input type="checkbox" name="terms" required>
-                        <span class="checkmark"></span> I agree to the <a href="#">terms & conditions</a>
+
+                <div class="form-options">
+                    <label class="terms-check">
+                        <input type="checkbox" id="terms" required>
+                        <span class="checkmark"></span>
+                        I agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a>
                     </label>
                 </div>
-                <button type="submit">SIGN UP</button>
+
+                <button type="submit" class="auth-button">Create Account</button>
             </form>
-            <p class="switch-auth">Already have an account? <a href="#" id="loginLink">Login</a></p>
-            <script>
-                document.getElementById("loginLink").addEventListener("click", function (event) {
-                    event.preventDefault();
-                    window.parent.document.querySelector("iframe[name='contentFrame']").src = "login.html";
-                });
-            </script>
+
+            <div class="auth-footer">
+                <p>Already have an account? <a href="#" id="loginLink">Sign In</a></p>
+            </div>
         </div>
     </div>
-</body>
 
+    <script>
+        document.getElementById("loginLink").addEventListener("click", function(event) {
+            event.preventDefault();
+            window.parent.document.querySelector("iframe[name='contentFrame']").src = "html/login.html";
+        });
+
+        document.getElementById("signupForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            // Add signup logic here
+        });
+    </script>
+</body>
 </html>

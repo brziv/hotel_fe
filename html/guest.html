@@ -12,6 +12,11 @@
     <div class="container">
         <div class="section">
             <h2>Quản lý Khách Hàng</h2>
+
+            <div class="search-container">
+                <input type="text" id="guestSearch" placeholder="Tìm kiếm" class="form-control">
+            </div>
+
             <form id="guestForm">
                 <input type="text" id="guestFirstName" placeholder="Tên" required>
                 <input type="text" id="guestLastName" placeholder="Họ" required>
@@ -20,6 +25,7 @@
                 <button type="submit">Thêm</button>
                 <button type="button" id="guestUpdateBtn" style="display:none;">Cập nhật</button>
             </form>
+            
             <table>
                 <thead>
                     <tr>
