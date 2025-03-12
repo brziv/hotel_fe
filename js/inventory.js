@@ -143,20 +143,6 @@ const api = {
         });
     },
 
-    updateImport: async function (importData) {
-        return await fetch(`${API_BASE_URL}/ImportGood/UpdateTblImportGood`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(importData)
-        });
-    },
-
-    deleteImport: async function (id) {
-        return await fetch(`${API_BASE_URL}/ImportGood/XoaTblImportGood?igImportId=${id}`, {
-            method: "DELETE"
-        });
-    },
-
     deleteImportDetail: async function (id) {
         return await fetch(`${API_BASE_URL}/ImportGoodsDetail/XoaTblImportGoodsDetail?igdId=${id}`, {
             method: "DELETE"
@@ -169,11 +155,6 @@ const api = {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(detailData)
         });
-        const responseData = await response.json();
-        if (!response.ok) {
-            throw new Error(`Failed to insert detail: ${responseData.message || response.statusText}`);
-        }
-        return responseData;
     }
 };
 
@@ -346,162 +327,6 @@ async function finalizeImport() {
     }
 }
 
-window.editImport = async function (importId) {
-    try {
-        const importResponse = await fetch(`${API_BASE_URL}/ImportGood/GetImportGoodList`);
-        const imports = await importResponse.json();
-        const importData = imports.data.find(i => i.igImportId === importId);
-
-        const detailsResponse = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailListByImport/${importId}`);
-        const details = await detailsResponse.json();
-
-        elements.supplierInput.value = importData.igSupplier;
-        state.importDetails = details.data.map(detail => ({
-            goodsId: detail.igdGoodsId,
-            quantity: detail.igdQuantity,
-            costPrice: detail.igdCostPrice,
-            goodName: detail.goodsName
-        }));
-        state.editingImportId = importId;
-
-        renderImportDetailAddTable();
-        elements.finalizeImportBtn.textContent = "Update Import";
-        elements.finalizeImportBtn.onclick = updateImport;
-        document.getElementById("importModalLabel").textContent = "Edit Import";
-
-        const importModal = new bootstrap.Modal(document.getElementById('importModal'));
-        importModal.show();
-    } catch (error) {
-        console.error("Error loading import for edit:", error);
-        alert("Failed to load import for editing");
-    }
-};
-
-async function updateImport() {
-    if (!state.editingImportId) return;
-
-    const totalPrice = state.importDetails.reduce((sum, detail) =>
-        sum + (detail.quantity * detail.costPrice), 0);
-
-    const importData = {
-        igImportId: state.editingImportId,
-        igSupplier: elements.supplierInput.value.trim(),
-        igSumPrice: totalPrice,
-        igCurrency: "VND",
-        igImportDate: new Date().toISOString()
-    };
-
-    try {
-        const existingDetailsResponse = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailListByImport/${state.editingImportId}`);
-        const existingDetails = await existingDetailsResponse.json();
-        const oldDetails = existingDetails.data.reduce((acc, detail) => {
-            acc[detail.igdGoodsId] = detail.igdQuantity;
-            return acc;
-        }, {});
-
-        const updateResponse = await api.updateImport(importData);
-        const updatedImport = await updateResponse.json();
-
-        const deletePromises = existingDetails.data.map(detail =>
-            api.deleteImportDetail(detail.igdId));
-        await Promise.all(deletePromises);
-
-        const detailPromises = state.importDetails.map(detail => {
-            if (!detail.goodsId) {
-                throw new Error(`Invalid goodsId for detail: ${JSON.stringify(detail)}`);
-            }
-            const detailData = {
-                igdImportId: state.editingImportId,
-                igdGoodsId: detail.goodsId,
-                igdQuantity: detail.quantity,
-                igdCostPrice: detail.costPrice
-            };
-            return api.insertImportDetail(detailData);
-        });
-        const insertedDetails = await Promise.all(detailPromises);
-
-        if (insertedDetails.length === 0 || insertedDetails.some(d => !d.data?.igdId)) {
-            throw new Error("No details were inserted");
-        }
-
-        const quantityUpdates = [];
-        state.goods.forEach(good => {
-            const oldQty = oldDetails[good.gGoodsId] || 0;
-            const newDetail = state.importDetails.find(d => d.goodsId === good.gGoodsId);
-            const newQty = newDetail ? newDetail.quantity : 0;
-
-            if (oldQty !== newQty) {
-                const delta = newQty - oldQty;
-                good.gQuantity += delta;
-                if (good.gQuantity < 0) good.gQuantity = 0;
-                quantityUpdates.push(api.updateGood(good));
-            }
-        });
-        await Promise.all(quantityUpdates);
-
-        state.importDetails = [];
-        state.editingImportId = null;
-        elements.supplierInput.value = "";
-        elements.finalizeImportBtn.textContent = "Save Import";
-        elements.finalizeImportBtn.onclick = finalizeImport;
-        document.getElementById("importModalLabel").textContent = "New Import";
-        renderImportDetailAddTable();
-        await Promise.all([
-            api.fetchGoods(),
-            api.fetchImportGoods(),
-            api.fetchImportHistory()
-        ]);
-
-        alert("Import successfully updated!");
-        bootstrap.Modal.getInstance(document.getElementById('importModal')).hide();
-    } catch (error) {
-        console.error("Error updating import:", error);
-        alert(`Failed to update import: ${error.message}`);
-    }
-};
-
-window.deleteImport = async function (importId) {
-    if (!confirm("Are you sure you want to delete this import and all its details?")) return;
-
-    try {
-        const detailsResponse = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailListByImport/${importId}`);
-        const details = await detailsResponse.json();
-
-        const quantityUpdates = [];
-        details.data.forEach(detail => {
-            const good = state.goods.find(g => g.gGoodsId === detail.igdGoodsId);
-            if (good) {
-                good.gQuantity -= detail.igdQuantity;
-                if (good.gQuantity < 0) good.gQuantity = 0;
-                quantityUpdates.push(api.updateGood(good));
-            }
-        });
-        await Promise.all(quantityUpdates);
-
-        const deleteDetailPromises = details.data.map(detail => {
-            const detailId = detail.igdId;
-            if (!detailId) {
-                throw new Error(`Invalid igdId in detail: ${JSON.stringify(detail)}`);
-            }
-            return api.deleteImportDetail(detailId);
-        });
-        await Promise.all(deleteDetailPromises);
-
-        await api.deleteImport(importId);
-
-        await Promise.all([
-            api.fetchGoods(),
-            api.fetchImportGoods(),
-            api.fetchImportHistory()
-        ]);
-
-        alert("Import successfully deleted!");
-    } catch (error) {
-        console.error("Error deleting import:", error);
-        alert(`Failed to delete import: ${error.message}`);
-    }
-};
-
 // Rendering Functions
 function renderGoodsTable() {
     elements.goodsTableBody.innerHTML = "";
@@ -557,12 +382,6 @@ function renderImportGoodsTable(imports) {
                 <button class="view-details-btn btn btn-sm btn-info" data-import-id="${importGood.igImportId}" 
                     data-bs-toggle="modal" data-bs-target="#importDetailModal">
                     View Details
-                </button>
-                <button class="update-import-btn btn btn-sm btn-primary" data-import-id="${importGood.igImportId}">
-                    Update
-                </button>
-                <button class="delete-import-btn btn btn-sm btn-danger" data-import-id="${importGood.igImportId}">
-                    Delete
                 </button>
             </td>
         `;
