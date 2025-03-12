@@ -1,5 +1,5 @@
 // Constants
-const API_BASE_URL = "https://hotel-bed.onrender.com/api";
+const API_BASE_URL = "http://localhost:5222/api";
 
 // Main execution
 document.addEventListener("DOMContentLoaded", initializeApp);
@@ -164,11 +164,16 @@ const api = {
     },
 
     insertImportDetail: async function (detailData) {
-        return await fetch(`${API_BASE_URL}/ImportGoodsDetail/InsertTblImportGoodsDetail`, {
+        const response = await fetch(`${API_BASE_URL}/ImportGoodsDetail/InsertTblImportGoodsDetail`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(detailData)
         });
+        const responseData = await response.json();
+        if (!response.ok) {
+            throw new Error(`Failed to insert detail: ${responseData.message || response.statusText}`);
+        }
+        return responseData;
     }
 };
 
@@ -271,141 +276,6 @@ window.removeImportDetail = function (index) {
     renderImportDetailAddTable();
 };
 
-async function finalizeImport() {
-    if (state.importDetails.length === 0) {
-        alert("Please add at least one good to the import");
-        return;
-    }
-
-    const supplier = elements.supplierInput.value.trim();
-    if (!supplier) {
-        alert("Please enter a supplier");
-        return;
-    }
-
-    const totalPrice = state.importDetails.reduce((sum, detail) =>
-        sum + (detail.quantity * detail.costPrice), 0);
-
-    const importData = {
-        IgSupplier: supplier,
-        IgSumPrice: totalPrice,
-        IgCurrency: "VND",
-        IgImportDate: new Date().toISOString()
-    };
-
-    try {
-        if (state.editingImportId) {
-            // Update existing import
-            importData.IgImportId = state.editingImportId;
-
-            // Get existing details
-            const existingDetailsResponse = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailListByImport/${state.editingImportId}`);
-            const existingDetails = await existingDetailsResponse.json();
-
-            // Adjust quantities for removed items
-            const quantityAdjustPromises = existingDetails.data.map(async oldDetail => {
-                if (!state.importDetails.find(d => d.goodsId === oldDetail.igdGoodsId)) {
-                    const good = state.goods.find(g => g.gGoodsId === oldDetail.igdGoodsId);
-                    good.gQuantity -= oldDetail.igdQuantity;
-                    return await api.updateGood(good);
-                }
-            });
-
-            await Promise.all(quantityAdjustPromises);
-            await api.updateImport(importData);
-
-            // Delete old details and insert new ones
-            const deletePromises = existingDetails.data.map(detail =>
-                api.deleteImportDetail(detail.igdId)
-            );
-            await Promise.all(deletePromises);
-
-            const detailPromises = state.importDetails.map(async detail => {
-                const detailData = {
-                    igdImportId: state.editingImportId,
-                    igdGoodsId: detail.goodsId,
-                    igdQuantity: detail.quantity,
-                    igdCostPrice: detail.costPrice
-                };
-                return await api.insertImportDetail(detailData);
-            });
-
-            const quantityPromises = state.importDetails.map(async detail => {
-                const good = state.goods.find(g => g.gGoodsId === detail.goodsId);
-                const oldDetail = existingDetails.data.find(d => d.igdGoodsId === detail.goodsId);
-                const oldQuantity = oldDetail ? oldDetail.igdQuantity : 0;
-                good.gQuantity = good.gQuantity - oldQuantity + detail.quantity;
-                return await api.updateGood(good);
-            });
-
-            await Promise.all([...detailPromises, ...quantityPromises]);
-
-            state.editingImportId = null;
-            elements.finalizeImportBtn.textContent = "Save Import";
-            alert("Import updated successfully!");
-        } else {
-            const importResponse = await api.insertImport(importData);
-            if (!importResponse.ok) {
-                const errorData = await importResponse.json();
-                throw new Error("Failed to save import: " + JSON.stringify(errorData));
-            }
-
-            const importResult = await importResponse.json();
-            const newImportId = importResult.data.igImportId;
-
-            const detailPromises = state.importDetails.map(async detail => {
-                const detailData = {
-                    igdImportId: newImportId,
-                    igdGoodsId: detail.goodsId,
-                    igdQuantity: detail.quantity,
-                    igdCostPrice: detail.costPrice
-                };
-                const response = await api.insertImportDetail(detailData);
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error("Failed to save detail: " + JSON.stringify(errorData));
-                }
-                return response;
-            });
-
-            const quantityPromises = state.importDetails.map(async detail => {
-                const good = state.goods.find(g => g.gGoodsId === detail.goodsId);
-                good.gQuantity += detail.quantity;
-                return await api.updateGood(good);
-            });
-
-            await Promise.all([...detailPromises, ...quantityPromises]);
-
-            // Reset form and state
-            state.importDetails = [];
-            elements.supplierInput.value = "";
-            renderImportDetailAddTable();
-
-            // Refresh all tables
-            await Promise.all([
-                api.fetchGoods(),
-                api.fetchImportGoods(),
-                api.fetchImportHistory()
-            ]);
-
-            const modal = bootstrap.Modal.getInstance(document.getElementById('importModal'));
-            modal?.hide();
-            alert("Import saved successfully!");
-        }
-
-        state.importDetails = [];
-        elements.supplierInput.value = "";
-        renderImportDetailAddTable();
-        await Promise.all([api.fetchGoods(), api.fetchImportGoods(), api.fetchImportHistory()]);
-
-        const modal = bootstrap.Modal.getInstance(document.getElementById('importModal'));
-        modal?.hide()
-    } catch (error) {
-        console.error("Error finalizing import:", error);
-        alert("Error saving import: " + error.message);
-    }
-}
-
 window.handleImportActions = function (event) {
     const button = event.target;
     const importId = button.getAttribute("data-import-id");
@@ -417,67 +287,220 @@ window.handleImportActions = function (event) {
     }
 };
 
-async function editImport(importId) {
+async function finalizeImport() {
+    if (state.importDetails.length === 0) {
+        alert("Please add at least one item to import");
+        return;
+    }
+
+    const totalPrice = state.importDetails.reduce((sum, detail) =>
+        sum + (detail.quantity * detail.costPrice), 0);
+
+    const importData = {
+        igSupplier: elements.supplierInput.value.trim(),
+        igSumPrice: totalPrice,
+        igCurrency: "VND",
+        igImportDate: new Date().toISOString()
+    };
+
     try {
-        const response = await fetch(`${API_BASE_URL}/ImportGood/GetImportGoodList`);
-        const imports = await response.json();
+        const importResponse = await api.insertImport(importData);
+        const importResult = await importResponse.json();
+        const importId = importResult.data.igImportId;
+
+        const detailPromises = state.importDetails.map(detail => {
+            const detailData = {
+                igdImportId: importId,
+                igdGoodsId: detail.goodsId,
+                igdQuantity: detail.quantity,
+                igdCostPrice: detail.costPrice
+            };
+            return api.insertImportDetail(detailData);
+        });
+
+        await Promise.all(detailPromises);
+
+        const quantityUpdates = state.importDetails.map(detail => {
+            const good = state.goods.find(g => g.gGoodsId === detail.goodsId);
+            good.gQuantity += detail.quantity;
+            return api.updateGood(good);
+        });
+
+        await Promise.all(quantityUpdates);
+
+        state.importDetails = [];
+        elements.supplierInput.value = "";
+        renderImportDetailAddTable();
+        await Promise.all([
+            api.fetchGoods(),
+            api.fetchImportGoods(),
+            api.fetchImportHistory()
+        ]);
+
+        alert("Import successfully added!");
+        document.getElementById("importModalLabel").textContent = "New Import";
+        bootstrap.Modal.getInstance(document.getElementById('importModal')).hide();
+    } catch (error) {
+        console.error("Error finalizing import:", error);
+        alert("Failed to add import");
+    }
+}
+
+window.editImport = async function (importId) {
+    try {
+        const importResponse = await fetch(`${API_BASE_URL}/ImportGood/GetImportGoodList`);
+        const imports = await importResponse.json();
         const importData = imports.data.find(i => i.igImportId === importId);
 
         const detailsResponse = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailListByImport/${importId}`);
-        const detailsData = await detailsResponse.json();
+        const details = await detailsResponse.json();
 
-        state.editingImportId = importId;
         elements.supplierInput.value = importData.igSupplier;
-
-        // Properly map the import details
-        state.importDetails = detailsData.data.map(detail => ({
+        state.importDetails = details.data.map(detail => ({
             goodsId: detail.igdGoodsId,
             quantity: detail.igdQuantity,
             costPrice: detail.igdCostPrice,
-            goodName: state.goods.find(g => g.gGoodsId === detail.igdGoodsId)?.gGoodsName || 'Unknown'
+            goodName: detail.goodsName
         }));
+        state.editingImportId = importId;
 
         renderImportDetailAddTable();
         elements.finalizeImportBtn.textContent = "Update Import";
+        elements.finalizeImportBtn.onclick = updateImport;
+        document.getElementById("importModalLabel").textContent = "Edit Import";
 
-        const modal = new bootstrap.Modal(document.getElementById('importModal'));
-        modal.show();
+        const importModal = new bootstrap.Modal(document.getElementById('importModal'));
+        importModal.show();
     } catch (error) {
-        console.error("Error editing import:", error);
+        console.error("Error loading import for edit:", error);
+        alert("Failed to load import for editing");
     }
-}
+};
 
-async function deleteImport(importId) {
-    if (confirm("Are you sure you want to delete this import?")) {
-        try {
-            const detailsResponse = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailListByImport/${importId}`);
-            const details = await detailsResponse.json();
+async function updateImport() {
+    if (!state.editingImportId) return;
 
-            const quantityPromises = details.data.map(async detail => {
-                const good = state.goods.find(g => g.gGoodsId === detail.igdGoodsId);
-                good.gQuantity -= detail.igdQuantity;
-                return await api.updateGood(good);
-            });
+    const totalPrice = state.importDetails.reduce((sum, detail) =>
+        sum + (detail.quantity * detail.costPrice), 0);
 
-            await Promise.all(quantityPromises);
-            const deleteResponse = await api.deleteImport(importId);
+    const importData = {
+        igImportId: state.editingImportId,
+        igSupplier: elements.supplierInput.value.trim(),
+        igSumPrice: totalPrice,
+        igCurrency: "VND",
+        igImportDate: new Date().toISOString()
+    };
 
-            if (!deleteResponse.ok) {
-                throw new Error("Failed to delete import");
+    try {
+        const existingDetailsResponse = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailListByImport/${state.editingImportId}`);
+        const existingDetails = await existingDetailsResponse.json();
+        const oldDetails = existingDetails.data.reduce((acc, detail) => {
+            acc[detail.igdGoodsId] = detail.igdQuantity;
+            return acc;
+        }, {});
+
+        const updateResponse = await api.updateImport(importData);
+        const updatedImport = await updateResponse.json();
+
+        const deletePromises = existingDetails.data.map(detail =>
+            api.deleteImportDetail(detail.igdId));
+        await Promise.all(deletePromises);
+
+        const detailPromises = state.importDetails.map(detail => {
+            if (!detail.goodsId) {
+                throw new Error(`Invalid goodsId for detail: ${JSON.stringify(detail)}`);
             }
+            const detailData = {
+                igdImportId: state.editingImportId,
+                igdGoodsId: detail.goodsId,
+                igdQuantity: detail.quantity,
+                igdCostPrice: detail.costPrice
+            };
+            return api.insertImportDetail(detailData);
+        });
+        const insertedDetails = await Promise.all(detailPromises);
 
-            // Refresh all tables after successful deletion
-            await Promise.all([
-                api.fetchGoods(),
-                api.fetchImportGoods(),
-                api.fetchImportHistory()
-            ]);
-        } catch (error) {
-            console.error("Error deleting import:", error);
-            alert("Error deleting import: " + error.message);
+        if (insertedDetails.length === 0 || insertedDetails.some(d => !d.data?.igdId)) {
+            throw new Error("No details were inserted");
         }
+
+        const quantityUpdates = [];
+        state.goods.forEach(good => {
+            const oldQty = oldDetails[good.gGoodsId] || 0;
+            const newDetail = state.importDetails.find(d => d.goodsId === good.gGoodsId);
+            const newQty = newDetail ? newDetail.quantity : 0;
+
+            if (oldQty !== newQty) {
+                const delta = newQty - oldQty;
+                good.gQuantity += delta;
+                if (good.gQuantity < 0) good.gQuantity = 0;
+                quantityUpdates.push(api.updateGood(good));
+            }
+        });
+        await Promise.all(quantityUpdates);
+
+        state.importDetails = [];
+        state.editingImportId = null;
+        elements.supplierInput.value = "";
+        elements.finalizeImportBtn.textContent = "Save Import";
+        elements.finalizeImportBtn.onclick = finalizeImport;
+        document.getElementById("importModalLabel").textContent = "New Import";
+        renderImportDetailAddTable();
+        await Promise.all([
+            api.fetchGoods(),
+            api.fetchImportGoods(),
+            api.fetchImportHistory()
+        ]);
+
+        alert("Import successfully updated!");
+        bootstrap.Modal.getInstance(document.getElementById('importModal')).hide();
+    } catch (error) {
+        console.error("Error updating import:", error);
+        alert(`Failed to update import: ${error.message}`);
     }
-}
+};
+
+window.deleteImport = async function (importId) {
+    if (!confirm("Are you sure you want to delete this import and all its details?")) return;
+
+    try {
+        const detailsResponse = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailListByImport/${importId}`);
+        const details = await detailsResponse.json();
+
+        const quantityUpdates = [];
+        details.data.forEach(detail => {
+            const good = state.goods.find(g => g.gGoodsId === detail.igdGoodsId);
+            if (good) {
+                good.gQuantity -= detail.igdQuantity;
+                if (good.gQuantity < 0) good.gQuantity = 0;
+                quantityUpdates.push(api.updateGood(good));
+            }
+        });
+        await Promise.all(quantityUpdates);
+
+        const deleteDetailPromises = details.data.map(detail => {
+            const detailId = detail.igdId;
+            if (!detailId) {
+                throw new Error(`Invalid igdId in detail: ${JSON.stringify(detail)}`);
+            }
+            return api.deleteImportDetail(detailId);
+        });
+        await Promise.all(deleteDetailPromises);
+
+        await api.deleteImport(importId);
+
+        await Promise.all([
+            api.fetchGoods(),
+            api.fetchImportGoods(),
+            api.fetchImportHistory()
+        ]);
+
+        alert("Import successfully deleted!");
+    } catch (error) {
+        console.error("Error deleting import:", error);
+        alert(`Failed to delete import: ${error.message}`);
+    }
+};
 
 // Rendering Functions
 function renderGoodsTable() {
@@ -560,8 +583,8 @@ function renderImportDetails(imports) {
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${importGood.goodsName}</td>
-            <td>${importGood.quantity}</td>
-            <td>${importGood.costPrice}</td>
+            <td>${importGood.igdQuantity}</td>
+            <td>${importGood.igdCostPrice}</td>
         `;
         elements.importDetailViewTable.appendChild(row);
     });

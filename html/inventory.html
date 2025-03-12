@@ -154,11 +154,21 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="text" class="form-control mb-3" id="supplier" placeholder="Supplier" required>
-                    <select class="form-control mb-3" id="goodsSelect"></select>
-                    <input type="number" class="form-control mb-3" id="quantity" placeholder="Quantity" required>
-                    <button class="btn btn-primary" id="addImportDetailBtn">Add to Import</button>
+                    <div class="mb-3">
+                        <label for="supplier" class="form-label">Supplier</label>
+                        <input type="text" class="form-control" id="supplier" placeholder="Supplier" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="goodsSelect" class="form-label">Select Good</label>
+                        <select class="form-control" id="goodsSelect"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="quantity" placeholder="Quantity" min="1" required>
+                    </div>
+                    <button class="btn btn-primary mb-3" id="addImportDetailBtn">Add to Import</button>
                     <hr>
+                    <h6>Import Details</h6>
                     <table class="table">
                         <thead>
                             <tr>
@@ -173,8 +183,8 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" id="finalizeImportBtn">Save Import</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="finalizeImportBtn">Save Import</button>
                 </div>
             </div>
         </div>

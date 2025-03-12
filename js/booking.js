@@ -43,7 +43,7 @@ document.getElementById("confirm-customer").addEventListener("click", async func
 
     try {
         const response = await fetch(
-            `https://hotel-bed.onrender.com/api/Booking/AddGuest?firstname=${encodeURIComponent(firstName)}&lastname=${encodeURIComponent(lastName)}&email=${encodeURIComponent(email)}&phonenum=${encodeURIComponent(phoneNumber)}`,
+            `http://localhost:5222/api/Booking/AddGuest?firstname=${encodeURIComponent(firstName)}&lastname=${encodeURIComponent(lastName)}&email=${encodeURIComponent(email)}&phonenum=${encodeURIComponent(phoneNumber)}`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -97,7 +97,7 @@ document.getElementById("bt_search").addEventListener("click", async function ()
 
     const formattedCheckin = encodeURIComponent(`${checkinDate}:00.000`);
     const formattedCheckout = encodeURIComponent(`${checkoutDate}:00.000`);
-    const apiUrl = `https://hotel-bed.onrender.com/api/Booking/FindAvailableRooms?indate=${formattedCheckin}&outdate=${formattedCheckout}&floor=${encodeURIComponent(floor)}`;
+    const apiUrl = `http://localhost:5222/api/Booking/FindAvailableRooms?indate=${formattedCheckin}&outdate=${formattedCheckout}&floor=${encodeURIComponent(floor)}`;
 
     try {
         const response = await fetch(apiUrl, {
@@ -215,7 +215,7 @@ document.getElementById("book-room").addEventListener("click", async function ()
     console.log("Booking request:", requestBody);
 
     try {
-        const response = await fetch("https://hotel-bed.onrender.com/api/Booking/BookImmediately", {
+        const response = await fetch("http://localhost:5222/api/Booking/BookImmediately", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(requestBody),
@@ -278,7 +278,7 @@ document.getElementById("pre-book").addEventListener("click", async function () 
     console.log("Pre-booking request:", requestBody);
 
     try {
-        const response = await fetch("https://hotel-bed.onrender.com/api/Booking/BookInAdvance", {
+        const response = await fetch("http://localhost:5222/api/Booking/BookInAdvance", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(requestBody),
