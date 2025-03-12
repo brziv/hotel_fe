@@ -9,7 +9,6 @@ let state = {
     goods: [],
     editGoodIndex: null,
     importDetails: [],
-    editingImportId: null
 };
 
 // DOM Elements
@@ -29,10 +28,10 @@ const elements = {
     quantityInput: document.querySelector("#quantity"),
     addImportDetailBtn: document.querySelector("#addImportDetailBtn"),
     finalizeImportBtn: document.querySelector("#finalizeImportBtn"),
-    importDetailAddTable: document.querySelector("#importDetailAddTable"),
-    importDetailViewTable: document.querySelector("#importDetailViewTable"),
+    addImportTable: document.querySelector("#addImportTable"),
+    importDetailTable: document.querySelector("#importDetailTable"),
     importHistoryTableBody: document.querySelector("#importHistoryTableBody"),
-    importHistoryTableForGood: document.querySelector("#importHistoryTableForGood"),
+    goodHistoryTable: document.querySelector("#goodHistoryTable"),
     historyGoodName: document.querySelector("#historyGoodName")
 };
 
@@ -47,7 +46,6 @@ function setupEventListeners() {
     elements.goodUpdateBtn.addEventListener("click", updateGoodHandler);
     elements.addImportDetailBtn.addEventListener("click", addImportDetail);
     elements.finalizeImportBtn.addEventListener("click", finalizeImport);
-    elements.importGoodsTableBody.addEventListener("click", handleImportActions);
 }
 
 async function fetchInitialData() {
@@ -66,7 +64,7 @@ const api = {
             const data = await response.json();
             state.goods = data.data;
             renderGoodsTable();
-            populateGoodsDropdown(data.data);
+            addGoodsToSelect(data.data);
         } catch (error) {
             console.error("Error fetching goods:", error);
         }
@@ -103,7 +101,7 @@ const api = {
         }
     },
 
-    fetchImportGoodsDetails: async function (importId) {
+    fetchImportDetails: async function (importId) {
         try {
             const response = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailListByImport/${importId}`);
             const data = await response.json();
@@ -150,7 +148,7 @@ const api = {
     },
 
     insertImportDetail: async function (detailData) {
-        const response = await fetch(`${API_BASE_URL}/ImportGoodsDetail/InsertTblImportGoodsDetail`, {
+        return await fetch(`${API_BASE_URL}/ImportGoodsDetail/InsertTblImportGoodsDetail`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(detailData)
@@ -248,24 +246,13 @@ function addImportDetail() {
     }
 
     state.importDetails.push({ goodsId, quantity, costPrice, goodName });
-    renderImportDetailAddTable();
+    renderAddImportTable();
     elements.quantityInput.value = "";
 }
 
 window.removeImportDetail = function (index) {
     state.importDetails.splice(index, 1);
-    renderImportDetailAddTable();
-};
-
-window.handleImportActions = function (event) {
-    const button = event.target;
-    const importId = button.getAttribute("data-import-id");
-
-    if (button.classList.contains("update-import-btn")) {
-        editImport(importId);
-    } else if (button.classList.contains("delete-import-btn")) {
-        deleteImport(importId);
-    }
+    renderAddImportTable();
 };
 
 async function finalizeImport() {
@@ -311,7 +298,7 @@ async function finalizeImport() {
 
         state.importDetails = [];
         elements.supplierInput.value = "";
-        renderImportDetailAddTable();
+        renderAddImportTable();
         await Promise.all([
             api.fetchGoods(),
             api.fetchImportGoods(),
@@ -345,7 +332,7 @@ function renderGoodsTable() {
                     data-good-id="${good.gGoodsId}" 
                     data-good-name="${good.gGoodsName}"
                     data-bs-toggle="modal" 
-                    data-bs-target="#importHistoryModal">
+                    data-bs-target="#goodHistoryModal">
                     History
                 </button>
                 <button class="update-good-btn btn btn-sm btn-primary" onclick="editGood('${good.gGoodsId}')">
@@ -364,9 +351,38 @@ function renderGoodsTable() {
             const goodId = this.getAttribute("data-good-id");
             const goodName = this.getAttribute("data-good-name");
             const history = await api.fetchImportHistoryForGood(goodId);
-            renderImportHistoryTableForGood(history, goodName);
+            renderGoodHistoryTable(history, goodName);
         });
     });
+}
+
+function addGoodsToSelect(goods) {
+    elements.goodsSelect.innerHTML = "<option value=''>Select a good</option>";
+    goods.forEach(good => {
+        elements.goodsSelect.innerHTML +=
+            `<option value="${good.gGoodsId}" data-cost="${good.gCostPrice}">${good.gGoodsName}</option>`;
+    });
+}
+
+function renderGoodHistoryTable(history, goodName) {
+    elements.historyGoodName.textContent = goodName;
+    elements.goodHistoryTable.innerHTML = "";
+
+    if (history && history.length > 0) {
+        history.forEach(record => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${record.supplier}</td>
+                <td>${record.igdQuantity}</td>
+                <td>${record.igdCostPrice}</td>
+                <td>${new Date(record.importDate).toLocaleDateString()}</td>
+            `;
+            elements.goodHistoryTable.appendChild(row);
+        });
+    } else {
+        elements.goodHistoryTable.innerHTML =
+            '<tr><td colspan="4">No import history found</td></tr>';
+    }
 }
 
 function renderImportGoodsTable(imports) {
@@ -389,28 +405,15 @@ function renderImportGoodsTable(imports) {
     });
 
     document.querySelectorAll(".view-details-btn").forEach(button => {
-        button.addEventListener("click", () => {
+        button.addEventListener("click", async () => {
             const importId = button.getAttribute("data-import-id");
-            api.fetchImportGoodsDetails(importId);
+            await api.fetchImportDetails(importId);
         });
     });
 }
 
-function renderImportDetails(imports) {
-    elements.importDetailViewTable.innerHTML = "";
-    imports.forEach(importGood => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${importGood.goodsName}</td>
-            <td>${importGood.igdQuantity}</td>
-            <td>${importGood.igdCostPrice}</td>
-        `;
-        elements.importDetailViewTable.appendChild(row);
-    });
-}
-
-function renderImportDetailAddTable() {
-    elements.importDetailAddTable.innerHTML = "";
+function renderAddImportTable() {
+    elements.addImportTable.innerHTML = "";
     state.importDetails.forEach((detail, index) => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -420,7 +423,20 @@ function renderImportDetailAddTable() {
                 <button class="btn btn-danger btn-sm" onclick="removeImportDetail(${index})">Remove</button>
             </td>
         `;
-        elements.importDetailAddTable.appendChild(row);
+        elements.addImportTable.appendChild(row);
+    });
+}
+
+function renderImportDetails(imports) {
+    elements.importDetailTable.innerHTML = "";
+    imports.forEach(importGood => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${importGood.goodsName}</td>
+            <td>${importGood.igdQuantity}</td>
+            <td>${importGood.igdCostPrice}</td>
+        `;
+        elements.importDetailTable.appendChild(row);
     });
 }
 
@@ -439,33 +455,4 @@ function renderImportHistoryTable(history) {
             elements.importHistoryTableBody.appendChild(row);
         });
     }
-}
-
-function renderImportHistoryTableForGood(history, goodName) {
-    elements.historyGoodName.textContent = goodName;
-    elements.importHistoryTableForGood.innerHTML = "";
-
-    if (history && history.length > 0) {
-        history.forEach(record => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>${record.supplier}</td>
-                <td>${record.igdQuantity}</td>
-                <td>${record.igdCostPrice}</td>
-                <td>${new Date(record.importDate).toLocaleDateString()}</td>
-            `;
-            elements.importHistoryTableForGood.appendChild(row);
-        });
-    } else {
-        elements.importHistoryTableForGood.innerHTML =
-            '<tr><td colspan="4">No import history found</td></tr>';
-    }
-}
-
-function populateGoodsDropdown(goods) {
-    elements.goodsSelect.innerHTML = "<option value=''>Select a good</option>";
-    goods.forEach(good => {
-        elements.goodsSelect.innerHTML +=
-            `<option value="${good.gGoodsId}" data-cost="${good.gCostPrice}">${good.gGoodsName}</option>`;
-    });
 }
