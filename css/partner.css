@@ -1,75 +1,40 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    padding-top: 50px;
-    text-align: center;
+    background: linear-gradient(135deg, #f6f7fb 0%, #eef1f5 100%);
+    padding-top: 60px;
 }
 
 .container {
-    padding: 20px;
     background: white;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 60%;
-    min-height: 100px;
 }
 
-h2 {
-    font-size: 24px;
-    text-align: center;
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
 }
 
-.search-container {
-    margin: 10px;
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
 }
 
-#partnerSearch {
-    width: 20%;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-th,
-td {
-    padding: 10px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-}
-
-th {
+.table-primary {
     background-color: #007bff;
     color: white;
 }
 
-button {
-    padding: 10px 15px;
-    background: #ff8009;
-    font-size: 15px;
-    border: none;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-    margin-bottom: 20px;
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-button:hover {
-    background: #c96e00;
-}
-
-input[type="text"],
-input[type="email"] {
-    width: 12%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 14px;
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .table {
+        font-size: 0.9rem;
+    }
 }

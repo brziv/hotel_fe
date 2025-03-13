@@ -129,6 +129,10 @@ body {
     cursor: pointer;
 }
 
+#remember, #terms {
+    cursor: pointer;
+}
+
 .forgot-password {
     color: var(--primary-color);
     text-decoration: none;

@@ -1,50 +1,77 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Nhân Viên</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/employee.css">
 </head>
-
 <body>
-    <div class="container">
-        <h2>Quản lý Nhân Viên</h2>
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <h2 class="mb-4 text-center">Quản lý Nhân Viên</h2>
 
-        <div class="search-container">
-            <input type="text" id="employeeSearch" placeholder="Tìm kiếm" class="form-control">
+                <!-- Search Bar -->
+                <div class="search-container mb-4 d-flex justify-content-center">
+                    <div class="col-md-4">
+                        <input type="text" id="employeeSearch" placeholder="Tìm kiếm" class="form-control">
+                    </div>
+                </div>
+
+                <!-- Input Form -->
+                <form id="employeeForm" class="mb-4">
+                    <div class="row g-2 justify-content-center">
+                        <div class="col-md-1-5">
+                            <input type="text" id="employeeFirstName" placeholder="Tên" class="form-control" required>
+                        </div>
+                        <div class="col-md-1-5">
+                            <input type="text" id="employeeLastName" placeholder="Họ" class="form-control" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" id="employeeRole" placeholder="Chức Vụ" class="form-control" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="email" id="employeeEmail" placeholder="Email" class="form-control" required>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" id="employeePhone" placeholder="Số Điện Thoại" class="form-control" required>
+                        </div>
+                        <div class="col-md-1-5">
+                            <input type="number" id="employeeSalary" placeholder="Lương" class="form-control" required>
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary me-2">Thêm</button>
+                            <button type="button" class="btn btn-success" id="employeeUpdateBtn" style="display:none;">Cập nhật</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Table -->
+                <div class="table-responsive">
+                    <table class="table table-hover text-center">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Tên</th>
+                                <th>Họ</th>
+                                <th>Chức Vụ</th>
+                                <th>Email</th>
+                                <th>Số Điện Thoại</th>
+                                <th>Lương</th>
+                                <th>Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeeTable">
+                            <!-- Employee rows will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-
-        <form id="employeeForm">
-            <input type="text" id="employeeFirstName" placeholder="Tên" required>
-            <input type="text" id="employeeLastName" placeholder="Họ" required>
-            <input type="text" id="employeeRole" placeholder="Chức Vụ" required>
-            <input type="email" id="employeeEmail" placeholder="Email" required>
-            <input type="text" id="employeePhone" placeholder="Số Điện Thoại" required>
-            <input type="number" id="employeeSalary" placeholder="Lương" required>
-            <button type="submit">Thêm</button>
-            <button type="button" id="employeeUpdateBtn" style="display:none;">Cập nhật</button>
-        </form>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>Tên</th>
-                    <th>Họ</th>
-                    <th>Chức Vụ</th>
-                    <th>Email</th>
-                    <th>Số Điện Thoại</th>
-                    <th>Lương</th>
-                    <th>Hành Động</th>
-                </tr>
-            </thead>
-            <tbody id="employeeTable">
-                <!-- Data will be populated here -->
-            </tbody>
-        </table>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/employee.js"></script>
 </body>
-
 </html>

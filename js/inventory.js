@@ -375,7 +375,7 @@ function renderGoodHistoryTable(history, goodName) {
                 <td>${record.supplier}</td>
                 <td>${record.igdQuantity}</td>
                 <td>${record.igdCostPrice}</td>
-                <td>${new Date(record.importDate).toLocaleDateString()}</td>
+                <td>${new Date(record.importDate).toLocaleString()}</td>
             `;
             elements.goodHistoryTable.appendChild(row);
         });
