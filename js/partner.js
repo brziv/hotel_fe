@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function fetchPartners() {
         try {
-            const response = await fetch("http://localhost:5222/api/Partner/GetPartnerList");
+            const response = await fetch("https://hotel-bed.onrender.com/api/Partner/GetPartnerList");
             const data = await response.json();
             partners = data.data;
             renderPartners();
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Add search function
     async function searchPartners(searchTerm) {
         try {
-            const response = await fetch(`http://localhost:5222/api/Partner/SearchTblPartner?s=${encodeURIComponent(searchTerm)}`);
+            const response = await fetch(`https://hotel-bed.onrender.com/api/Partner/SearchTblPartner?s=${encodeURIComponent(searchTerm)}`);
             const data = await response.json();
             partners = data.data;
             renderPartners();
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function addPartner(partner) {
         try {
-            const response = await fetch("http://localhost:5222/api/Partner/InsertTblPartner", {
+            const response = await fetch("https://hotel-bed.onrender.com/api/Partner/InsertTblPartner", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function updatePartner(partner) {
         try {
-            const response = await fetch("http://localhost:5222/api/Partner/UpdateTblPartner", {
+            const response = await fetch("https://hotel-bed.onrender.com/api/Partner/UpdateTblPartner", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
     async function deletePartner(index) {
         try {
             const partner = partners[index];
-            await fetch(`http://localhost:5222/api/Partner/XoaTblPartner?pPartnerId=${partner.pPartnerId}`, {
+            await fetch(`https://hotel-bed.onrender.com/api/Partner/XoaTblPartner?pPartnerId=${partner.pPartnerId}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"

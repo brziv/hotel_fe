@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function fetchEmployees() {
         try {
-            const response = await fetch("http://localhost:5222/api/Employee/GetEmployeeList");
+            const response = await fetch("https://hotel-bed.onrender.com/api/Employee/GetEmployeeList");
             const data = await response.json();
             employees = data.data;
             renderEmployees();
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Add search function
     async function searchEmployees(searchTerm) {
         try {
-            const response = await fetch(`http://localhost:5222/api/Employee/SearchTblEmployee?s=${encodeURIComponent(searchTerm)}`);
+            const response = await fetch(`https://hotel-bed.onrender.com/api/Employee/SearchTblEmployee?s=${encodeURIComponent(searchTerm)}`);
             const data = await response.json();
             employees = data.data;
             renderEmployees();
@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function addEmployee(employee) {
         try {
-            const response = await fetch("http://localhost:5222/api/Employee/InsertTblEmployee", {
+            const response = await fetch("https://hotel-bed.onrender.com/api/Employee/InsertTblEmployee", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function updateEmployee(employee) {
         try {
-            await fetch("http://localhost:5222/api/Employee/UpdateTblEmployee", {
+            await fetch("https://hotel-bed.onrender.com/api/Employee/UpdateTblEmployee", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
     async function deleteEmployee(index) {
         try {
             const employee = employees[index];
-            await fetch(`http://localhost:5222/api/Employee/XoaTblEmployee?eEmployeeId=${employee.eEmployeeId}`, {
+            await fetch(`https://hotel-bed.onrender.com/api/Employee/XoaTblEmployee?eEmployeeId=${employee.eEmployeeId}`, {
                 method: "DELETE",
             });
             await fetchEmployees();

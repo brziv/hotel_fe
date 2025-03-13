@@ -1,5 +1,5 @@
 // Constants
-const API_BASE_URL = "http://localhost:5222/api";
+const API_BASE_URL = "https://hotel-bed.onrender.com/api";
 
 // Main execution
 document.addEventListener("DOMContentLoaded", initializeApp);
