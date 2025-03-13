@@ -3,12 +3,13 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
+    font-size: 100%;
 }
 
 .nav-container {
     position: fixed;
     top: 0;
-    width: 100%;
+    width: 98%;
     background: linear-gradient(135deg, #388e3c, #1976d2, #7b1fa2);
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -31,6 +32,7 @@ body {
 .navbar {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 15px;
     min-width: max-content;
 }
@@ -59,6 +61,7 @@ body {
 
 .nav-links a {
     text-decoration: none;
+    font-size: 1.1rem;
     color: white;
     font-weight: bold;
     transition: 0.3s;
@@ -95,14 +98,18 @@ iframe {
     .navbar {
         padding: 10px;
         height: 100%;
+        gap: 20px;
     }
 
     .logo {
-        font-size: 20px;
+        font-size: 1.4rem;
+        flex-shrink: 0;
     }
 
     .nav-links {
         display: flex;
+        flex: 1;
+        justify-content: flex-end;
         flex-wrap: nowrap;
         overflow-x: auto;
     }
@@ -113,7 +120,7 @@ iframe {
     }
 
     .nav-links a {
-        font-size: 14px;
+        font-size: 1.1rem;
         padding: 8px 12px;
     }
 }

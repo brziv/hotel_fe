@@ -35,11 +35,30 @@ body {
 }
 
 @media (max-width: 768px) {
+    .col-md-1-5 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 10px;
+    }
+    
     .container {
         padding: 15px;
     }
     
     .table {
         font-size: 0.9rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .col-auto {
+        width: 100%;
+    }
+
+    .me-2 {
+        margin-right: 0 !important;
     }
 }

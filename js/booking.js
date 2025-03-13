@@ -120,12 +120,16 @@ document.getElementById("bt_search").addEventListener("click", async function ()
         availableroomfound.forEach((room, index) => {
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${room.roomId}</td>
-                <td>${room.roomNumber}</td>
-                <td>${room.floor}</td>
-                <td>${room.roomType}</td>
-                <td>${room.pricePerHour}</td>
-                <td><input type="checkbox" class="room-select" data-index="${index}"></td>
+                <td class="align-middle">${room.roomId}</td>
+                <td class="align-middle">${room.roomNumber}</td>
+                <td class="align-middle">${room.floor}</td>
+                <td class="align-middle">${room.roomType}</td>
+                <td class="align-middle">${room.pricePerHour}</td>
+                <td class="align-middle">
+                    <div class="form-check d-flex justify-content-center">
+                        <input type="checkbox" class="form-check-input room-select" data-index="${index}">
+                    </div>
+                </td>
             `;
             searchRoomBody.appendChild(row);
         });
@@ -159,14 +163,18 @@ document.getElementById("choose-room").addEventListener("click", function () {
     newlySelectedRooms.forEach(room => {
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td><input type="text" class="small-input" value="${room.roomId}" readonly></td>
-            <td><input type="text" class="small-input" value="${room.roomNumber}" readonly></td>
-            <td><input type="text" class="small-input" value="${room.floor}" readonly></td>
-            <td><input type="text" class="small-input" value="${room.roomType}" readonly></td>
-            <td><input type="text" class="small-input" value="${room.pricePerHour}" readonly></td>
-            <td><input type="datetime-local" id="checkin-${room.roomId}" class="large-input" value="${checkinDate}" required></td>
-            <td><input type="datetime-local" id="checkout-${room.roomId}" class="large-input" value="${checkoutDate}" required></td>
-            <td><button class="delete-room">Delete</button></td>
+            <td><input type="text" class="form-control form-control-sm" value="${room.roomId}" readonly></td>
+            <td><input type="text" class="form-control form-control-sm" value="${room.roomNumber}" readonly></td>
+            <td><input type="text" class="form-control form-control-sm" value="${room.floor}" readonly></td>
+            <td><input type="text" class="form-control form-control-sm" value="${room.roomType}" readonly></td>
+            <td><input type="text" class="form-control form-control-sm" value="${room.pricePerHour}" readonly></td>
+            <td><input type="datetime-local" id="checkin-${room.roomId}" class="form-control" value="${checkinDate}" required></td>
+            <td><input type="datetime-local" id="checkout-${room.roomId}" class="form-control" value="${checkoutDate}" required></td>
+            <td>
+                <button class="btn btn-danger btn-sm delete-room">
+                    <i class="bi bi-trash"></i> Delete
+                </button>
+            </td>
         `;
         tableBody.appendChild(row);
 

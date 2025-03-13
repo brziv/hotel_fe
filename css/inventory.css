@@ -23,8 +23,20 @@ h4 {
     background: white;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 60% !important;
+    width: 70% !important;
     min-height: 100px;
+    overflow-x: hidden;
+}
+
+.table-responsive {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 0;
+    white-space: nowrap;
 }
 
 #importHistoryHeader {
@@ -65,4 +77,39 @@ button {
 
 button:hover {
     background-color: #c96e00;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+        width: 100% !important;
+    }
+
+    button {
+        padding: 4px 8px;
+        font-size: 14px !important;
+    }
+
+    .row {
+        margin: 0;
+    }
+
+    .col-md-2 {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    hr {
+        display: none;
+    }
+
+    #goods.table-responsive {
+        overflow-x: auto !important;
+    }
+}
+
+@media (min-width: 1175px) { 
+    #goods.table-responsive {
+        overflow-x: unset !important; /* Remove scroll at 900px instead */
+    }
 }

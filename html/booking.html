@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đặt Phòng Khách Sạn</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/booking.css">
 </head>
 
@@ -29,11 +30,11 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 90px;">RoomID</th>
-                        <th style="width: 90px;">Room Number</th>
-                        <th style="width: 90px;">Floor</th>
-                        <th style="width: 90px;">Room Type</th>
-                        <th style="width: 90px;">Price Per Hour</th>
+                        <th>RoomID</th>
+                        <th>Room Number</th>
+                        <th>Floor</th>
+                        <th>Room Type</th>
+                        <th>Price Per Hour</th>
                         <th style=>CheckIn</th>
                         <th style=> CheckOut</th>
                         <th></th>
@@ -55,7 +56,6 @@
         </div>
     </div>
 
-
     <!-- Modal Add New Customer -->
     <div id="customer-modal" class="modal">
         <div class="modal-content-addcus">
@@ -74,42 +74,51 @@
             </div>
         </div>
     </div>
+
     <!-- Modal tìm phòng -->
     <div id="find-room-modal" class="modal">
         <div class="modal-content-findroom">
-            <h3>Tìm Phòng</h3>
-            <div class="findrooms">
-                <label for="checkin">CheckIn:</label>
-                <input type="datetime-local" id="checkin" required>
+            <h3 class="text-center mb-4">Tìm Phòng</h3>
 
-                <label for="checkout">CheckOut:</label>
-                <input type="datetime-local" id="checkout" required>
-
-                <label for="floor">Floor:</label>
-                <input type="text" id="floor" required>
-
-                <button type="button" id="bt_search">Search</button>
+            <div class="findrooms row g-3 mb-4">
+                <div class="col-md-3">
+                    <label for="checkin" class="form-label">CheckIn:</label>
+                    <input type="datetime-local" id="checkin" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="checkout" class="form-label">CheckOut:</label>
+                    <input type="datetime-local" id="checkout" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="floor" class="form-label">Floor:</label>
+                    <input type="text" id="floor" class="form-control" required>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="button" id="bt_search" class="btn btn-primary w-100">Search</button>
+                </div>
             </div>
 
-            <table id="room-search-table">
-                <thead>
-                    <tr>
-                        <th>RoomID</th>
-                        <th>RoomNum</th>
-                        <th>Floor</th>
-                        <th>RoomType</th>
-                        <th>Price</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="search-room-body">
-                    <!-- Dữ liệu phòng sẽ được thêm vào đây -->
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table id="room-search-table" class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>RoomID</th>
+                            <th>RoomNum</th>
+                            <th>Floor</th>
+                            <th>RoomType</th>
+                            <th>Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="search-room-body">
+                        <!-- Room data will be added here -->
+                    </tbody>
+                </table>
+            </div>
 
-            <div class="modal-buttons">
-                <button id="cancel-findroom">Cancel</button>
-                <button id="choose-room">Choose</button>
+            <div class="modal-buttons mt-4">
+                <button id="cancel-findroom" class="btn btn-danger">Cancel</button>
+                <button id="choose-room" class="btn btn-success">Choose</button>
             </div>
         </div>
     </div>
