@@ -39,14 +39,19 @@ h4 {
     white-space: nowrap;
 }
 
-#importHistoryHeader {
+#goods-tabs {
     margin-bottom: 25px;
 }
 
-#importModal,
-#importDetailModal,
-#goodHistoryModal {
-    top: 9%;
+#goods,
+#import-goods,
+#import-history,
+#services {
+    margin-top: 15px;
+}
+
+.modal {
+    top: 9% !important;
 }
 
 th,
@@ -103,13 +108,13 @@ button:hover {
         display: none;
     }
 
-    #goods.table-responsive {
+    .table-responsive {
         overflow-x: auto !important;
     }
 }
 
 @media (min-width: 1175px) { 
-    #goods.table-responsive {
-        overflow-x: unset !important; /* Remove scroll at 900px instead */
+    .table-responsive {
+        overflow-x: unset !important;
     }
 }
