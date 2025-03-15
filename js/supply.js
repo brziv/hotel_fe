@@ -331,6 +331,7 @@ async function handleFinalizeImport() {
 // Rendering Functions
 function renderGoodsTable() {
     domElements.goodsTableBody.innerHTML = "";
+    
     state.goodsList.forEach((good) => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -363,14 +364,19 @@ function populateGoodsSelect(goods) {
 function renderGoodHistoryTable(history, goodName) {
     domElements.historyGoodName.textContent = goodName;
     domElements.goodHistoryTable.innerHTML = "";
+
     if (history && history.length > 0) {
-        history.forEach((record) => {
+        const sortedHistory = [...history].sort((a, b) => {
+            return new Date(b.igImportDate) - new Date(a.igImportDate);
+        });
+
+        sortedHistory.forEach((record) => {
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${record.supplier}</td>
+                <td>${record.igSupplier}</td>
                 <td>${record.igdQuantity}</td>
                 <td>${record.igdCostPrice}</td>
-                <td>${new Date(record.importDate).toLocaleDateString()}</td>
+                <td>${new Date(record.igImportDate).toLocaleDateString()}</td>
             `;
             domElements.goodHistoryTable.appendChild(row);
         });
@@ -381,7 +387,12 @@ function renderGoodHistoryTable(history, goodName) {
 
 function renderImportGoodsTable(imports) {
     domElements.importGoodsTableBody.innerHTML = "";
-    imports.forEach((importGood) => {
+
+    const sortedImport = [...imports].sort((a, b) => {
+        return new Date(b.igImportDate) - new Date(a.igImportDate);
+    });
+
+    sortedImport.forEach((importGood) => {
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${importGood.igSupplier}</td>
@@ -405,6 +416,7 @@ function renderImportGoodsTable(imports) {
 
 function renderAddImportTable() {
     domElements.addImportTable.innerHTML = "";
+
     state.importDetailsList.forEach((detail, index) => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -418,10 +430,11 @@ function renderAddImportTable() {
 
 function renderImportDetails(imports) {
     domElements.importDetailTable.innerHTML = "";
+
     imports.forEach((importGood) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td>${importGood.goodsName}</td>
+            <td>${importGood.gGoodsName}</td>
             <td>${importGood.igdQuantity}</td>
             <td>${importGood.igdCostPrice}</td>
         `;
@@ -431,15 +444,20 @@ function renderImportDetails(imports) {
 
 function renderImportHistoryTable(history) {
     domElements.importHistoryTableBody.innerHTML = "";
+
     if (history && history.length > 0) {
-        history.forEach((record) => {
+        const sortedHistory = [...history].sort((a, b) => {
+            return new Date(b.igImportDate) - new Date(a.igImportDate);
+        });
+
+        sortedHistory.forEach((record) => {
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${record.goodsName}</td>
+                <td>${record.gGoodsName}</td>
                 <td>${record.igdQuantity}</td>
                 <td>${record.igdCostPrice}</td>
-                <td>${record.supplier}</td>
-                <td>${new Date(record.importDate).toLocaleString()}</td>
+                <td>${record.igSupplier}</td>
+                <td>${new Date(record.igImportDate).toLocaleString()}</td>
             `;
             domElements.importHistoryTableBody.appendChild(row);
         });

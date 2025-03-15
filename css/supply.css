@@ -5,12 +5,13 @@ body {
     background: linear-gradient(135deg, #f6f7fb 0%, #eef1f5 100%);
     display: flex;
     justify-content: center;
-    padding-top: 50px;
+    padding-top: 40px;
     text-align: center;
 }
 
 h2 {
     font-size: 28px !important;
+    margin-top: 10px !important;
     margin-bottom: 25px !important;
 }
 
