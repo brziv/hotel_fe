@@ -11,22 +11,22 @@
 
 <body>
     <div class="container">
-        <h2>Quản lý phòng khách sạn</h2>
+        <h2>Room Management</h2>
         <div class="input-group">
             <div class="select-group">
-                <label for="floorSelect">Chọn tầng:</label>
+                <label for="floorSelect">Choose Floor:</label>
                 <select id="floorSelect" onchange="changeFloor()">
-                    <option value="1">Tầng 1</option>
-                    <option value="2">Tầng 2</option>
-                    <option value="3">Tầng 3</option>
-                    <option value="4">Tầng 4</option>
-                    <option value="5">Tầng 5</option>
+                    <option value="1">Floor 1</option>
+                    <option value="2">Floor 2</option>
+                    <option value="3">Floor 3</option>
+                    <option value="4">Floor 4</option>
+                    <option value="5">Floor 5</option>
                 </select>
             </div>
             <div class="select-group">
-                <label for="startDate">Từ ngày:</label>
+                <label for="startDate">From:</label>
                 <input type="datetime-local" id="startDate" onchange="changeTimePeriod()">
-                <label for="endDate">Đến:</label>
+                <label for="endDate">To:</label>
                 <input type="datetime-local" id="endDate" onchange="changeTimePeriod()">
             </div>
         </div>
@@ -37,10 +37,10 @@
     <div class="overlay" id="overlay"></div>
     <div id="modal" class="modal">
         <div class="modal-content">
-            <h3>Chi tiết đặt phòng</h3>
-            <p><strong>Khách hàng:</strong> <span id="cust-name"></span></p>
-            <p><strong>Điện thoại:</strong> <span id="cust-phone"></span></p>
-            <p><strong>Thời gian đặt:</strong> <span id="cust-time"></span> giờ</p>
+            <h3>Booking Details</h3>
+            <p><strong>Customer:</strong> <span id="cust-name"></span></p>
+            <p><strong>Phone Number:</strong> <span id="cust-phone"></span></p>
+            <p><strong>Duration:</strong> <span id="cust-time"></span> giờ</p>
             <p><strong>Tổng hóa đơn:</strong> <span id="cust-bill"></span> VND</p>
             <button onclick="bookService()">🛒 <b>Đặt dịch vụ</b></button>
             <button onclick="checkout()">💳 <b>Trả phòng</b></button>

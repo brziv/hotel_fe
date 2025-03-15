@@ -55,7 +55,41 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="datetime-local"
     padding: 15px;
     border-radius: 8px;
     margin-top: 20px;
+    margin-bottom: 20px;
     background-color: #fafafa;
+}
+
+#room_list .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+#room_list table {
+    width: 100%;
+    min-width: 600px;
+    border-collapse: collapse;
+}
+
+#room_list th:nth-child(6),
+#room_list th:nth-child(7),
+#room_list td:nth-child(6),
+#room_list td:nth-child(7) {
+    min-width: 170px;
+    max-width: 200px;
+}
+
+#room_list th:nth-child(8),
+#room_list td:nth-child(8) {
+    min-width: 90px;
+}
+
+#room_list th:nth-child(1),
+#room_list th:nth-child(3),
+#room_list td:nth-child(1),
+#room_list td:nth-child(3) {
+    width: 80px;
 }
 
 table {
@@ -259,6 +293,22 @@ td {
         text-overflow: ellipsis;
         max-width: 120px;
     }
+
+    #room_list {
+        padding: 10px;
+        margin: 15px 0;
+    }
+
+    #room_list .table-responsive {
+        margin: 0;
+        border-radius: 4px;
+        border: 1px solid #eee;
+    }
+    
+    #bt_findroom {
+        width: 100%;
+        margin-top: 10px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -274,6 +324,34 @@ td {
     .btn {
         width: 100%;
         margin-bottom: 8px;
+    }
+
+    #room_list {
+        padding: 8px;
+    }
+    
+    #room_list table {
+        font-size: 12px;
+    }
+
+    .input-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    
+    .input-group label {
+        margin-bottom: 3px;
+    }
+    
+    .input-group input, 
+    #deposit {
+        width: 100%;
+    }
+    
+    #add-customer {
+        width: 100%;
+        margin-top: 5px;
     }
 }
 
