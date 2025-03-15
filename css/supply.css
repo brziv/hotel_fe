@@ -28,9 +28,36 @@ h4 {
     overflow-x: hidden;
 }
 
-.table-responsive {
+/* Tab content layout */
+.tab-content {
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    margin-bottom: 1rem;
+    height: calc(100vh - 180px); /* Adjust based on header size */
+    max-height: 700px;
+}
+
+.tab-pane {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.form-section {
+    flex: 0 0 auto;
+    width: 100%;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    background: white;
+    z-index: 10;
+}
+
+.table-container {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-top: 10px;
 }
 
 .table {
@@ -43,15 +70,28 @@ h4 {
     margin-bottom: 25px;
 }
 
-#goods,
-#import-goods,
-#import-history,
-#services {
-    margin-top: 15px;
-}
-
 .modal {
     top: 9% !important;
+}
+
+.modal-content {
+    overflow: hidden;
+}
+
+.modal-body {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.modal-body .table {
+    min-width: 100%;
+}
+
+#good-history-table td:last-child {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 th,
@@ -63,6 +103,9 @@ td {
 th {
     background-color: #007bff;
     color: white;
+    position: sticky;
+    top: 0;
+    z-index: 5;
 }
 
 button {
@@ -104,17 +147,8 @@ button:hover {
         margin-bottom: 10px;
     }
 
-    hr {
-        display: none;
-    }
-
-    .table-responsive {
-        overflow-x: auto !important;
-    }
-}
-
-@media (min-width: 1175px) { 
-    .table-responsive {
-        overflow-x: unset !important;
+    /* Adjust table container for mobile */
+    .tab-content {
+        height: calc(100vh - 150px);
     }
 }

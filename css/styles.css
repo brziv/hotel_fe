@@ -92,11 +92,11 @@ iframe {
 /* Responsive styles */
 @media (max-width: 768px) {
     .nav-container {
-        height: 60px;
+        height: 80px;
     }
 
     .navbar {
-        padding: 10px;
+        padding: 5px;
         height: 100%;
         gap: 20px;
     }

@@ -49,6 +49,16 @@ function setupEventListeners() {
     domElements.goodsTableBody.addEventListener("click", handleGoodsTableActions);
 }
 
+// Data Fetching
+async function fetchInitialData() {
+    await Promise.all([
+        api.fetchGoods(),
+        api.fetchImportGoods(),
+        api.fetchImportHistory(),
+        api.fetchServices(),
+    ]);
+}
+
 // API Calls
 const api = {
     fetchGoods: async () => {
@@ -147,16 +157,6 @@ const api = {
     },
 };
 
-// Data Fetching
-async function fetchInitialData() {
-    await Promise.all([
-        api.fetchGoods(),
-        api.fetchImportGoods(),
-        api.fetchImportHistory(),
-        api.fetchServices(),
-    ]);
-}
-
 // Event Handlers
 async function handleAddGood(event) {
     event.preventDefault();
@@ -176,29 +176,6 @@ async function handleAddGood(event) {
         domElements.addGoodsForm.reset();
     } catch (error) {
         console.error("Error adding good:", error);
-    }
-}
-
-async function handleUpdateGood() {
-    const good = state.goodsList.find((g) => g.gGoodsId === state.editGoodId);
-    if (!good) return;
-
-    good.gGoodsName = domElements.goodsNameInput.value.trim();
-    good.gCategory = domElements.categoryInput.value.trim();
-    good.gUnit = domElements.unitInput.value.trim();
-    good.gCostPrice = parseFloat(domElements.costPriceInput.value);
-    good.gSellingPrice = parseFloat(domElements.sellingPriceInput.value);
-    good.gCurrency = "VND";
-
-    try {
-        await api.updateGood(good);
-        await api.fetchGoods();
-        domElements.addGoodsForm.reset();
-        domElements.addGoodBtn.style.display = "inline-block";
-        domElements.updateGoodBtn.style.display = "none";
-        state.editGoodId = null;
-    } catch (error) {
-        console.error("Error updating good:", error);
     }
 }
 
@@ -228,6 +205,29 @@ function editGood(goodId) {
     state.editGoodId = goodId;
     domElements.addGoodBtn.style.display = "none";
     domElements.updateGoodBtn.style.display = "inline-block";
+}
+
+async function handleUpdateGood() {
+    const good = state.goodsList.find((g) => g.gGoodsId === state.editGoodId);
+    if (!good) return;
+
+    good.gGoodsName = domElements.goodsNameInput.value.trim();
+    good.gCategory = domElements.categoryInput.value.trim();
+    good.gUnit = domElements.unitInput.value.trim();
+    good.gCostPrice = parseFloat(domElements.costPriceInput.value);
+    good.gSellingPrice = parseFloat(domElements.sellingPriceInput.value);
+    good.gCurrency = "VND";
+
+    try {
+        await api.updateGood(good);
+        await api.fetchGoods();
+        domElements.addGoodsForm.reset();
+        domElements.addGoodBtn.style.display = "inline-block";
+        domElements.updateGoodBtn.style.display = "none";
+        state.editGoodId = null;
+    } catch (error) {
+        console.error("Error updating good:", error);
+    }
 }
 
 async function deleteGood(goodId) {
@@ -335,7 +335,7 @@ function renderGoodsTable() {
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${good.gGoodsName}</td>
-            <td>${good.gCategory || "N/A"}</td>
+            <td>${good.gCategory}</td>
             <td>${good.gQuantity}</td>
             <td>${good.gUnit}</td>
             <td>${good.gCostPrice}</td>
@@ -370,7 +370,7 @@ function renderGoodHistoryTable(history, goodName) {
                 <td>${record.supplier}</td>
                 <td>${record.igdQuantity}</td>
                 <td>${record.igdCostPrice}</td>
-                <td>${new Date(record.importDate).toLocaleString()}</td>
+                <td>${new Date(record.importDate).toLocaleDateString()}</td>
             `;
             domElements.goodHistoryTable.appendChild(row);
         });

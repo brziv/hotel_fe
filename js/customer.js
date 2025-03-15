@@ -32,8 +32,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td>${guest.gEmail}</td>
                     <td>${guest.gPhoneNumber}</td>
                     <td>
-                        <button class="btn btn-primary me-2" onclick="editGuest(${index})">Sửa</button>
-                        <button class="btn btn-danger" onclick="deleteGuest(${index})">Xóa</button>
+                        <button class="btn btn-primary me-2" onclick="editGuest(${index})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteGuest(${index})">Delete</button>
                     </td>
                 </tr>
             `;

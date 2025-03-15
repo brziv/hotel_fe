@@ -36,8 +36,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td>${employee.ePhoneNumber}</td>
                     <td>${employee.eSalary}</td>
                     <td>
-                        <button class="btn btn-primary me-2" onclick="editEmployee(${index})">Sửa</button>
-                        <button class="btn btn-danger" onclick="deleteEmployee(${index})">Xóa</button>
+                        <button class="btn btn-primary me-2" onclick="editEmployee(${index})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteEmployee(${index})">Delete</button>
                     </td>
                 </tr>
             `;
