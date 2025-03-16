@@ -43,7 +43,7 @@ document.getElementById("confirm-customer").addEventListener("click", function (
     }
 
     fetch(
-        `http://localhost:5222/api/Booking/AddGuest?firstname=${encodeURIComponent(firstName)}&lastname=${encodeURIComponent(lastName)}&email=${encodeURIComponent(email)}&phonenum=${encodeURIComponent(phoneNumber)}`,
+        `https://hotel-bed.onrender.com/api/Booking/AddGuest?firstname=${encodeURIComponent(firstName)}&lastname=${encodeURIComponent(lastName)}&email=${encodeURIComponent(email)}&phonenum=${encodeURIComponent(phoneNumber)}`,
         {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -221,7 +221,7 @@ document.getElementById("book-room").addEventListener("click", function () {
         })),
     };
 
-    fetch("http://localhost:5222/api/Booking/BookImmediately", {
+    fetch("https://hotel-bed.onrender.com/api/Booking/BookImmediately", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
@@ -275,7 +275,7 @@ document.getElementById("pre-book").addEventListener("click", function () {
         })),
     };
 
-    fetch("http://localhost:5222/api/Booking/BookInAdvance", {
+    fetch("https://hotel-bed.onrender.com/api/Booking/BookInAdvance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),

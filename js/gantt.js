@@ -25,7 +25,7 @@ async function fetchBookings() {
     let formattedInDate = encodeURIComponent(inDate.replace("T", " ") + ":00.000");
     let formattedOutDate = encodeURIComponent(outDate.replace("T", " ") + ":00.000");
 
-    let apiUrl = `http://localhost:5222/api/Booking/FindBookings?indate=${formattedInDate}&outdate=${formattedOutDate}&floornum=${floor}`;
+    let apiUrl = `https://hotel-bed.onrender.com/api/Booking/FindBookings?indate=${formattedInDate}&outdate=${formattedOutDate}&floornum=${floor}`;
 
     try {
         let response = await fetch(apiUrl);
