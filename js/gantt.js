@@ -1,66 +1,164 @@
-google.charts.load("current", { packages: ["timeline"] });
-google.charts.setOnLoadCallback(drawChart);
+let upcomingBookings = [];
+let currentBookings = [];
+let pastBookings = [];
+let allBookings = [];
 
-var allData = {
-    1: [
-        ["Phòng 101", "Nguyễn Văn A", new Date(2025, 2, 3, 10, 0, 0), new Date(2025, 2, 3, 18, 0, 0)],
-        ["Phòng 101", "Trần Thị B", new Date(2025, 2, 3, 19, 0, 0), new Date(2025, 2, 4, 5, 0, 0)],
-        ["Phòng 102", "Lê Văn C", new Date(2025, 2, 3, 10, 0, 0), new Date(2025, 2, 3, 20, 0, 0)],
-        ["Phòng 102", "Phạm Thị D", new Date(2025, 2, 4, 8, 0, 0), new Date(2025, 2, 4, 16, 0, 0)],
-        ["Phòng 103", "Hoàng Văn E", new Date(2025, 2, 3, 12, 0, 0), new Date(2025, 2, 3, 22, 0, 0)],
-        ["Phòng 104", "Bùi Thị F", new Date(2025, 2, 4, 14, 0, 0), new Date(2025, 2, 4, 23, 0, 0)],
-        ["Phòng 105", "Đỗ Văn G", new Date(2025, 2, 3, 9, 0, 0), new Date(2025, 2, 3, 17, 0, 0)],
-        ["Phòng 106", "Nguyễn Văn H", new Date(2025, 2, 5, 7, 0, 0), new Date(2025, 2, 5, 15, 0, 0)],
-        ["Phòng 107", "Lê Thị I", new Date(2025, 2, 4, 10, 0, 0), new Date(2025, 2, 4, 18, 0, 0)],
-        ["Phòng 108", "Phạm Văn J", new Date(2025, 2, 3, 11, 0, 0), new Date(2025, 2, 3, 19, 0, 0)],
-        ["Phòng 109", "Trần Văn K", new Date(2025, 2, 4, 13, 0, 0), new Date(2025, 2, 4, 21, 0, 0)]
-    ],
-    2: [
-        ["Phòng 201", "Nguyễn Văn L", new Date(2025, 2, 3, 9, 30, 0), new Date(2025, 2, 3, 17, 30, 0)],
-        ["Phòng 201", "Trần Thị M", new Date(2025, 2, 3, 18, 30, 0), new Date(2025, 2, 4, 4, 30, 0)],
-        ["Phòng 202", "Lê Văn N", new Date(2025, 2, 3, 11, 0, 0), new Date(2025, 2, 3, 21, 0, 0)],
-        ["Phòng 203", "Hoàng Văn O", new Date(2025, 2, 4, 7, 0, 0), new Date(2025, 2, 4, 15, 0, 0)],
-        ["Phòng 204", "Bùi Thị P", new Date(2025, 2, 4, 13, 30, 0), new Date(2025, 2, 4, 22, 30, 0)],
-        ["Phòng 205", "Đỗ Văn Q", new Date(2025, 2, 3, 8, 0, 0), new Date(2025, 2, 3, 16, 0, 0)]
-    ],
-    3: [
-        ["Phòng 301", "Nguyễn Văn R", new Date(2025, 2, 3, 9, 0, 0), new Date(2025, 2, 3, 17, 0, 0)],
-        ["Phòng 301", "Trần Thị S", new Date(2025, 2, 3, 18, 0, 0), new Date(2025, 2, 4, 4, 0, 0)],
-        ["Phòng 302", "Lê Văn T", new Date(2025, 2, 3, 11, 0, 0), new Date(2025, 2, 3, 21, 0, 0)],
-        ["Phòng 303", "Hoàng Văn U", new Date(2025, 2, 4, 7, 0, 0), new Date(2025, 2, 4, 15, 0, 0)],
-        ["Phòng 304", "Bùi Thị V", new Date(2025, 2, 4, 13, 0, 0), new Date(2025, 2, 4, 22, 0, 0)],
-        ["Phòng 305", "Đỗ Văn W", new Date(2025, 2, 3, 8, 0, 0), new Date(2025, 2, 3, 16, 0, 0)]
-    ]
+async function fetchBookings() {
+    let floor = document.getElementById("floorSelect").value;
+    let inDate = document.getElementById("startDate").value;
+    let outDate = document.getElementById("endDate").value;
 
-};
+    if (!inDate || !outDate) {
+        let today = new Date();
+        let sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(today.getDate() - 7);
 
-function drawChart(floor = 1) {
-    var container = document.getElementById("timeline");
-    var chart = new google.visualization.Timeline(container);
-    var dataTable = new google.visualization.DataTable();
+        const formatDateTimeLocal = date => date.toISOString().slice(0, 16);
 
-    dataTable.addColumn({ type: "string", id: "Phòng" });
-    dataTable.addColumn({ type: "string", id: "Khách hàng" });
-    dataTable.addColumn({ type: "datetime", id: "Bắt đầu" });
-    dataTable.addColumn({ type: "datetime", id: "Kết thúc" });
+        inDate = formatDateTimeLocal(sevenDaysAgo);
+        outDate = formatDateTimeLocal(today);
 
-    var filteredData = filterDataByTimePeriod(allData[floor]);
-    if (filteredData.length === 0) {
-        document.getElementById("timeline").innerHTML = "<p>Không có dữ liệu để hiển thị.</p>";
+        document.getElementById("startDate").value = inDate;
+        document.getElementById("endDate").value = outDate;
+    }
+
+    let formattedInDate = encodeURIComponent(inDate.replace("T", " ") + ":00.000");
+    let formattedOutDate = encodeURIComponent(outDate.replace("T", " ") + ":00.000");
+
+    let apiUrl = `http://localhost:5222/api/Booking/FindBookings?indate=${formattedInDate}&outdate=${formattedOutDate}&floornum=${floor}`;
+
+    try {
+        let response = await fetch(apiUrl);
+        if (!response.ok) throw new Error("Lỗi khi tải dữ liệu!");
+
+        let data = await response.json();
+        allBookings = [];
+        upcomingBookings = [];
+        currentBookings = [];
+        pastBookings = [];
+        allBookings = data.bookings;
+        processBookings(data.bookings);
+    } catch (error) {
+        console.error("Lỗi khi gọi API:", error);
+    }
+}
+
+function processBookings(bookings) {
+    if (!bookings || !Array.isArray(bookings)) {
+        console.error("Bookings data is invalid:", bookings);
         return;
     }
 
-    dataTable.addRows(filteredData);
+    bookings.forEach(booking => {
+        let checkinDate = new Date(booking.checkInDate);
+        let checkoutDate = new Date(booking.checkOutDate);
+
+        if (booking.bookingStatus === "Pending") {
+            upcomingBookings.push([
+                booking.bookingId,
+                booking.firstName,
+                booking.lastName,
+                booking.roomnum,
+                booking.bookingStatus,
+                booking.totalMoney,
+                booking.deposit,
+                checkinDate,
+                checkoutDate
+            ]);
+        } else if (booking.bookingStatus === "Confirmed") {
+            currentBookings.push([
+                booking.bookingId,
+                booking.firstName,
+                booking.lastName,
+                booking.roomnum,
+                booking.bookingStatus,
+                booking.totalMoney,
+                booking.deposit,
+                checkinDate,
+                checkoutDate
+            ]);
+        } else if (booking.bookingStatus === "Paid") {
+            pastBookings.push([
+                booking.bookingId,
+                booking.firstName,
+                booking.lastName,
+                booking.roomnum,
+                booking.bookingStatus,
+                booking.totalMoney,
+                booking.deposit,
+                checkinDate,
+                checkoutDate
+            ]);
+        }
+    });
+
+    console.log("Upcoming:", upcomingBookings);
+    console.log("Current:", currentBookings);
+    console.log("Past:", pastBookings);
+
+    drawChart();
+}
+
+function changeTimePeriod() {
+    fetchBookings();
+}
+
+function changeFloor() {
+    fetchBookings();
+}
+
+function drawChart() {
+    var container = document.getElementById("timeline");
+    if (!container) {
+        console.error("Timeline container not found");
+        return;
+    }
+
+    var chart = new google.visualization.Timeline(container);
+    var dataTable = new google.visualization.DataTable();
+
+    dataTable.addColumn({ type: "string", id: "RoomNumber" });
+    dataTable.addColumn({ type: "string", id: "GuestName" });
+    dataTable.addColumn({ type: "datetime", id: "Start" });
+    dataTable.addColumn({ type: "datetime", id: "End" });
+
+    if (!allBookings || allBookings.length === 0) {
+        container.innerHTML = "<p>No booking data available.</p>";
+        return;
+    }
+
+    let formattedData = allBookings.map(booking => {
+        try {
+            return [
+                String(booking.roomnum),
+                `${booking.firstName} ${booking.lastName}`,
+                new Date(booking.checkInDate),
+                new Date(booking.checkOutDate)
+            ];
+        } catch (e) {
+            console.error("Error formatting booking:", booking, e);
+            return null;
+        }
+    }).filter(row => row !== null);
+
+    if (formattedData.length === 0) {
+        container.innerHTML = "<p>No valid booking data to display.</p>";
+        return;
+    }
+
+    dataTable.addRows(formattedData);
 
     var options = {
-        timeline: { showRowLabels: true },
+        timeline: {
+            showRowLabels: true,
+            colorByRowLabel: true
+        },
         hAxis: {
-            format: "HH:mm dd/MM",
+            format: "EEE, dd/MM HH:mm",
             gridlines: { count: 12 }
-        }
+        },
+        height: 500
     };
-
-    chart.draw(dataTable, options);
 
     // Change cursor when hovering booked rooms
     google.visualization.events.addListener(chart, "onmouseover", function () {
@@ -80,25 +178,17 @@ function drawChart(floor = 1) {
             var start = dataTable.getValue(row, 2);
             var end = dataTable.getValue(row, 3);
             var duration = (end - start) / (1000 * 60 * 60);
-            var bill = duration * 200000;
-            showModal(name, "0123456789", duration, bill);
+            var bill = "insert a number";
+            showModal(name, "123456789", duration, bill);
         }
     });
+
+    chart.draw(dataTable, options);
 }
 
-function filterDataByTimePeriod(data) {
-    var startDate = new Date(document.getElementById("startDate").value);
-    var endDate = new Date(document.getElementById("endDate").value);
-
-    if (isNaN(startDate) || isNaN(endDate)) {
-        return data; // If no dates are selected, return the original data
-    }
-
-    return data.filter(function (booking) {
-        var bookingStart = booking[2];
-        var bookingEnd = booking[3];
-        return (bookingStart >= startDate && bookingEnd <= endDate);
-    });
+function changeBookingType() {
+    var selectedFloor = parseInt(document.getElementById("floorSelect").value);
+    drawChart(selectedFloor, selectedType);
 }
 
 function showModal(name, phone, time, bill) {
@@ -119,40 +209,3 @@ function closeModal() {
 
     document.body.classList.remove("modal-open");
 }
-
-function checkout() {
-    alert("Chức năng trả phòng đang phát triển!");
-}
-
-function changeFloor() {
-    var selectedFloor = document.getElementById("floorSelect").value;
-    drawChart(parseInt(selectedFloor));
-}
-
-function changeTimePeriod() {
-    drawChart(parseInt(document.getElementById("floorSelect").value));
-}
-
-function loadBookings() {
-    var bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-
-    // Duyệt qua từng đặt phòng và thêm vào dữ liệu của tầng
-    bookings.forEach(booking => {
-        let room = `Phòng ${booking.room}`;
-        let name = booking.name;
-        let checkin = new Date(booking.checkin);
-        let checkout = new Date(booking.checkout);
-
-        let floor = Math.floor(parseInt(booking.room) / 100); // Xác định tầng từ số phòng
-        if (!allData[floor]) {
-            allData[floor] = [];
-        }
-
-        allData[floor].push([room, name, checkin, checkout]);
-    });
-
-    // Vẽ lại biểu đồ Gantt với dữ liệu mới
-    drawChart(parseInt(document.getElementById("floorSelect").value));
-}
-
-document.addEventListener("DOMContentLoaded", loadBookings);

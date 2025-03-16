@@ -31,7 +31,12 @@
             </div>
         </div>
         <div id="timeline"></div>
+
         <script src="../js/gantt.js"></script>
+        <script type="text/javascript">
+            google.charts.load("current", { packages: ["timeline"] });
+            google.charts.setOnLoadCallback(fetchBookings);
+        </script>
     </div>
 
     <div class="overlay" id="overlay"></div>
@@ -41,10 +46,10 @@
             <p><strong>Customer:</strong> <span id="cust-name"></span></p>
             <p><strong>Phone Number:</strong> <span id="cust-phone"></span></p>
             <p><strong>Duration:</strong> <span id="cust-time"></span> giờ</p>
-            <p><strong>Tổng hóa đơn:</strong> <span id="cust-bill"></span> VND</p>
-            <button onclick="bookService()">🛒 <b>Đặt dịch vụ</b></button>
-            <button onclick="checkout()">💳 <b>Trả phòng</b></button>
-            <button onclick="closeModal()"><b>Đóng</b></button>
+            <p><strong>Total Money:</strong> <span id="cust-bill"></span> VND</p>
+            <button onclick="bookService()">🛒 <b>Book Services</b></button>
+            <button onclick="checkout()">💳 <b>Check Out</b></button>
+            <button onclick="closeModal()"><b>Close</b></button>
         </div>
 </body>
 
