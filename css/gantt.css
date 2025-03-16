@@ -26,6 +26,9 @@ h2 {
 
 #timeline {
     height: 500px;
+    width: 100%;
+    min-height: 400px;
+    margin: 20px 0;
     cursor: default;
     overflow-x: auto;
     overflow-y: hidden;

@@ -16,8 +16,6 @@
         <!-- Họ và Tên + Nút tạo khách hàng -->
         <label for="input-group">Find Customer:</label>
         <div class="input-group">
-            <label for="cid">Cid:</label>
-            <input type="text" id="cid" name="cid" required>
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" required>
             <label for="phonenum">PhoneNumber:</label>
@@ -27,11 +25,10 @@
 
         <div id="room_list">
             <h3>Room List</h3>
-            <div class="table-responsive"> <!-- Add this wrapper -->
+            <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>RoomID</th>
                             <th>Room Number</th>
                             <th>Floor</th>
                             <th>Room Type</th>
@@ -50,7 +47,9 @@
         </div>
         <div>
             <label for="deposit">Deposit:</label>
-            <input type="text" id="deposit" name="deposit" required>
+            <input type="text" id="deposit" name="deposit">
+            <label for="total-money">Total Money:</label>
+            <input type="text" id="total-money" name="total-money" value="0" readonly>
         </div>
         <div class="button-group">
             <button type="button" id="book-room">Booking Room</button>
@@ -105,7 +104,6 @@
                 <table id="room-search-table" class="table table-hover">
                     <thead class="table-light">
                         <tr>
-                            <th>RoomID</th>
                             <th>RoomNum</th>
                             <th>Floor</th>
                             <th>RoomType</th>
