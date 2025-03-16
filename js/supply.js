@@ -6,11 +6,16 @@ const state = {
     goodsList: [],
     editGoodId: null,
     importDetailsList: [],
+    servicesList: [],
+    editServiceId: null,
+    serviceGoodsList: [],
 };
 
 // DOM Elements
 const domElements = {
     goodsTableBody: document.querySelector("#goods-table-body"),
+    goodHistoryTable: document.querySelector("#good-history-table"),
+    historyGoodName: document.querySelector("#history-good-name"),
     addGoodsForm: document.querySelector("#add-goods-form"),
     goodsNameInput: document.querySelector("#goods-name"),
     categoryInput: document.querySelector("#category"),
@@ -19,17 +24,25 @@ const domElements = {
     sellingPriceInput: document.querySelector("#selling-price"),
     addGoodBtn: document.querySelector("#add-good-btn"),
     updateGoodBtn: document.querySelector("#update-good-btn"),
+
     importGoodsTableBody: document.querySelector("#import-goods-table-body"),
-    supplierInput: document.querySelector("#supplier"),
-    goodsSelect: document.querySelector("#goods-select"),
-    quantityInput: document.querySelector("#quantity"),
-    addImportDetailBtn: document.querySelector("#add-import-detail-btn"),
-    finalizeImportBtn: document.querySelector("#finalize-import-btn"),
     addImportTable: document.querySelector("#add-import-table"),
     importDetailTable: document.querySelector("#import-detail-table"),
+    importSupplierInput: document.querySelector("#import-supplier"),
+    importGoodsSelect: document.querySelector("#import-goods-select"),
+    importQuantityInput: document.querySelector("#import-quantity"),
+    addImportDetailBtn: document.querySelector("#add-import-detail-btn"),
+    finalizeImportBtn: document.querySelector("#finalize-import-btn"),
+
     importHistoryTableBody: document.querySelector("#import-history-table-body"),
-    goodHistoryTable: document.querySelector("#good-history-table"),
-    historyGoodName: document.querySelector("#history-good-name"),
+
+    servicesTableBody: document.querySelector("#services-table-body"),
+    addServiceTable: document.querySelector("#add-service-table"),
+    serviceNameInput: document.querySelector("#service-name"),
+    serviceGoodsSelect: document.querySelector("#service-goods-select"),
+    serviceQuantityInput: document.querySelector("#service-quantity"),
+    addServiceGoodBtn: document.querySelector("#add-service-good-btn"),
+    finalizeServiceBtn: document.querySelector("#finalize-service-btn"),
 };
 
 // Initialization
@@ -43,10 +56,15 @@ function initializeApp() {
 // Event Listeners
 function setupEventListeners() {
     domElements.addGoodsForm.addEventListener("submit", handleAddGood);
+    domElements.goodsTableBody.addEventListener("click", handleGoodsTableActions);
     domElements.updateGoodBtn.addEventListener("click", handleUpdateGood);
+
     domElements.addImportDetailBtn.addEventListener("click", handleAddImportDetail);
     domElements.finalizeImportBtn.addEventListener("click", handleFinalizeImport);
-    domElements.goodsTableBody.addEventListener("click", handleGoodsTableActions);
+
+    domElements.addServiceGoodBtn.addEventListener("click", handleAddServiceGood);
+    domElements.finalizeServiceBtn.addEventListener("click", handleFinalizeService);
+    domElements.servicesTableBody.addEventListener("click", handleServicesTableActions);
 }
 
 // Data Fetching
@@ -67,7 +85,8 @@ const api = {
             const data = await response.json();
             state.goodsList = data.data;
             renderGoodsTable();
-            populateGoodsSelect(data.data);
+            populateImportGoodsSelect(data.data);
+            populateServiceGoodsSelect(data.data);
         } catch (error) {
             console.error("Error fetching goods:", error);
         }
@@ -115,7 +134,14 @@ const api = {
     },
 
     fetchServices: async () => {
-        // Placeholder for future implementation
+        try {
+            const response = await fetch(`${API_BASE_URL}/Service/GetServiceList`);
+            const data = await response.json();
+            state.servicesList = data.data;
+            renderServicesTable(data.data);
+        } catch (error) {
+            console.error("Error fetching services:", error);
+        }
     },
 
     addGood: async (good) => {
@@ -153,6 +179,20 @@ const api = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(detailData),
+        });
+    },
+
+    addService: async (service) => {
+        return await fetch(`${API_BASE_URL}/Service/InsertTblService`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(service),
+        });
+    },
+
+    deleteService: async (id) => {
+        return await fetch(`${API_BASE_URL}/Service/XoaTblService?sServiceId=${id}`, {
+            method: "DELETE",
         });
     },
 };
@@ -233,10 +273,13 @@ async function handleUpdateGood() {
 async function deleteGood(goodId) {
     if (confirm("Are you sure you want to delete this good?")) {
         try {
-            await api.deleteGood(goodId);
+            const response = await api.deleteGood(goodId);
+            if (!response.ok) throw new Error("Failed to delete good");
             await api.fetchGoods();
+            alert("Good deleted successfully!");
         } catch (error) {
             console.error("Error deleting good:", error);
+            alert("Failed to delete good");
         }
     }
 }
@@ -247,9 +290,9 @@ async function showGoodHistory(goodId, goodName) {
 }
 
 function handleAddImportDetail() {
-    const goodsId = domElements.goodsSelect.value;
-    const quantity = parseInt(domElements.quantityInput.value);
-    const selectedOption = domElements.goodsSelect.selectedOptions[0];
+    const goodsId = domElements.importGoodsSelect.value;
+    const quantity = parseInt(domElements.importQuantityInput.value);
+    const selectedOption = domElements.importGoodsSelect.selectedOptions[0];
     const costPrice = parseFloat(selectedOption.dataset.cost);
     const goodName = selectedOption.text;
 
@@ -265,7 +308,7 @@ function handleAddImportDetail() {
 
     state.importDetailsList.push({ goodsId, quantity, costPrice, goodName });
     renderAddImportTable();
-    domElements.quantityInput.value = "";
+    domElements.importQuantityInput.value = "";
 }
 
 function handleRemoveImportDetail(index) {
@@ -285,7 +328,7 @@ async function handleFinalizeImport() {
     );
 
     const importData = {
-        igSupplier: domElements.supplierInput.value.trim(),
+        igSupplier: domElements.importSupplierInput.value.trim(),
         igSumPrice: totalPrice,
         igCurrency: "VND",
         igImportDate: new Date().toISOString(),
@@ -317,7 +360,7 @@ async function handleFinalizeImport() {
         await Promise.all(quantityUpdates);
 
         state.importDetailsList = [];
-        domElements.supplierInput.value = "";
+        domElements.importSupplierInput.value = "";
         renderAddImportTable();
         await Promise.all([api.fetchGoods(), api.fetchImportGoods(), api.fetchImportHistory()]);
         alert("Import successfully added!");
@@ -328,10 +371,104 @@ async function handleFinalizeImport() {
     }
 }
 
+function handleAddServiceGood() {
+    const goodsId = domElements.serviceGoodsSelect.value;
+    const quantity = parseInt(domElements.serviceQuantityInput.value);
+    const selectedOption = domElements.serviceGoodsSelect.selectedOptions[0];
+    const goodName = selectedOption.text;
+    const costPrice = parseFloat(selectedOption.dataset.cost);
+    const sellingPrice = parseFloat(selectedOption.dataset.sellingPrice || 0);
+
+    if (!goodsId || !quantity || quantity <= 0) {
+        alert("Please select a good and enter a valid quantity");
+        return;
+    }
+
+    if (state.serviceGoodsList.some((detail) => detail.goodsId === goodsId)) {
+        alert("This good is already added to the service");
+        return;
+    }
+
+    state.serviceGoodsList.push({ goodsId, quantity, goodName, costPrice, sellingPrice });
+    renderServiceGoodsTable();
+    domElements.serviceQuantityInput.value = "";
+}
+
+function handleRemoveServiceGood(index) {
+    state.serviceGoodsList.splice(index, 1);
+    renderServiceGoodsTable();
+}
+
+async function handleFinalizeService() {
+    if (state.serviceGoodsList.length === 0) {
+        alert("Please add at least one good to the service");
+        return;
+    }
+
+    const totalCostPrice = state.serviceGoodsList.reduce(
+        (sum, detail) => sum + detail.costPrice * detail.quantity,
+        0
+    );
+    const totalSellPrice = state.serviceGoodsList.reduce(
+        (sum, detail) => sum + detail.sellingPrice * detail.quantity,
+        0
+    );
+
+    const serviceData = {
+        sServiceName: domElements.serviceNameInput.value.trim(),
+        sServiceCostPrice: totalCostPrice,
+        sServiceSellPrice: totalSellPrice,
+        serviceGoods: state.serviceGoodsList.map(detail => ({
+            sgGoodsId: detail.goodsId,
+            sgQuantity: detail.quantity
+        }))
+    };
+
+    try {
+        const response = await api.addService(serviceData);
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(JSON.stringify(errorData));
+        }
+        await api.fetchServices();
+        state.serviceGoodsList = [];
+        domElements.addServiceTable.reset();
+        renderServiceGoodsTable();
+        alert("Service added successfully!");
+        bootstrap.Modal.getInstance(document.getElementById("service-modal")).hide();
+    } catch (error) {
+        console.error("Error adding service:", error);
+        alert("Failed to add service: " + error.message);
+    }
+}
+
+function handleServicesTableActions(event) {
+    const target = event.target;
+    const serviceId = target.dataset.serviceId;
+
+    if (target.classList.contains("delete-service-btn")) {
+        deleteService(serviceId);
+    }
+}
+
+async function deleteService(serviceId) {
+    if (confirm("Are you sure you want to delete this service?")) {
+        try {
+            const response = await api.deleteService(serviceId);
+            if (!response.ok) throw new Error("Failed to delete service");
+            await api.fetchServices();
+            alert("Service deleted successfully!");
+        } catch (error) {
+            console.error("Error deleting service:", error);
+            alert("Failed to delete service");
+        }
+    }
+}
+
 // Rendering Functions
 function renderGoodsTable() {
     domElements.goodsTableBody.innerHTML = "";
-    
+
     state.goodsList.forEach((good) => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -349,15 +486,6 @@ function renderGoodsTable() {
             </td>
         `;
         domElements.goodsTableBody.appendChild(row);
-    });
-}
-
-function populateGoodsSelect(goods) {
-    domElements.goodsSelect.innerHTML = '<option value="">Select a good</option>';
-    goods.forEach((good) => {
-        domElements.goodsSelect.innerHTML += `
-            <option value="${good.gGoodsId}" data-cost="${good.gCostPrice}">${good.gGoodsName}</option>
-        `;
     });
 }
 
@@ -414,6 +542,15 @@ function renderImportGoodsTable(imports) {
     });
 }
 
+function populateImportGoodsSelect(goods) {
+    domElements.importGoodsSelect.innerHTML = '<option value="">Select a good</option>';
+    goods.forEach((good) => {
+        domElements.importGoodsSelect.innerHTML += `
+            <option value="${good.gGoodsId}" data-cost="${good.gCostPrice}">${good.gGoodsName}</option>
+        `;
+    });
+}
+
 function renderAddImportTable() {
     domElements.addImportTable.innerHTML = "";
 
@@ -462,4 +599,48 @@ function renderImportHistoryTable(history) {
             domElements.importHistoryTableBody.appendChild(row);
         });
     }
+}
+
+function renderServicesTable(services) {
+    domElements.servicesTableBody.innerHTML = "";
+
+    services.forEach((service) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${service.sServiceName}</td>
+            <td>${service.goodsInfo.split('\n').join('<br>')}</td>
+            <td>${service.sServiceCostPrice.toLocaleString()} VND</td>
+            <td>${service.sServiceSellPrice.toLocaleString()} VND</td>
+            <td>
+                <button class="delete-service-btn btn btn-sm btn-danger" data-service-id="${service.sServiceId}">Delete</button>
+            </td>
+        `;
+        domElements.servicesTableBody.appendChild(row);
+    });
+}
+
+function renderServiceGoodsTable() {
+    const tableBody = document.querySelector("#service-goods-table-body");
+    tableBody.innerHTML = "";
+
+    state.serviceGoodsList.forEach((detail, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${detail.goodName}</td>
+            <td>${detail.quantity}</td>
+            <td>${(detail.costPrice * detail.quantity).toLocaleString()} VND</td>
+            <td>${(detail.sellingPrice * detail.quantity).toLocaleString()} VND</td>
+            <td><button class="btn btn-danger btn-sm" onclick="handleRemoveServiceGood(${index})">Remove</button></td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+function populateServiceGoodsSelect(goods) {
+    domElements.serviceGoodsSelect.innerHTML = '<option value="">Select a good</option>';
+    goods.forEach((good) => {
+        domElements.serviceGoodsSelect.innerHTML += `
+            <option value="${good.gGoodsId}" data-cost="${good.gCostPrice}" data-selling-price="${good.gSellingPrice}">${good.gGoodsName}</option>
+        `;
+    });
 }

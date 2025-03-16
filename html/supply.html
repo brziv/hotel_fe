@@ -175,7 +175,7 @@
         </div>
     </div>
 
-    <!-- New Import Modal -->
+    <!-- Add Import Modal -->
     <div class="modal fade" id="import-modal" tabindex="-1" aria-labelledby="import-modal-label" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -185,16 +185,16 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="supplier" class="form-label">Supplier</label>
-                        <input type="text" class="form-control" id="supplier" placeholder="Supplier" required>
+                        <label for="import-supplier" class="form-label">Supplier</label>
+                        <input type="text" class="form-control" id="import-supplier" placeholder="Supplier" required>
                     </div>
                     <div class="mb-3">
-                        <label for="goods-select" class="form-label">Select Good</label>
-                        <select class="form-control" id="goods-select"></select>
+                        <label for="import-goods-select" class="form-label">Select Good</label>
+                        <select class="form-control" id="import-goods-select"></select>
                     </div>
                     <div class="mb-3">
-                        <label for="quantity" class="form-label">Quantity</label>
-                        <input type="number" class="form-control" id="quantity" placeholder="Quantity" min="1" required>
+                        <label for="import-quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="import-quantity" placeholder="Quantity" min="1" required>
                     </div>
                     <button class="btn btn-primary mb-3" id="add-import-detail-btn">Add to Import</button>
                     <hr>
@@ -238,6 +238,51 @@
                         </thead>
                         <tbody id="import-detail-table"></tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Service Modal -->
+    <div class="modal fade" id="service-modal" tabindex="-1" aria-labelledby="serviceModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="serviceModalLabel">Add/Edit Service</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-service-table">
+                        <div class="mb-3">
+                            <label for="service-name">Service Name:</label>
+                            <input type="text" id="service-name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="service-goods-select">Select Good:</label>
+                            <select id="service-goods-select" class="form-control"></select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="service-quantity">Quantity:</label>
+                            <input type="number" id="service-quantity" class="form-control" min="1">
+                        </div>
+                        <button type="button" id="add-service-good-btn" class="btn btn-primary mb-3">Add Good</button>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Good Name</th>
+                                    <th>Quantity</th>
+                                    <th>Cost Price</th>
+                                    <th>Sell Price</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="service-goods-table-body"></tbody>
+                        </table>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="finalize-service-btn" class="btn btn-success">Save Service</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
