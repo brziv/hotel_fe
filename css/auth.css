@@ -19,7 +19,7 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #4caf50, #2196f3, #9c27b0);
+    background: linear-gradient(135deg, #1a365d, #2c5282, #2b6cb0);
     color: var(--text-primary);
     min-height: 100vh;
     display: flex;

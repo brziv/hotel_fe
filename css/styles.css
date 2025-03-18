@@ -10,7 +10,7 @@ body {
     position: fixed;
     top: 0;
     width: 98%;
-    background: linear-gradient(135deg, #388e3c, #1976d2, #7b1fa2);
+    background: linear-gradient(to right, #4571ad, #6680a1);
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     z-index: 1000;

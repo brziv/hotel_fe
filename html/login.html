@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="../css/auth.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="auth-container">
         <div class="auth-card">
@@ -14,12 +16,12 @@
                 <h1>Welcome Back</h1>
                 <p>Please enter your credentials to continue</p>
             </div>
-            
+
             <form class="auth-form" id="loginForm">
                 <div class="form-group">
                     <div class="input-wrapper">
-                        <input type="email" id="email" required placeholder=" ">
-                        <label for="email">Email Address</label>
+                        <input type="text" id="username" required placeholder=" ">
+                        <label for="username">Username</label>
                         <span class="input-highlight"></span>
                     </div>
                 </div>
@@ -51,15 +53,50 @@
     </div>
 
     <script>
-        document.getElementById("signupLink").addEventListener("click", function(event) {
+        document.getElementById("signupLink").addEventListener("click", function (event) {
             event.preventDefault();
             window.parent.document.querySelector("iframe[name='contentFrame']").src = "html/signup.html";
         });
 
-        document.getElementById("loginForm").addEventListener("submit", function(event) {
+        document.getElementById("loginForm").addEventListener("submit", async function (event) {
             event.preventDefault();
-            // Add login logic here
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const remember = document.getElementById("remember").checked;
+
+            try {
+                const response = await fetch('http://localhost:5222/api/Auth/Login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.code === 100) {
+                    // Store token and role in localStorage
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('role', data.role);
+
+                    if (remember) {
+                        localStorage.setItem('remember', 'true');
+                    }
+                    window.location.href = 'gantt.html';
+                } else {
+                    alert(data.msg);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('An error occurred during login');
+            }
         });
     </script>
 </body>
+
 </html>
