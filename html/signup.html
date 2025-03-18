@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="../css/auth.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="auth-container">
         <div class="auth-card">
@@ -14,20 +16,12 @@
                 <h1>Create Account</h1>
                 <p>Join us to start managing your hotel</p>
             </div>
-            
+
             <form class="auth-form" id="signupForm">
                 <div class="form-group">
                     <div class="input-wrapper">
-                        <input type="text" id="fullname" required placeholder=" ">
-                        <label for="fullname">Full Name</label>
-                        <span class="input-highlight"></span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="input-wrapper">
-                        <input type="email" id="email" required placeholder=" ">
-                        <label for="email">Email Address</label>
+                        <input type="text" id="username" required placeholder=" ">
+                        <label for="username">Username</label>
                         <span class="input-highlight"></span>
                     </div>
                 </div>
@@ -66,15 +60,50 @@
     </div>
 
     <script>
-        document.getElementById("loginLink").addEventListener("click", function(event) {
+        document.getElementById("loginLink").addEventListener("click", function (event) {
             event.preventDefault();
             window.parent.document.querySelector("iframe[name='contentFrame']").src = "html/login.html";
         });
 
-        document.getElementById("signupForm").addEventListener("submit", function(event) {
+        document.getElementById("signupForm").addEventListener("submit", async function (event) {
             event.preventDefault();
-            // Add signup logic here
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+
+            if (password !== confirmPassword) {
+                alert("Passwords don't match");
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5222/api/Auth/Register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.code === 100) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('role', data.role);
+                    window.location.href = 'gantt.html';
+                } else {
+                    alert(data.msg);
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('An error occurred during registration');
+            }
         });
     </script>
 </body>
+
 </html>

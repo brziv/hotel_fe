@@ -1,32 +1,113 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hotel Management</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
-
 <body>
     <div class="nav-container">
         <nav class="navbar">
-            <a href="html/gantt.html" class="logo" target="contentFrame">Hotel Management</a>
+            <a href="#" class="logo" id="logoLink">Hotel Management</a>
             <ul class="nav-links">
-                <li><a href="html/booking.html" target="contentFrame">Booking</a></li>
-                <li><a href="html/customer.html" target="contentFrame">Customers</a></li>
-                <li><a href="html/partner.html" target="contentFrame">Partners</a></li>
-                <li><a href="html/employee.html" target="contentFrame">Employees</a></li>
-                <li><a href="html/supply.html" target="contentFrame">Supply</a></li>
-                <li><a href="html/reports.html" target="contentFrame">Reports</a></li>
-                <li><a href="html/login.html" id="btnlogin" class="btn" target="contentFrame">Login</a></li>
-                <li><a href="html/signup.html" id="btnsignup" class="btn" target="contentFrame">Sign Up</a></li>
+                <!-- Common tabs for all logged-in users -->
+                <li class="tab-booking"><a href="html/booking.html" target="contentFrame">Booking</a></li>
+                
+                <!-- Staff and Admin only -->
+                <li class="tab-customers"><a href="html/customer.html" target="contentFrame">Customers</a></li>
+                <li class="tab-supply"><a href="html/supply.html" target="contentFrame">Supply</a></li>
+                
+                <!-- Admin only -->
+                <li class="tab-employees"><a href="html/employee.html" target="contentFrame">Employees</a></li>
+                <li class="tab-partners"><a href="html/partner.html" target="contentFrame">Partners</a></li>
+                <li class="tab-reports"><a href="html/reports.html" target="contentFrame">Reports</a></li>
+                
+                <!-- Authentication tabs -->
+                <li class="tab-login"><a href="html/login.html" id="btnlogin" class="btn" target="contentFrame">Login</a></li>
+                <li class="tab-signup"><a href="html/signup.html" id="btnsignup" class="btn" target="contentFrame">Sign Up</a></li>
+                <li class="tab-logout" style="display: none;"><a href="#" id="btnlogout" class="btn">Logout</a></li>
             </ul>
         </nav>
     </div>
     
-    <iframe name="contentFrame" src="html/gantt.html" width="100%" height="800px"
-        style="border:none; margin-top: 50px;"></iframe>
-</body>
+    <iframe name="contentFrame" src="html/login.html" width="100%" height="800px" style="border:none; margin-top: 50px;"></iframe>
 
+    <script>
+        function updateNavigation() {
+            const role = localStorage.getItem('role');
+            const token = localStorage.getItem('token');
+            
+            // Get all tab elements
+            const bookingTab = document.querySelector('.tab-booking');
+            const customersTab = document.querySelector('.tab-customers');
+            const partnersTab = document.querySelector('.tab-partners');
+            const supplyTab = document.querySelector('.tab-supply');
+            const employeesTab = document.querySelector('.tab-employees');
+            const reportsTab = document.querySelector('.tab-reports');
+            const loginTab = document.querySelector('.tab-login');
+            const signupTab = document.querySelector('.tab-signup');
+            const logoutTab = document.querySelector('.tab-logout');
+
+            // Reset all tabs to hidden
+            const allTabs = document.querySelectorAll('.nav-links li');
+            allTabs.forEach(tab => tab.style.display = 'none');
+
+            if (!token || !role) {
+                // Show only login and signup for unauthenticated users
+                loginTab.style.display = 'block';
+                signupTab.style.display = 'block';
+            } else {
+                // Show tabs based on role
+                logoutTab.style.display = 'block';
+
+                switch(role) {
+                    case 'User':
+                        bookingTab.style.display = 'block';
+                        break;
+                    case 'Staff':
+                        bookingTab.style.display = 'block';
+                        customersTab.style.display = 'block';
+                        supplyTab.style.display = 'block';
+                        break;
+                    case 'Admin':
+                        bookingTab.style.display = 'block';
+                        customersTab.style.display = 'block';
+                        partnersTab.style.display = 'block';
+                        employeesTab.style.display = 'block';
+                        supplyTab.style.display = 'block';
+                        reportsTab.style.display = 'block';
+                        break;
+                }
+            }
+        }
+
+        // Logo click handler
+        document.getElementById('logoLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+            if (token) {
+                document.querySelector('iframe[name="contentFrame"]').src = 'html/gantt.html';
+            } else {
+                document.querySelector('iframe[name="contentFrame"]').src = 'html/login.html';
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('btnlogout').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            localStorage.removeItem('remember');
+            updateNavigation();
+            document.querySelector('iframe[name="contentFrame"]').src = 'html/login.html';
+        });
+
+        // Update navigation on page load
+        window.addEventListener('load', updateNavigation);
+
+        // Update navigation when storage changes (useful for multi-tab scenarios)
+        window.addEventListener('storage', updateNavigation);
+    </script>
+</body>
 </html>
