@@ -118,22 +118,57 @@ function drawChart() {
     var dataTable = new google.visualization.DataTable();
 
     dataTable.addColumn({ type: "string", id: "RoomNumber" });
-    dataTable.addColumn({ type: "string", id: "GuestName" });
+    dataTable.addColumn({ type: "string", id: "dummy GuestName" });
+    dataTable.addColumn({ type: "string", role: "tooltip", p: { html: true } }); 
+    dataTable.addColumn({ type: 'string', id: 'style', role: 'style' });
     dataTable.addColumn({ type: "datetime", id: "Start" });
     dataTable.addColumn({ type: "datetime", id: "End" });
+    
 
     if (!allBookings || allBookings.length === 0) {
         container.innerHTML = "<p>No booking data available.</p>";
         return;
     }
+    let sortedAllBooking = [...upcomingBookings, ...currentBookings, ...pastBookings];
+    console.log("sortedAllBooking",sortedAllBooking);
+    //corlor
+    let upcomingColor = "#FFA500"; // Orange (Pending)
+    let currentColor = "#0000FF";  // Blue (Confirmed)
+    let pastColor = "#008000";     // Green (Paid)
 
-    let formattedData = allBookings.map(booking => {
+    let formattedData = sortedAllBooking.map(booking => {
         try {
+            let tooltipContent = `
+                <div style="padding:10px;">
+                    <strong>Guest:</strong> ${booking[1]} ${booking[2]} <br>
+                    <strong>Room:</strong> ${booking[3]} <br>
+                    <strong>Status:</strong> ${booking[4]} <br>
+                    <strong>Total:</strong> $${booking[5]} <br>
+                    <strong>Deposit:</strong> $${booking[6]} <br>
+                    <strong>Check-in:</strong> ${new Date(booking[7]).toLocaleString()} <br>
+                    <strong>Check-out:</strong> ${new Date(booking[8]).toLocaleString()}
+                </div>
+            `;
+
+            // Xác định màu dựa trên trạng thái đặt phòng
+            let bookingColor;
+            if (booking[4] === "Pending") {
+                bookingColor = upcomingColor;
+            } else if (booking[4] === "Confirmed") {
+                bookingColor = currentColor;
+            } else if (booking[4] === "Paid") {
+                bookingColor = pastColor;
+            } else {
+                bookingColor = "#808080"; // Mặc định màu xám nếu trạng thái không xác định
+            }
+
             return [
-                String(booking.roomnum),
-                `${booking.firstName} ${booking.lastName}`,
-                new Date(booking.checkInDate),
-                new Date(booking.checkOutDate)
+                String(booking[3]),  // Room number
+                "", 
+                tooltipContent,
+                bookingColor,  // Màu sắc
+                new Date(booking[7]), // Check-in
+                new Date(booking[8])  // Check-out
             ];
         } catch (e) {
             console.error("Error formatting booking:", booking, e);
@@ -141,21 +176,49 @@ function drawChart() {
         }
     }).filter(row => row !== null);
 
+    
     if (formattedData.length === 0) {
         container.innerHTML = "<p>No valid booking data to display.</p>";
         return;
     }
-
+    // Thêm tất cả các phòng trống vào danh sách
+    const floor = document.getElementById("floorSelect").value;
+    const roomsPerFloor = 10; // Giả sử mỗi tầng có 10 phòng
+    const roomsOnSelectedFloor = [];
+    
+    // Tạo danh sách phòng theo tầng đã chọn (vd: 101, 102, 103... cho tầng 1)
+    for (let i = 1; i <= roomsPerFloor; i++) {
+        const roomNumber = `${floor}${i.toString().padStart(2, '0')}`;
+        roomsOnSelectedFloor.push(roomNumber);
+    }
+    
+    // Lấy danh sách các phòng đã có booking
+    const bookedRooms = formattedData.map(row => row[0]);
+    
+    // Tìm các phòng chưa có booking
+    const emptyRooms = roomsOnSelectedFloor.filter(room => !bookedRooms.includes(room));
+    
+    // Thêm các phòng trống vào dataTable
+    const startDate = new Date(document.getElementById("startDate").value);
+    const endDate = new Date(document.getElementById("endDate").value);
+    
+    emptyRooms.forEach(roomNum => {
+        formattedData.push([
+            roomNum,
+            "",
+            `<div style="padding:10px;"><strong>Room:</strong> ${roomNum} <br><strong>Status:</strong> Available</div>`,
+            "#DDDDDD", // Màu xám cho phòng trống
+            startDate,
+            startDate // Đặt cùng ngày để tạo điểm (không phải khoảng thời gian)
+        ]);
+    });
+    
     dataTable.addRows(formattedData);
-
+    console.log('datatable',dataTable);
     var options = {
-        timeline: {
-            showRowLabels: true,
-            colorByRowLabel: true
-        },
+        alternatingRowStyle: false,
         hAxis: {
-            format: "EEE, dd/MM HH:mm",
-            gridlines: { count: 12 }
+            format: "EEE, dd/MM",
         },
         height: 500
     };
@@ -178,11 +241,11 @@ function drawChart() {
             var start = dataTable.getValue(row, 2);
             var end = dataTable.getValue(row, 3);
             var duration = (end - start) / (1000 * 60 * 60);
-            var bill = "insert a number";
+            var bill = dataTable.getValue(row, 3);
             showModal(name, "123456789", duration, bill);
         }
     });
-
+    
     chart.draw(dataTable, options);
 }
 
