@@ -2,6 +2,8 @@ let upcomingBookings = [];
 let currentBookings = [];
 let pastBookings = [];
 let allBookings = [];
+let chart;
+let dataTable;
 
 async function fetchBookings() {
     let floor = document.getElementById("floorSelect").value;
@@ -114,8 +116,8 @@ function drawChart() {
         return;
     }
 
-    var chart = new google.visualization.Timeline(container);
-    var dataTable = new google.visualization.DataTable();
+    chart = new google.visualization.Timeline(container);
+    dataTable = new google.visualization.DataTable();
 
     dataTable.addColumn({ type: "string", id: "RoomNumber" });
     dataTable.addColumn({ type: "string", id: "dummy GuestName" });
@@ -237,12 +239,35 @@ function drawChart() {
         var selection = chart.getSelection();
         if (selection.length > 0) {
             var row = selection[0].row;
-            var name = dataTable.getValue(row, 1);
-            var start = dataTable.getValue(row, 2);
-            var end = dataTable.getValue(row, 3);
-            var duration = (end - start) / (1000 * 60 * 60);
-            var bill = dataTable.getValue(row, 3);
-            showModal(name, "123456789", duration, bill);
+        // Get booking status from dataTable or use booking array
+            var name = null;
+            var roomnumber = null;
+            var status = null;
+            var totalMoney = null;
+            var deposit = null;
+            var timein = null;
+            var timeout = null;
+            
+            // Find the corresponding booking in our arrays
+            const roomNumber = dataTable.getValue(row, 0); // Assuming room number is in column 0
+            const checkinDate = dataTable.getValue(row, 4);
+            
+            // Search in all booking arrays to find matching booking
+            for (let booking of [...upcomingBookings, ...currentBookings, ...pastBookings]) {
+                if (booking[3] === roomNumber && booking[7].getTime() === checkinDate.getTime()) { // booking[3] contains the room number
+                    
+                    selectedBooking = booking;
+                    name = booking[1]+' '+booking[2];
+                    roomnumber = booking[3];
+                    status = booking[4]; 
+                    totalMoney = booking[5];
+                    deposit = booking[6];
+                    timein = booking[7].toLocaleString();
+                    timeout = booking[8].toLocaleString();
+                    break;
+                }
+            }
+            showModal(name, roomnumber, status, totalMoney, deposit, timein, timeout);
         }
     });
     
@@ -254,11 +279,57 @@ function changeBookingType() {
     drawChart(selectedFloor, selectedType);
 }
 
-function showModal(name, phone, time, bill) {
+function showModal(name, roomnumber, status, totalMoney, deposit, timein, timeout) {
+    var selection = chart.getSelection();
+    if (selection.length > 0) {
+        var row = selection[0].row;
+        // Get booking status from dataTable or use booking array
+        var bookingStatus = "";
+        
+        // Find the corresponding booking in our arrays
+        const roomNumber = dataTable.getValue(row, 0); // Assuming room number is in column 0
+        const checkinDate = dataTable.getValue(row, 4);
+        
+        // Search in all booking arrays to find matching booking
+        let selectedBooking = null;
+        for (let booking of [...upcomingBookings, ...currentBookings, ...pastBookings]) {
+            if (booking[3] === roomNumber && booking[7].getTime() === checkinDate.getTime()) { // booking[3] contains the room number
+                
+                selectedBooking = booking;
+                bookingStatus = booking[4]; // booking[4] contains the status
+                break;
+            }
+        }
+
+    }
+    const bookServiceBtn = document.getElementById('book-service-btn');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const checkinBtn = document.getElementById('checkin-btn');
+    
+    bookServiceBtn.style.display = 'none';
+    checkoutBtn.style.display = 'none';
+    checkinBtn.style.display = 'none';
+    
+    // Show buttons based on status
+    if (bookingStatus === "Confirmed") {
+        // If confirmed, show check out and book service
+        checkoutBtn.style.display = 'inline-block';
+        bookServiceBtn.style.display = 'inline-block';
+    } else if (bookingStatus === "Pending") {
+        // If pending, only show check in
+        checkinBtn.style.display = 'inline-block';
+    } else if (bookingStatus === "Paid") {
+        // If paid, don't show any buttons except close
+        // No additional buttons needed
+    }
+
     document.getElementById('cust-name').textContent = name;
-    document.getElementById('cust-phone').textContent = phone;
-    document.getElementById('cust-time').textContent = time;
-    document.getElementById('cust-bill').textContent = bill;
+    document.getElementById('cust-room-num').textContent = roomnumber;
+    document.getElementById('cust-status').textContent = status;
+    document.getElementById('cust-total-money').textContent = totalMoney;
+    document.getElementById('cust-deposit').textContent = deposit;
+    document.getElementById('cust-time-in').textContent = timein;
+    document.getElementById('cust-time-out').textContent = timeout;
 
     document.getElementById('modal').style.display = 'block';
     document.getElementById('overlay').style.display = 'block';

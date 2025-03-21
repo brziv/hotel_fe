@@ -44,13 +44,16 @@
         <div class="modal-content">
             <h3>Booking Details</h3>
             <p><strong>Customer:</strong> <span id="cust-name"></span></p>
-            <p><strong>Phone Number:</strong> <span id="cust-phone"></span></p>
-            <p><strong>Duration:</strong> <span id="cust-time"></span> giờ</p>
-            <p><strong>Total Money:</strong> <span id="cust-bill"></span> VND</p>
-            <button onclick="bookService()">🛒 <b>Book Services</b></button>
-            <button onclick="checkout()">💳 <b>Check Out</b></button>
-            <button onclick="checkin()">💳 <b>Check In</b></button>
-            <button onclick="closeModal()"><b>Close</b></button>
+            <p><strong>Room Number:</strong> <span id="cust-room-num"></span></p>
+            <p><strong>Status:</strong> <span id="cust-status"></span></p>
+            <p><strong>Total Money:</strong> <span id="cust-total-money"></span> VND</p>
+            <p><strong>Deposit:</strong> <span id="cust-deposit"></span> VND</p>
+            <p><strong>TimeIn:</strong> <span id="cust-time-in"></span></p>
+            <p><strong>TimeOut:</strong> <span id="cust-time-out"></span></p>
+            <button onclick="bookService()" id="book-service-btn">🛒 <b>Book Services</b></button>
+            <button onclick="checkout()" id="checkout-btn">💳 <b>Check Out</b></button>
+            <button onclick="checkin()" id="checkin-btn">💳 <b>Check In</b></button>
+            <button onclick="closeModal()" id="close-modal-btn"><b>Close</b></button>
         </div>
 </body>
 
