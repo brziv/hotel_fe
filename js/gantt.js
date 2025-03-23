@@ -133,7 +133,8 @@ function drawChart() {
     }
     let sortedAllBooking = [...upcomingBookings, ...currentBookings, ...pastBookings];
     console.log("sortedAllBooking",sortedAllBooking);
-    //corlor
+
+    // Colors
     let upcomingColor = "#FFA500"; // Orange (Pending)
     let currentColor = "#00FF7F";  // Green (Confirmed)
     let pastColor = "#CCCCCC";     // Gray (Paid)
@@ -152,7 +153,7 @@ function drawChart() {
                 </div>
             `;
 
-            // Xác định màu dựa trên trạng thái đặt phòng
+            // Set color based on booking status
             let bookingColor;
             if (booking[4] === "Pending") {
                 bookingColor = upcomingColor;
@@ -161,14 +162,14 @@ function drawChart() {
             } else if (booking[4] === "Paid") {
                 bookingColor = pastColor;
             } else {
-                bookingColor = "#CCCCCC"; // Mặc định màu xám nếu trạng thái không xác định
+                bookingColor = "#CCCCCC"; // Default to gray
             }
 
             return [
                 String(booking[3]),  // Room number
                 "", 
                 tooltipContent,
-                bookingColor,  // Màu sắc
+                bookingColor,  // Color
                 new Date(booking[7]), // Check-in
                 new Date(booking[8])  // Check-out
             ];
@@ -183,24 +184,25 @@ function drawChart() {
         container.innerHTML = "<p>No valid booking data to display.</p>";
         return;
     }
-    // Thêm tất cả các phòng trống vào danh sách
+
+    // Add empty rooms to the timeline
     const floor = document.getElementById("floorSelect").value;
-    const roomsPerFloor = 10; // Giả sử mỗi tầng có 10 phòng
+    const roomsPerFloor = 10; // Suppose each floor has 10 rooms
     const roomsOnSelectedFloor = [];
     
-    // Tạo danh sách phòng theo tầng đã chọn (vd: 101, 102, 103... cho tầng 1)
+    // Create room numbers for the selected floor
     for (let i = 1; i <= roomsPerFloor; i++) {
         const roomNumber = `${floor}${i.toString().padStart(2, '0')}`;
         roomsOnSelectedFloor.push(roomNumber);
     }
     
-    // Lấy danh sách các phòng đã có booking
+    // Find all booked rooms
     const bookedRooms = formattedData.map(row => row[0]);
     
-    // Tìm các phòng chưa có booking
+    // Find empty rooms
     const emptyRooms = roomsOnSelectedFloor.filter(room => !bookedRooms.includes(room));
     
-    // Thêm các phòng trống vào dataTable
+    // Add empty rooms to the timeline
     const startDate = new Date(document.getElementById("startDate").value);
     const endDate = new Date(document.getElementById("endDate").value);
     
@@ -209,9 +211,9 @@ function drawChart() {
             roomNum,
             "",
             `<div style="padding:10px;"><strong>Room:</strong> ${roomNum} <br><strong>Status:</strong> Available</div>`,
-            "#DDDDDD", // Màu xám cho phòng trống
+            "#DDDDDD", // Light gray
             startDate,
-            startDate // Đặt cùng ngày để tạo điểm (không phải khoảng thời gian)
+            startDate // Set start and end date to the same date
         ]);
     });
     
