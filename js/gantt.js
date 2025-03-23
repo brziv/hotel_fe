@@ -4,6 +4,8 @@ let pastBookings = [];
 let allBookings = [];
 let chart;
 let dataTable;
+let bookingid;
+let servicesList = [];
 
 async function fetchBookings() {
     let floor = document.getElementById("floorSelect").value;
@@ -297,6 +299,7 @@ function showModal(name, roomnumber, status, totalMoney, deposit, timein, timeou
                 
                 selectedBooking = booking;
                 bookingStatus = booking[4]; // booking[4] contains the status
+                bookingid = booking[0];
                 break;
             }
         }
@@ -381,7 +384,176 @@ async function checkin() {
         console.error("Lỗi khi gọi API:", error);
     }
 }
-function checkout() {
-    
 
-};
+async function bookService() {
+    document.getElementById('addservice-modal').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+    document.getElementById('modal').style.display = 'none';
+
+    document.getElementById('addservice-customerName').value = document.getElementById('cust-name').textContent;
+    document.getElementById('addservice-roomNumber').value = document.getElementById('cust-room-num').textContent;
+
+    try {
+        const response = await fetch(`http://localhost:5222/api/Service/GetServiceList`);
+        const data = await response.json();
+        servicesList = data.data;
+  
+        document.getElementById('addserviceTableBody').innerHTML = "";
+        servicesList.forEach((service) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${service.sServiceName}</td>
+                <td>${service.goodsInfo.split('\n').join('<br>')}</td>
+                <td>${service.sServiceSellPrice.toLocaleString()}</td>
+                <td><button class="btn btn-add" onclick="addService(this)">+</button></td>
+            `;
+            document.getElementById('addserviceTableBody').appendChild(row);
+        });
+    } catch (error) {
+        console.error("Error fetching services:", error);
+    }
+
+    try {
+        const response = await fetch(`http://localhost:5222/api/ServiceGood/FindUsedService?bookingId=${bookingid}`);
+        const data = await response.json();
+        var UsedservicesList = data.data;
+      
+        document.getElementById('addservice-UsedServices').querySelector('tbody').innerHTML = "";
+        UsedservicesList.forEach((service) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${service.sServiceName}</td>
+                <td>${service.goodsInfo.split('\n').join('<br>')}</td>
+                <td>${service.sServiceSellPrice.toLocaleString()}</td>
+                <td>${service.quantity}</td>
+                <td>${(service.sServiceSellPrice * service.quantity).toLocaleString()}</td>
+            `;
+            document.getElementById('addservice-UsedServices').querySelector('tbody').appendChild(row);
+        });
+    } catch (error) {
+        console.error("Error fetching services:", error);
+    }
+}
+
+function addService(button) {
+    let row = button.parentElement.parentElement;
+    let serviceName = row.cells[0].innerText;
+    let serviceDetail = row.cells[1].innerText;
+    let price = parseInt(row.cells[2].innerText.replace(/,/g, ''));
+
+    let selectedTable = document.getElementById('addservice-selectedServices').querySelector('tbody');
+
+    let existingRow = [...selectedTable.rows].find(r => r.cells[0].innerText === serviceName);
+    
+    if (existingRow) {
+        let qtyCell = existingRow.cells[3];
+        let totalCell = existingRow.cells[4];
+        let qty = parseInt(qtyCell.querySelector('input').value) +1;
+        qtyCell.querySelector('input').value=qty;
+        totalCell.innerText = (qty * price).toLocaleString();
+    } else {
+        let newRow = selectedTable.insertRow();
+        newRow.innerHTML = `
+            <td>${serviceName}</td>
+            <td>${serviceDetail}</td>
+            <td>${price.toLocaleString()}</td>
+            <td><input type="number" id="addservice-quantity" class="quantity-input" value="1"></td>
+            <td>${price.toLocaleString()}</td>
+            <td><button class="btn btn-remove" onclick="removeService(this)">-</button></td>
+        `;
+    }
+}
+document.addEventListener("DOMContentLoaded", function() {
+    let tableBody = document.getElementById('addservice-selectedServices')?.querySelector('tbody');
+    if (tableBody) {
+        tableBody.addEventListener('input', function(event) {
+            let targetCell = event.target; 
+            if (targetCell.classList.contains("quantity-input")) {
+                let row = targetCell.closest('tr'); 
+                let qty = parseInt(targetCell.value) || 0; 
+                let price = parseInt(row.cells[2].innerText.replace(/,/g, '')) || 0; 
+                let totalCell = row.cells[4]; 
+                totalCell.innerText = (qty * price).toLocaleString();
+            }
+        });
+    } else {
+        console.error(" addservice-selectedServices table not exist");
+    }
+});
+
+function removeService(button) {
+    let row = button.parentElement.parentElement;
+    row.remove();
+}
+async function addServicetoBooking() {
+    try {
+        // Lấy thông tin từ bảng dịch vụ đã chọn
+        const selectedTable = document.getElementById('addservice-selectedServices').querySelector('tbody');
+        
+        // Nếu không có dịch vụ nào được chọn
+        if (selectedTable.rows.length === 0) {
+            alert("Vui lòng chọn ít nhất một dịch vụ!");
+            return;
+        }
+        
+        // Tạo mảng dữ liệu cho API
+        const servicesData = [];
+        
+        // Lặp qua từng dòng trong bảng đã chọn
+        for (let i = 0; i < selectedTable.rows.length; i++) {
+            const row = selectedTable.rows[i];
+            const serviceName = row.cells[0].innerText;
+            const quantity = parseInt(row.cells[3].querySelector('input').value);
+            
+            
+            // Tìm serviceID từ tên dịch vụ trong servicesList
+            const service = servicesList.find(s => s.sServiceName === serviceName);
+            if (!service) {
+                console.error(`Không tìm thấy dịch vụ có tên: ${serviceName}`);
+                continue;
+            }
+        
+            servicesData.push({
+                "serviceID": service.sServiceId, // Sửa thành sServiceId thay vì serviceID
+                "quantity": quantity
+            });
+        }
+        
+        if (servicesData.length === 0) {
+            alert("Không thể tìm thấy ID cho các dịch vụ đã chọn!");
+            return;
+        }
+        
+        // Gọi API để thêm dịch vụ với BookingID và danh sách dịch vụ
+        const response = await fetch(`http://localhost:5222/api/ServiceGood/AddService?BookingID=${bookingid}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(servicesData)
+        });
+          
+        if(response.ok){
+            console.log('Add services successfully');
+        }
+        // Đóng modal và làm mới dữ liệu
+        closeAddServiceModal();
+        fetchBookings();
+
+    } catch (error) {
+        console.error('ERROR:', error);
+        alert('ERROR!');
+    }
+}
+
+function closeAddServiceModal() {
+    document.getElementById('addservice-modal').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('addservice-UsedServices').querySelector('tbody').innerHTML = "";
+    document.getElementById('addservice-selectedServices').querySelector('tbody').innerHTML = "";
+}
+
+function checkout() {
+
+
+}
