@@ -135,8 +135,8 @@ function drawChart() {
     console.log("sortedAllBooking",sortedAllBooking);
     //corlor
     let upcomingColor = "#FFA500"; // Orange (Pending)
-    let currentColor = "#0000FF";  // Blue (Confirmed)
-    let pastColor = "#008000";     // Green (Paid)
+    let currentColor = "#00FF7F";  // Green (Confirmed)
+    let pastColor = "#CCCCCC";     // Gray (Paid)
 
     let formattedData = sortedAllBooking.map(booking => {
         try {
@@ -161,7 +161,7 @@ function drawChart() {
             } else if (booking[4] === "Paid") {
                 bookingColor = pastColor;
             } else {
-                bookingColor = "#808080"; // Mặc định màu xám nếu trạng thái không xác định
+                bookingColor = "#CCCCCC"; // Mặc định màu xám nếu trạng thái không xác định
             }
 
             return [
@@ -305,10 +305,12 @@ function showModal(name, roomnumber, status, totalMoney, deposit, timein, timeou
     const bookServiceBtn = document.getElementById('book-service-btn');
     const checkoutBtn = document.getElementById('checkout-btn');
     const checkinBtn = document.getElementById('checkin-btn');
-    
+    const cancelBtn = document.getElementById('cancel-btn');
+
     bookServiceBtn.style.display = 'none';
     checkoutBtn.style.display = 'none';
     checkinBtn.style.display = 'none';
+    cancelBtn.style.display = 'none';
     
     // Show buttons based on status
     if (bookingStatus === "Confirmed") {
@@ -318,6 +320,7 @@ function showModal(name, roomnumber, status, totalMoney, deposit, timein, timeou
     } else if (bookingStatus === "Pending") {
         // If pending, only show check in
         checkinBtn.style.display = 'inline-block';
+        cancelBtn.style.display = 'inline-block';
     } else if (bookingStatus === "Paid") {
         // If paid, don't show any buttons except close
         // No additional buttons needed
@@ -343,3 +346,42 @@ function closeModal() {
 
     document.body.classList.remove("modal-open");
 }
+
+async function checkin() {
+    var selection = chart.getSelection();
+    if (selection.length > 0) {
+        var row = selection[0].row;
+        // Get booking status from dataTable or use booking array
+        var bookingId = "";
+        
+        // Find the corresponding booking in our arrays
+        const roomNumber = dataTable.getValue(row, 0); // Assuming room number is in column 0
+        const checkinDate = dataTable.getValue(row, 4);
+        
+        // Search in all booking arrays to find matching booking
+        for (let booking of [...upcomingBookings, ...currentBookings, ...pastBookings]) {
+            if (booking[3] === roomNumber && booking[7].getTime() === checkinDate.getTime()) { // booking[3] contains the room number
+                
+                bookingId = booking[0];
+                break;
+            }
+        }
+
+    }
+    let apiUrl = `http://localhost:5222/api/Booking/Checkin?id=${bookingId}`;
+
+    try {
+        let response = await fetch(apiUrl, {
+            method: "POST", 
+            headers: { "Content-Type": "application/json" }
+        });
+        if (!response.ok) throw new Error("Lỗi khi tải dữ liệu!");
+        fetchBookings();
+    } catch (error) {
+        console.error("Lỗi khi gọi API:", error);
+    }
+}
+function checkout() {
+    
+
+};

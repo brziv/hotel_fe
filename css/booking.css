@@ -399,3 +399,9 @@ td {
         opacity: 1;
     }
 }
+.input-group {
+    min-height: 200px;  /* Đảm bảo đủ không gian kể cả khi `#customer-list` hiển thị */
+}
+#customer-list {
+    width: 230px;
+}
