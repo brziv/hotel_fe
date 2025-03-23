@@ -1,60 +1,298 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const bookedRoomsElement = document.getElementById("booked-rooms");
-    const availableRoomsElement = document.getElementById("available-rooms");
-    const totalRevenueElement = document.getElementById("total-revenue");
-    const totalCustomersElement = document.getElementById("total-customers");
+// Load Google Charts
+google.charts.load('current', {
+    'packages': ['corechart', 'line', 'bar']
+});
+google.charts.setOnLoadCallback(initializeCharts);
 
-    // Assuming allData is available globally or imported from gantt.js
-    const allData = {
-        1: [
-            ["Phòng 101", "Nguyễn Văn A", new Date(2025, 2, 3, 10, 0, 0), new Date(2025, 2, 3, 18, 0, 0)],
-            ["Phòng 101", "Trần Thị B", new Date(2025, 2, 3, 19, 0, 0), new Date(2025, 2, 4, 5, 0, 0)],
-            ["Phòng 102", "Lê Văn C", new Date(2025, 2, 3, 10, 0, 0), new Date(2025, 2, 3, 20, 0, 0)],
-            ["Phòng 102", "Phạm Thị D", new Date(2025, 2, 4, 8, 0, 0), new Date(2025, 2, 4, 16, 0, 0)],
-            ["Phòng 103", "Hoàng Văn E", new Date(2025, 2, 3, 12, 0, 0), new Date(2025, 2, 3, 22, 0, 0)],
-            ["Phòng 104", "Bùi Thị F", new Date(2025, 2, 4, 14, 0, 0), new Date(2025, 2, 4, 23, 0, 0)],
-            ["Phòng 105", "Đỗ Văn G", new Date(2025, 2, 3, 9, 0, 0), new Date(2025, 2, 3, 17, 0, 0)],
-            ["Phòng 106", "Nguyễn Văn H", new Date(2025, 2, 5, 7, 0, 0), new Date(2025, 2, 5, 15, 0, 0)],
-            ["Phòng 107", "Lê Thị I", new Date(2025, 2, 4, 10, 0, 0), new Date(2025, 2, 4, 18, 0, 0)],
-            ["Phòng 108", "Phạm Văn J", new Date(2025, 2, 3, 11, 0, 0), new Date(2025, 2, 3, 19, 0, 0)],
-            ["Phòng 109", "Trần Văn K", new Date(2025, 2, 4, 13, 0, 0), new Date(2025, 2, 4, 21, 0, 0)]
-        ],
-        2: [
-            ["Phòng 201", "Nguyễn Văn L", new Date(2025, 2, 3, 9, 30, 0), new Date(2025, 2, 3, 17, 30, 0)],
-            ["Phòng 201", "Trần Thị M", new Date(2025, 2, 3, 18, 30, 0), new Date(2025, 2, 4, 4, 30, 0)],
-            ["Phòng 202", "Lê Văn N", new Date(2025, 2, 3, 11, 0, 0), new Date(2025, 2, 3, 21, 0, 0)],
-            ["Phòng 203", "Hoàng Văn O", new Date(2025, 2, 4, 7, 0, 0), new Date(2025, 2, 4, 15, 0, 0)],
-            ["Phòng 204", "Bùi Thị P", new Date(2025, 2, 4, 13, 30, 0), new Date(2025, 2, 4, 22, 30, 0)],
-            ["Phòng 205", "Đỗ Văn Q", new Date(2025, 2, 3, 8, 0, 0), new Date(2025, 2, 3, 16, 0, 0)]
-        ]
+// Global variables
+let startDate = document.getElementById('startDate');
+let endDate = document.getElementById('endDate');
+let generateReportBtn = document.getElementById('generateReport');
+
+// Initialize date inputs with default values
+const today = new Date();
+const thirtyDaysAgo = new Date(today);
+thirtyDaysAgo.setDate(today.getDate() - 30);
+
+startDate.value = thirtyDaysAgo.toISOString().split('T')[0];
+endDate.value = today.toISOString().split('T')[0];
+
+// Event listeners
+generateReportBtn.addEventListener('click', generateReports);
+document.querySelectorAll('.nav-link').forEach(tab => {
+    tab.addEventListener('click', (e) => {
+        const targetId = e.target.getAttribute('data-bs-target').substring(1);
+        refreshChart(targetId);
+    });
+});
+
+// Initialize charts
+function initializeCharts() {
+    generateReports();
+}
+
+// Main report generation function
+async function generateReports() {
+    const start = new Date(startDate.value);
+    const end = new Date(endDate.value);
+
+    try {
+        // Fetch all required data
+        const [bookingData, roomData, serviceData, costData] = await Promise.all([
+            fetchBookingData(start, end),
+            fetchRoomData(start, end),
+            fetchServiceData(start, end),
+            fetchCostData(start, end)
+        ]);
+
+        // Generate all charts
+        generateBookingTrendChart(bookingData);
+        generateRevenueTrendChart(bookingData);
+        generateRoomOccupancyChart(roomData);
+        generatePopularRoomChart(roomData);
+        generateServiceRevenueChart(serviceData);
+        generateProfitChart(bookingData, serviceData, costData);
+
+        // Update summary data
+        updateProfitSummary(bookingData, serviceData, costData);
+    } catch (error) {
+        console.error('Error generating reports:', error);
+        alert('Error generating reports. Please try again.');
+    }
+}
+
+// Data fetching functions
+async function fetchBookingData(start, end) {
+    const response = await fetch(`/api/reports/bookings?start=${start.toISOString()}&end=${end.toISOString()}`);
+    if (!response.ok) throw new Error('Failed to fetch booking data');
+    return await response.json();
+}
+
+async function fetchRoomData(start, end) {
+    const response = await fetch(`/api/reports/rooms?start=${start.toISOString()}&end=${end.toISOString()}`);
+    if (!response.ok) throw new Error('Failed to fetch room data');
+    return await response.json();
+}
+
+async function fetchServiceData(start, end) {
+    const response = await fetch(`/api/reports/services?start=${start.toISOString()}&end=${end.toISOString()}`);
+    if (!response.ok) throw new Error('Failed to fetch service data');
+    return await response.json();
+}
+
+async function fetchCostData(start, end) {
+    const response = await fetch(`/api/reports/costs?start=${start.toISOString()}&end=${end.toISOString()}`);
+    if (!response.ok) throw new Error('Failed to fetch cost data');
+    return await response.json();
+}
+
+// Chart generation functions
+function generateBookingTrendChart(data) {
+    const chartData = new google.visualization.DataTable();
+    chartData.addColumn('date', 'Date');
+    chartData.addColumn('number', 'Number of Bookings');
+
+    // Process data
+    const bookingsByDate = new Map();
+    data.bookings.forEach(booking => {
+        const date = new Date(booking.checkInTime);
+        const dateStr = date.toDateString();
+        bookingsByDate.set(dateStr, (bookingsByDate.get(dateStr) || 0) + 1);
+    });
+
+    // Convert to chart data
+    const rows = Array.from(bookingsByDate.entries()).map(([dateStr, count]) => {
+        return [new Date(dateStr), count];
+    });
+    chartData.addRows(rows);
+
+    const options = {
+        title: 'Booking Trend',
+        curveType: 'function',
+        legend: { position: 'bottom' },
+        hAxis: { title: 'Date' },
+        vAxis: { title: 'Number of Bookings' }
     };
 
-    function calculateReports(data) {
-        let bookedRooms = 0;
-        let totalRevenue = 0;
-        let totalCustomers = 0;
-        const totalRooms = 20; // Assuming there are 20 rooms in total
+    const chart = new google.visualization.LineChart(document.getElementById('bookingTrendChart'));
+    chart.draw(chartData, options);
+}
 
-        for (let floor in data) {
-            bookedRooms += data[floor].length;
-            totalCustomers += data[floor].length;
-            data[floor].forEach(booking => {
-                const start = booking[2];
-                const end = booking[3];
-                const duration = (end - start) / (1000 * 60 * 60); // Duration in hours
-                totalRevenue += duration * 200000; // Assuming 200,000 VND per hour
-            });
+function generateRevenueTrendChart(data) {
+    const chartData = new google.visualization.DataTable();
+    chartData.addColumn('date', 'Date');
+    chartData.addColumn('number', 'Revenue (VND)');
+
+    // Process data
+    const revenueByDate = new Map();
+    data.bookings.forEach(booking => {
+        if (booking.status === 'Paid') {
+            const date = new Date(booking.checkInTime);
+            const dateStr = date.toDateString();
+            revenueByDate.set(dateStr, (revenueByDate.get(dateStr) || 0) + booking.totalMoney);
         }
+    });
 
-        const availableRooms = totalRooms - bookedRooms;
+    // Convert to chart data
+    const rows = Array.from(revenueByDate.entries()).map(([dateStr, revenue]) => {
+        return [new Date(dateStr), revenue];
+    });
+    chartData.addRows(rows);
 
-        return { bookedRooms, availableRooms, totalRevenue, totalCustomers };
+    const options = {
+        title: 'Revenue Trend',
+        curveType: 'function',
+        legend: { position: 'bottom' },
+        hAxis: { title: 'Date' },
+        vAxis: { 
+            title: 'Revenue (VND)',
+            format: 'short'
+        }
+    };
+
+    const chart = new google.visualization.LineChart(document.getElementById('revenueTrendChart'));
+    chart.draw(chartData, options);
+}
+
+function generateRoomOccupancyChart(data) {
+    const chartData = new google.visualization.DataTable();
+    chartData.addColumn('string', 'Status');
+    chartData.addColumn('number', 'Rooms');
+
+    const totalRooms = data.totalRooms;
+    const occupiedRooms = data.occupiedRooms;
+    const availableRooms = totalRooms - occupiedRooms;
+
+    chartData.addRows([
+        ['Occupied', occupiedRooms],
+        ['Available', availableRooms]
+    ]);
+
+    const options = {
+        title: 'Room Occupancy',
+        pieHole: 0.4,
+        colors: ['#007bff', '#28a745']
+    };
+
+    const chart = new google.visualization.PieChart(document.getElementById('roomOccupancyChart'));
+    chart.draw(chartData, options);
+}
+
+function generatePopularRoomChart(data) {
+    const chartData = new google.visualization.DataTable();
+    chartData.addColumn('string', 'Room Type');
+    chartData.addColumn('number', 'Revenue');
+
+    // Process data
+    const rows = data.roomTypes.map(type => [type.name, type.revenue]);
+    chartData.addRows(rows);
+
+    const options = {
+        title: 'Revenue by Room Type',
+        legend: { position: 'none' },
+        hAxis: { title: 'Revenue (VND)' },
+        vAxis: { title: 'Room Type' }
+    };
+
+    const chart = new google.visualization.BarChart(document.getElementById('popularRoomChart'));
+    chart.draw(chartData, options);
+}
+
+function generateServiceRevenueChart(data) {
+    const chartData = new google.visualization.DataTable();
+    chartData.addColumn('string', 'Service');
+    chartData.addColumn('number', 'Revenue');
+
+    // Process data
+    const rows = data.services.map(service => [service.name, service.revenue]);
+    chartData.addRows(rows);
+
+    const options = {
+        title: 'Service Revenue Distribution',
+        pieHole: 0.4
+    };
+
+    const chart = new google.visualization.PieChart(document.getElementById('serviceRevenueChart'));
+    chart.draw(chartData, options);
+
+    // Update service revenue table
+    const tableBody = document.getElementById('serviceRevenueTable');
+    tableBody.innerHTML = data.services
+        .sort((a, b) => b.revenue - a.revenue)
+        .map(service => `
+            <tr>
+                <td>${service.name}</td>
+                <td>${service.revenue.toLocaleString()} VND</td>
+                <td>${service.count}</td>
+            </tr>
+        `).join('');
+}
+
+function generateProfitChart(bookingData, serviceData, costData) {
+    const chartData = new google.visualization.DataTable();
+    chartData.addColumn('string', 'Category');
+    chartData.addColumn('number', 'Amount (VND)');
+
+    const totalRevenue = calculateTotalRevenue(bookingData, serviceData);
+    const totalCosts = calculateTotalCosts(costData);
+
+    chartData.addRows([
+        ['Revenue', totalRevenue],
+        ['Costs', totalCosts]
+    ]);
+
+    const options = {
+        title: 'Revenue vs Costs',
+        legend: { position: 'none' },
+        colors: ['#28a745', '#dc3545']
+    };
+
+    const chart = new google.visualization.ColumnChart(document.getElementById('profitChart'));
+    chart.draw(chartData, options);
+}
+
+// Helper functions
+function calculateTotalRevenue(bookingData, serviceData) {
+    const roomRevenue = bookingData.bookings
+        .filter(booking => booking.status === 'Paid')
+        .reduce((sum, booking) => sum + booking.totalMoney, 0);
+
+    const serviceRevenue = serviceData.services
+        .reduce((sum, service) => sum + service.revenue, 0);
+
+    return roomRevenue + serviceRevenue;
+}
+
+function calculateTotalCosts(costData) {
+    return costData.costs.reduce((sum, cost) => sum + cost.amount, 0);
+}
+
+function updateProfitSummary(bookingData, serviceData, costData) {
+    const totalRevenue = calculateTotalRevenue(bookingData, serviceData);
+    const totalCosts = calculateTotalCosts(costData);
+    const netProfit = totalRevenue - totalCosts;
+
+    document.getElementById('totalRevenue').textContent = `${totalRevenue.toLocaleString()} VND`;
+    document.getElementById('totalCosts').textContent = `${totalCosts.toLocaleString()} VND`;
+    document.getElementById('netProfit').textContent = `${netProfit.toLocaleString()} VND`;
+}
+
+// Chart refresh function
+function refreshChart(tabId) {
+    switch (tabId) {
+        case 'overview':
+            generateBookingTrendChart(window.lastBookingData);
+            generateRevenueTrendChart(window.lastBookingData);
+            break;
+        case 'room-revenue':
+            generateRoomOccupancyChart(window.lastRoomData);
+            generatePopularRoomChart(window.lastRoomData);
+            break;
+        case 'service-revenue':
+            generateServiceRevenueChart(window.lastServiceData);
+            break;
+        case 'profit':
+            generateProfitChart(window.lastBookingData, window.lastServiceData, window.lastCostData);
+            break;
     }
-
-    const reports = calculateReports(allData);
-
-    bookedRoomsElement.textContent = reports.bookedRooms;
-    availableRoomsElement.textContent = reports.availableRooms;
-    totalRevenueElement.textContent = reports.totalRevenue.toLocaleString() + " VND";
-    totalCustomersElement.textContent = reports.totalCustomers;
-});
+}
