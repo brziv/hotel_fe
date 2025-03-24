@@ -81,7 +81,7 @@ async function fetchInitialData() {
 const api = {
     fetchGoods: async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/Good/GetGoodList`);
+            const response = await fetch(`${API_BASE_URL}/Product/GetProductList`);
             const data = await response.json();
             state.goodsList = data.data;
             renderGoodsTable();
@@ -94,7 +94,7 @@ const api = {
 
     fetchGoodHistory: async (goodId) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailListByGood/${goodId}`);
+            const response = await fetch(`${API_BASE_URL}/Igd/GetImportGoodsDetailListByGood/${goodId}`);
             const data = await response.json();
             return data.data;
         } catch (error) {
@@ -115,7 +115,7 @@ const api = {
 
     fetchImportDetails: async (importId) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailListByImport/${importId}`);
+            const response = await fetch(`${API_BASE_URL}/Igd/GetImportGoodsDetailListByImport/${importId}`);
             const data = await response.json();
             renderImportDetails(data.data);
         } catch (error) {
@@ -125,7 +125,7 @@ const api = {
 
     fetchImportHistory: async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/ImportGoodsDetail/GetImportGoodsDetailList`);
+            const response = await fetch(`${API_BASE_URL}/Igd/GetImportGoodsDetailList`);
             const data = await response.json();
             renderImportHistoryTable(data.data);
         } catch (error) {
@@ -135,17 +135,17 @@ const api = {
 
     fetchServices: async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/Service/GetServiceList`);
+            const response = await fetch(`${API_BASE_URL}/Package/GetPackageList`);
             const data = await response.json();
             state.servicesList = data.data;
             renderServicesTable(data.data);
         } catch (error) {
-            console.error("Error fetching services:", error);
+            console.error("Error fetching packages:", error);
         }
     },
 
     addGood: async (good) => {
-        return await fetch(`${API_BASE_URL}/Good/InsertTblGood`, {
+        return await fetch(`${API_BASE_URL}/Product/InsertTblProduct`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(good),
@@ -153,7 +153,7 @@ const api = {
     },
 
     updateGood: async (good) => {
-        return await fetch(`${API_BASE_URL}/Good/UpdateTblGood`, {
+        return await fetch(`${API_BASE_URL}/Product/UpdateTblProduct`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(good),
@@ -161,7 +161,7 @@ const api = {
     },
 
     deleteGood: async (id) => {
-        return await fetch(`${API_BASE_URL}/Good/XoaTblGood?gGoodsId=${id}`, {
+        return await fetch(`${API_BASE_URL}/Product/XoaTblProduct?pProductId=${id}`, {
             method: "DELETE",
         });
     },
@@ -175,7 +175,7 @@ const api = {
     },
 
     insertImportDetail: async (detailData) => {
-        return await fetch(`${API_BASE_URL}/ImportGoodsDetail/InsertTblImportGoodsDetail`, {
+        return await fetch(`${API_BASE_URL}/Igd/InsertTblImportGoodsDetail`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(detailData),
@@ -183,7 +183,7 @@ const api = {
     },
 
     addService: async (service) => {
-        return await fetch(`${API_BASE_URL}/Service/InsertTblService`, {
+        return await fetch(`${API_BASE_URL}/Package/InsertTblPackage`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(service),
@@ -191,7 +191,7 @@ const api = {
     },
 
     deleteService: async (id) => {
-        return await fetch(`${API_BASE_URL}/Service/XoaTblService?sServiceId=${id}`, {
+        return await fetch(`${API_BASE_URL}/Package/XoaTblPackage?spPackageId=${id}`, {
             method: "DELETE",
         });
     },
@@ -233,7 +233,7 @@ function handleGoodsTableActions(event) {
 }
 
 function editGood(goodId) {
-    const good = state.goodsList.find((g) => g.gGoodsId === goodId);
+    const good = state.goodsList.find((g) => g.pProductId === goodId);
     if (!good) return;
 
     domElements.goodsNameInput.value = good.gGoodsName;
@@ -248,7 +248,7 @@ function editGood(goodId) {
 }
 
 async function handleUpdateGood() {
-    const good = state.goodsList.find((g) => g.gGoodsId === state.editGoodId);
+    const good = state.goodsList.find((g) => g.pProductId === state.editGoodId);
     if (!good) return;
 
     good.gGoodsName = domElements.goodsNameInput.value.trim();
@@ -352,7 +352,7 @@ async function handleFinalizeImport() {
         await Promise.all(detailPromises);
 
         const quantityUpdates = state.importDetailsList.map((detail) => {
-            const good = state.goodsList.find((g) => g.gGoodsId === detail.goodsId);
+            const good = state.goodsList.find((g) => g.pProductId === detail.goodsId);
             good.gQuantity += detail.quantity;
             return api.updateGood(good);
         });
@@ -419,7 +419,7 @@ async function handleFinalizeService() {
         sServiceCostPrice: totalCostPrice,
         sServiceSellPrice: totalSellPrice,
         serviceGoods: state.serviceGoodsList.map(detail => ({
-            sgGoodsId: detail.goodsId,
+            spProductId: detail.goodsId,
             sgQuantity: detail.quantity
         }))
     };
@@ -472,17 +472,17 @@ function renderGoodsTable() {
     state.goodsList.forEach((good) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td>${good.gGoodsName}</td>
-            <td>${good.gCategory}</td>
-            <td>${good.gQuantity}</td>
-            <td>${good.gUnit}</td>
-            <td>${good.gCostPrice}</td>
-            <td>${good.gSellingPrice}</td>
-            <td>${good.gCurrency}</td>
+            <td>${good.pProductName}</td>
+            <td>${good.pCategory}</td>
+            <td>${good.pQuantity}</td>
+            <td>${good.pUnit}</td>
+            <td>${good.pCostPrice}</td>
+            <td>${good.pSellingPrice}</td>
+            <td>${good.pCurrency}</td>
             <td>
-                <button class="history-btn btn btn-sm btn-info" data-good-id="${good.gGoodsId}" data-good-name="${good.gGoodsName}" data-bs-toggle="modal" data-bs-target="#good-history-modal">History</button>
-                <button class="update-good-btn btn btn-sm btn-primary" data-good-id="${good.gGoodsId}">Update</button>
-                <button class="delete-good-btn btn btn-sm btn-danger" data-good-id="${good.gGoodsId}">Delete</button>
+                <button class="history-btn btn btn-sm btn-info" data-good-id="${good.pProductId}" data-good-name="${good.pProductName}" data-bs-toggle="modal" data-bs-target="#good-history-modal">History</button>
+                <button class="update-good-btn btn btn-sm btn-primary" data-good-id="${good.pProductId}">Update</button>
+                <button class="delete-good-btn btn btn-sm btn-danger" data-good-id="${good.pProductId}">Delete</button>
             </td>
         `;
         domElements.goodsTableBody.appendChild(row);
@@ -546,7 +546,7 @@ function populateImportGoodsSelect(goods) {
     domElements.importGoodsSelect.innerHTML = '<option value="">Select a good</option>';
     goods.forEach((good) => {
         domElements.importGoodsSelect.innerHTML += `
-            <option value="${good.gGoodsId}" data-cost="${good.gCostPrice}">${good.gGoodsName}</option>
+            <option value="${good.pProductId}" data-cost="${good.gCostPrice}">${good.gGoodsName}</option>
         `;
     });
 }
@@ -571,7 +571,7 @@ function renderImportDetails(imports) {
     imports.forEach((importGood) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td>${importGood.gGoodsName}</td>
+            <td>${importGood.pProductName}</td>
             <td>${importGood.igdQuantity}</td>
             <td>${importGood.igdCostPrice}</td>
         `;
@@ -590,7 +590,7 @@ function renderImportHistoryTable(history) {
         sortedHistory.forEach((record) => {
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${record.gGoodsName}</td>
+                <td>${record.pProductName}</td>
                 <td>${record.igdQuantity}</td>
                 <td>${record.igdCostPrice}</td>
                 <td>${record.igSupplier}</td>
@@ -607,12 +607,12 @@ function renderServicesTable(services) {
     services.forEach((service) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td>${service.sServiceName}</td>
-            <td>${service.goodsInfo.split('\n').join('<br>')}</td>
+            <td>${service.spPackageName}</td>
+            <td>${service.productsInfo.split('\n').join('<br>')}</td>
             <td>${service.sServiceCostPrice.toLocaleString()} VND</td>
             <td>${service.sServiceSellPrice.toLocaleString()} VND</td>
             <td>
-                <button class="delete-service-btn btn btn-sm btn-danger" data-service-id="${service.sServiceId}">Delete</button>
+                <button class="delete-service-btn btn btn-sm btn-danger" data-service-id="${service.spPackageId}">Delete</button>
             </td>
         `;
         domElements.servicesTableBody.appendChild(row);
@@ -640,7 +640,7 @@ function populateServiceGoodsSelect(goods) {
     domElements.serviceGoodsSelect.innerHTML = '<option value="">Select a good</option>';
     goods.forEach((good) => {
         domElements.serviceGoodsSelect.innerHTML += `
-            <option value="${good.gGoodsId}" data-cost="${good.gCostPrice}" data-selling-price="${good.gSellingPrice}">${good.gGoodsName}</option>
+            <option value="${good.pProductId}" data-cost="${good.pCostPrice}" data-selling-price="${good.pSellingPrice}">${good.pGoodsName}</option>
         `;
     });
 }

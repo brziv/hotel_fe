@@ -16,10 +16,10 @@
 
         <!-- Navigation Tabs -->
         <ul class="nav nav-tabs" id="goods-tabs">
-            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#goods">Goods</a></li>
+            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#goods">Products</a></li>
             <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#import-goods">Import Goods</a></li>
             <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#import-history">Import History</a></li>
-            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#services">Services</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#services">Service Packages</a></li>
         </ul>
 
         <!-- Tab Content -->
@@ -27,11 +27,11 @@
             <!-- Goods Tab -->
             <div id="goods" class="tab-pane fade show active">
                 <div class="form-section">
-                    <h4>Goods Management</h4>
+                    <h4>Product Management</h4>
                     <form id="add-goods-form">
                         <div class="row mt-4 mb-4">
                             <div class="col-md-2">
-                                <input type="text" class="form-control" id="goods-name" placeholder="Goods Name"
+                                <input type="text" class="form-control" id="goods-name" placeholder="Product Name"
                                     required>
                             </div>
                             <div class="col-md-2">
@@ -124,18 +124,18 @@
             <!-- Services Tab -->
             <div id="services" class="tab-pane fade">
                 <div class="form-section">
-                    <h4>Services Management</h4>
+                    <h4>Package Management</h4>
                     <div class="text-center">
                         <button class="btn btn-primary mt-3 mb-4" data-bs-toggle="modal"
-                            data-bs-target="#service-modal">New Service</button>
+                            data-bs-target="#service-modal">New Package</button>
                     </div>
                 </div>
                 <div class="table-container">
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Service Name</th>
-                                <th>Service Details</th>
+                                <th>Package Name</th>
+                                <th>Package Details</th>
                                 <th>Cost Price</th>
                                 <th>Sell Price</th>
                                 <th>Actions</th>
@@ -248,28 +248,28 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="serviceModalLabel">Add/Edit Service</h5>
+                    <h5 class="modal-title" id="serviceModalLabel">Add/Edit Package</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="add-service-table">
                         <div class="mb-3">
-                            <label for="service-name">Service Name:</label>
+                            <label for="service-name">Package Name:</label>
                             <input type="text" id="service-name" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label for="service-goods-select">Select Good:</label>
+                            <label for="service-goods-select">Select Product:</label>
                             <select id="service-goods-select" class="form-control"></select>
                         </div>
                         <div class="mb-3">
                             <label for="service-quantity">Quantity:</label>
                             <input type="number" id="service-quantity" class="form-control" min="1">
                         </div>
-                        <button type="button" id="add-service-good-btn" class="btn btn-primary mb-3">Add Good</button>
+                        <button type="button" id="add-service-good-btn" class="btn btn-primary mb-3">Add Product</button>
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Good Name</th>
+                                    <th>Product Name</th>
                                     <th>Quantity</th>
                                     <th>Cost Price</th>
                                     <th>Sell Price</th>
@@ -281,7 +281,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="finalize-service-btn" class="btn btn-success">Save Service</button>
+                    <button type="button" id="finalize-service-btn" class="btn btn-success">Save Package</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>

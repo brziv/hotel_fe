@@ -396,7 +396,7 @@ async function bookService() {
     document.getElementById('addservice-roomNumber').value = document.getElementById('cust-room-num').textContent;
 
     try {
-        const response = await fetch(`http://localhost:5222/api/Service/GetServiceList`);
+        const response = await fetch(`http://localhost:5222/api/Package/GetPackageList`);
         const data = await response.json();
         servicesList = data.data;
   
@@ -404,8 +404,8 @@ async function bookService() {
         servicesList.forEach((service) => {
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${service.sServiceName}</td>
-                <td>${service.goodsInfo.split('\n').join('<br>')}</td>
+                <td>${service.spPackageName}</td>
+                <td>${service.productsInfo.split('\n').join('<br>')}</td>
                 <td>${service.sServiceSellPrice.toLocaleString()}</td>
                 <td><button class="btn btn-add" onclick="addService(this)">+</button></td>
             `;
@@ -416,7 +416,7 @@ async function bookService() {
     }
 
     try {
-        const response = await fetch(`http://localhost:5222/api/ServiceGood/FindUsedService?bookingId=${bookingid}`);
+        const response = await fetch(`http://localhost:5222/api/PackageDetail/FindUsedService?bookingId=${bookingid}`);
         const data = await response.json();
         var UsedservicesList = data.data;
       
