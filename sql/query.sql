@@ -241,9 +241,8 @@ VALUES
 
 ---------------------------------Procedure, Fuction, Trigger
 
---1) Nhan phong(finished)
-go
-CREATE or alter PROCEDURE pro_check_in
+--1) Check-in
+ALTER PROCEDURE pro_check_in
     @BookingID UNIQUEIDENTIFIER
 AS
 BEGIN
@@ -254,16 +253,15 @@ BEGIN
     UPDATE tbl_Rooms
     SET r_Status = 'Occupied'
     WHERE r_RoomID IN (
-        SELECT  br_RoomID
+        SELECT br_RoomID
         FROM tbl_BookingRooms
         WHERE br_BookingID = @BookingID
     );
 END;
-go
-exec pro_check_in '6063325b-c01b-4e9d-8a8c-4a4e6dc0fd1b';
-go
---2) Tra phong(finished)
-CREATE or alter PROCEDURE pro_check_out
+GO
+
+--2) Check-out
+ALTER PROCEDURE pro_check_out
     @BookingID UNIQUEIDENTIFIER,
     @PaymentMethod NVARCHAR(50)
 AS
@@ -293,92 +291,72 @@ BEGIN
         WHERE br_BookingID = @BookingID
     );
 END;
-exec pro_check_out '6063325b-c01b-4e9d-8a8c-4a4e6dc0fd1b','cashhhhhh';
-go
---3) edit service(finished)
-CREATE or alter PROCEDURE pro_edit_services
+GO
+
+--3) Edit services
+ALTER PROCEDURE pro_edit_services
     @BookingID UNIQUEIDENTIFIER,
-    @ServiceID UNIQUEIDENTIFIER,
+    @PackageID UNIQUEIDENTIFIER,
     @Quantity INT
 AS
 BEGIN
     DECLARE @ServicePrice DECIMAL(10,2);
 
-    -- take service sell price
+    -- Get service sell price
     SELECT @ServicePrice = s_ServiceSellPrice 
-    FROM tbl_Services 
-    WHERE s_ServiceID = @ServiceID;
+    FROM tbl_ServicePackages 
+    WHERE sp_PackageID = @PackageID;
 
-    -- add to bookingservices
+    -- Add to booking services
     INSERT INTO tbl_BookingServices (bs_BookingID, bs_ServiceID, bs_Quantity)
-    VALUES (@BookingID, @ServiceID, @Quantity);
+    VALUES (@BookingID, @PackageID, @Quantity);
 
-    -- update totalmoney in bookings
+    -- Update total money in bookings
     UPDATE tbl_Bookings
     SET b_TotalMoney = b_TotalMoney + (@ServicePrice * @Quantity)
     WHERE b_BookingID = @BookingID;
 END;
-go
-select * from tbl_BookingServices
-go
-EXEC pro_edit_services '9A734537-0955-4A33-9277-1F572E7EE3BE', 'CFBD0209-8188-455E-9391-05FAAB388E87', 3;
---4)Find booking for index graph(finished)
 GO
-CREATE or alter PROCEDURE pro_find_bookings
+
+--4) Find bookings for index graph
+ALTER PROCEDURE pro_find_bookings
     @CheckInDate DATETIME,
     @CheckOutDate DATETIME,
     @Floor NVARCHAR(10)
 AS
 BEGIN
-    -- FIND booking with date and floor
-    SELECT r.*,b.*,br_CheckInDate,br_CheckOutDate
+    SELECT r.*, b.*, br_CheckInDate, br_CheckOutDate
     FROM tbl_Bookings b
     JOIN tbl_BookingRooms br ON b.b_BookingID = br.br_BookingID
     JOIN tbl_Rooms r ON br.br_RoomID = r.r_RoomID
     JOIN tbl_Floors f ON r.r_FloorID = f.f_FloorID
-    WHERE 
-        (@CheckInDate < br_CheckOutDate AND @CheckOutDate > br_CheckInDate)
+    WHERE (@CheckInDate < br_CheckOutDate AND @CheckOutDate > br_CheckInDate)
         AND f.f_Floor = @Floor;
 END;
 GO
-select * from tbl_Bookings b
-exec pro_find_bookings '2025-03-04 00:00:00.000','2025-03-05 00:00:00.000','1';
 
---5) Create User --hoac la dung curd
-INSERT INTO tbl_Guests (g_FirstName, g_LastName, g_Email, g_PhoneNumber) 
-VALUES ('Thanh', 'Le Xuan', 'xuanthanhle@gmail.com', '0988718567');
-select * from tbl_Guests
---6) Find emty rooms(Room is available 1 hour after previous guest checked out)
-go
-alter PROCEDURE pro_FindAvailableRooms
+--5) Find available rooms
+ALTER PROCEDURE pro_FindAvailableRooms
     @CheckInDate DATETIME,
     @CheckOutDate DATETIME,
-	@floor Nvarchar(10)
+    @Floor NVARCHAR(10)
 AS
 BEGIN
-    -- find rooms are occupied
     WITH BookedRooms AS (
-		SELECT DISTINCT br.br_RoomID
-		FROM tbl_Bookings b
-		JOIN tbl_BookingRooms br ON b.b_BookingID = br.br_BookingID
-		WHERE (@CheckInDate < DATEADD(HOUR, 1, br.br_CheckOutDate) 
-			AND @CheckOutDate > br.br_CheckInDate) 
-	)
-	SELECT r.r_RoomID, r.r_RoomNumber, f.f_Floor, r.r_RoomType, r.r_PricePerHour
-	FROM tbl_Rooms r
-	JOIN tbl_Floors f ON r.r_FloorID = f.f_FloorID
-	WHERE r.r_RoomID NOT IN (SELECT br_RoomID FROM BookedRooms) 
-	AND f.f_Floor = @floor;
-
+        SELECT DISTINCT br.br_RoomID
+        FROM tbl_Bookings b
+        JOIN tbl_BookingRooms br ON b.b_BookingID = br.br_BookingID
+        WHERE (@CheckInDate < DATEADD(HOUR, 1, br.br_CheckOutDate) 
+            AND @CheckOutDate > br.br_CheckInDate)
+    )
+    SELECT r.r_RoomID, r.r_RoomNumber, f.f_Floor, r.r_RoomType, r.r_PricePerHour
+    FROM tbl_Rooms r
+    JOIN tbl_Floors f ON r.r_FloorID = f.f_FloorID
+    WHERE r.r_RoomID NOT IN (SELECT br_RoomID FROM BookedRooms) 
+        AND f.f_Floor = @Floor;
 END;
-go
-select br_CheckInDate,br_CheckOutDate, r_RoomNumber from tbl_Bookings
-join tbl_BookingRooms on b_BookingID=br_BookingID
-join tbl_Rooms on br_RoomID = r_RoomID
-go
-EXEC pro_FindAvailableRooms '2025-03-05 01:00:00.000', '2025-03-08 00:00:00.000','1';
+GO
 
-go
 --7.1)
 
 --7.2)

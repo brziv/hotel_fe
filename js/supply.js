@@ -88,7 +88,7 @@ const api = {
             populateImportGoodsSelect(data.data);
             populateServiceGoodsSelect(data.data);
         } catch (error) {
-            console.error("Error fetching goods:", error);
+            console.error("Error fetching products:", error);
         }
     },
 
@@ -201,13 +201,13 @@ const api = {
 async function handleAddGood(event) {
     event.preventDefault();
     const newGood = {
-        gGoodsName: domElements.goodsNameInput.value.trim(),
-        gCategory: domElements.categoryInput.value.trim(),
-        gQuantity: 0,
-        gUnit: domElements.unitInput.value.trim(),
-        gCostPrice: parseFloat(domElements.costPriceInput.value),
-        gSellingPrice: parseFloat(domElements.sellingPriceInput.value),
-        gCurrency: "VND",
+        pProductName: domElements.goodsNameInput.value.trim(),
+        pCategory: domElements.categoryInput.value.trim(),
+        pQuantity: 0,
+        pUnit: domElements.unitInput.value.trim(),
+        pCostPrice: parseFloat(domElements.costPriceInput.value),
+        pSellingPrice: parseFloat(domElements.sellingPriceInput.value),
+        pCurrency: "VND",
     };
 
     try {
@@ -236,11 +236,11 @@ function editGood(goodId) {
     const good = state.goodsList.find((g) => g.pProductId === goodId);
     if (!good) return;
 
-    domElements.goodsNameInput.value = good.gGoodsName;
-    domElements.categoryInput.value = good.gCategory;
-    domElements.unitInput.value = good.gUnit;
-    domElements.costPriceInput.value = good.gCostPrice;
-    domElements.sellingPriceInput.value = good.gSellingPrice;
+    domElements.goodsNameInput.value = good.pProductName;
+    domElements.categoryInput.value = good.pCategory;
+    domElements.unitInput.value = good.pUnit;
+    domElements.costPriceInput.value = good.pCostPrice;
+    domElements.sellingPriceInput.value = good.pSellingPrice;
 
     state.editGoodId = goodId;
     domElements.addGoodBtn.style.display = "none";
@@ -251,12 +251,12 @@ async function handleUpdateGood() {
     const good = state.goodsList.find((g) => g.pProductId === state.editGoodId);
     if (!good) return;
 
-    good.gGoodsName = domElements.goodsNameInput.value.trim();
-    good.gCategory = domElements.categoryInput.value.trim();
-    good.gUnit = domElements.unitInput.value.trim();
-    good.gCostPrice = parseFloat(domElements.costPriceInput.value);
-    good.gSellingPrice = parseFloat(domElements.sellingPriceInput.value);
-    good.gCurrency = "VND";
+    good.pProductName = domElements.goodsNameInput.value.trim();
+    good.pCategory = domElements.categoryInput.value.trim();
+    good.pUnit = domElements.unitInput.value.trim();
+    good.pCostPrice = parseFloat(domElements.costPriceInput.value);
+    good.pSellingPrice = parseFloat(domElements.sellingPriceInput.value);
+    good.pCurrency = "VND";
 
     try {
         await api.updateGood(good);
@@ -352,8 +352,8 @@ async function handleFinalizeImport() {
         await Promise.all(detailPromises);
 
         const quantityUpdates = state.importDetailsList.map((detail) => {
-            const good = state.goodsList.find((g) => g.pProductId === detail.goodsId);
-            good.gQuantity += detail.quantity;
+            const good = state.goodsList.find((p) => p.pProductId === detail.goodsId);
+            good.pQuantity += detail.quantity;
             return api.updateGood(good);
         });
 
@@ -415,12 +415,12 @@ async function handleFinalizeService() {
     );
 
     const serviceData = {
-        sServiceName: domElements.serviceNameInput.value.trim(),
+        spPackageName: domElements.serviceNameInput.value.trim(),
         sServiceCostPrice: totalCostPrice,
         sServiceSellPrice: totalSellPrice,
-        serviceGoods: state.serviceGoodsList.map(detail => ({
-            spProductId: detail.goodsId,
-            sgQuantity: detail.quantity
+        packageDetails: state.serviceGoodsList.map(detail => ({
+            pdProductId: detail.goodsId,
+            pdQuantity: detail.quantity
         }))
     };
 
@@ -546,7 +546,7 @@ function populateImportGoodsSelect(goods) {
     domElements.importGoodsSelect.innerHTML = '<option value="">Select a good</option>';
     goods.forEach((good) => {
         domElements.importGoodsSelect.innerHTML += `
-            <option value="${good.pProductId}" data-cost="${good.gCostPrice}">${good.gGoodsName}</option>
+            <option value="${good.pProductId}" data-cost="${good.pCostPrice}">${good.pProductName}</option>
         `;
     });
 }
@@ -640,7 +640,7 @@ function populateServiceGoodsSelect(goods) {
     domElements.serviceGoodsSelect.innerHTML = '<option value="">Select a good</option>';
     goods.forEach((good) => {
         domElements.serviceGoodsSelect.innerHTML += `
-            <option value="${good.pProductId}" data-cost="${good.pCostPrice}" data-selling-price="${good.pSellingPrice}">${good.pGoodsName}</option>
+            <option value="${good.pProductId}" data-cost="${good.pCostPrice}" data-selling-price="${good.pSellingPrice}">${good.pProductName}</option>
         `;
     });
 }

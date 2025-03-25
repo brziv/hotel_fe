@@ -424,8 +424,8 @@ async function bookService() {
         UsedservicesList.forEach((service) => {
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${service.sServiceName}</td>
-                <td>${service.goodsInfo.split('\n').join('<br>')}</td>
+                <td>${service.spPackageName}</td>
+                <td>${service.productsInfo.split('\n').join('<br>')}</td>
                 <td>${service.sServiceSellPrice.toLocaleString()}</td>
                 <td>${service.quantity}</td>
                 <td>${(service.sServiceSellPrice * service.quantity).toLocaleString()}</td>
@@ -509,14 +509,14 @@ async function addServicetoBooking() {
             
             
             // Tìm serviceID từ tên dịch vụ trong servicesList
-            const service = servicesList.find(s => s.sServiceName === serviceName);
+            const service = servicesList.find(s => s.spPackageName === serviceName);
             if (!service) {
                 console.error(`Không tìm thấy dịch vụ có tên: ${serviceName}`);
                 continue;
             }
         
             servicesData.push({
-                "serviceID": service.sServiceId, // Sửa thành sServiceId thay vì serviceID
+                "serviceID": service.spPackageId,
                 "quantity": quantity
             });
         }
@@ -527,7 +527,7 @@ async function addServicetoBooking() {
         }
         
         // Gọi API để thêm dịch vụ với BookingID và danh sách dịch vụ
-        const response = await fetch(`http://localhost:5222/api/ServiceGood/AddService?BookingID=${bookingid}`, {
+        const response = await fetch(`http://localhost:5222/api/Booking/AddService?BookingID=${bookingid}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
