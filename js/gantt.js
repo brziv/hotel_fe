@@ -5,6 +5,9 @@ let allBookings = [];
 let chart;
 let dataTable;
 let bookingid;
+let guestName;
+let deposit;
+let initialtotalMoney;
 let servicesList = [];
 
 async function fetchBookings() {
@@ -64,10 +67,11 @@ function processBookings(bookings) {
                 booking.lastName,
                 booking.roomnum,
                 booking.bookingStatus,
-                booking.totalMoney,
-                booking.deposit,
+                booking.totalMoney||0,
+                booking.deposit||0,
                 checkinDate,
-                checkoutDate
+                checkoutDate,
+                booking.priceperhour
             ]);
         } else if (booking.bookingStatus === "Confirmed") {
             currentBookings.push([
@@ -76,10 +80,11 @@ function processBookings(bookings) {
                 booking.lastName,
                 booking.roomnum,
                 booking.bookingStatus,
-                booking.totalMoney,
-                booking.deposit,
+                booking.totalMoney||0,
+                booking.deposit||0,
                 checkinDate,
-                checkoutDate
+                checkoutDate,
+                booking.priceperhour
             ]);
         } else if (booking.bookingStatus === "Paid") {
             pastBookings.push([
@@ -89,9 +94,10 @@ function processBookings(bookings) {
                 booking.roomnum,
                 booking.bookingStatus,
                 booking.totalMoney,
-                booking.deposit,
+                booking.deposit||0,
                 checkinDate,
-                checkoutDate
+                checkoutDate,
+                booking.priceperhour
             ]);
         }
     });
@@ -255,7 +261,6 @@ function drawChart() {
             // Find the corresponding booking in our arrays
             const roomNumber = dataTable.getValue(row, 0); // Assuming room number is in column 0
             const checkinDate = dataTable.getValue(row, 4);
-            
             // Search in all booking arrays to find matching booking
             for (let booking of [...upcomingBookings, ...currentBookings, ...pastBookings]) {
                 if (booking[3] === roomNumber && booking[7].getTime() === checkinDate.getTime()) { // booking[3] contains the room number
@@ -302,6 +307,7 @@ function showModal(name, roomnumber, status, totalMoney, deposit, timein, timeou
                 selectedBooking = booking;
                 bookingStatus = booking[4]; // booking[4] contains the status
                 bookingid = booking[0];
+                initialtotalMoney = booking[5];
                 break;
             }
         }
@@ -399,7 +405,7 @@ async function bookService() {
         const response = await fetch(`http://localhost:5222/api/Package/GetPackageList`);
         const data = await response.json();
         servicesList = data.data;
-  
+
         document.getElementById('addserviceTableBody').innerHTML = "";
         servicesList.forEach((service) => {
             const row = document.createElement("tr");
@@ -416,7 +422,7 @@ async function bookService() {
     }
 
     try {
-        const response = await fetch(`http://localhost:5222/api/PackageDetail/FindUsedService?bookingId=${bookingid}`);
+        const response = await fetch(`http://localhost:5222/api/Package/FindUsedService?bookingId=${bookingid}`);
         const data = await response.json();
         var UsedservicesList = data.data;
       
@@ -516,7 +522,7 @@ async function addServicetoBooking() {
             }
         
             servicesData.push({
-                "serviceID": service.spPackageId,
+                "packageID": service.spPackageId,
                 "quantity": quantity
             });
         }
@@ -527,7 +533,7 @@ async function addServicetoBooking() {
         }
         
         // Gọi API để thêm dịch vụ với BookingID và danh sách dịch vụ
-        const response = await fetch(`http://localhost:5222/api/Booking/AddService?BookingID=${bookingid}`, {
+        const response = await fetch(`http://localhost:5222/api/Package/AddService?BookingID=${bookingid}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -555,7 +561,211 @@ function closeAddServiceModal() {
     document.getElementById('addservice-selectedServices').querySelector('tbody').innerHTML = "";
 }
 
-function checkout() {
+async function showCheckoutModal() {
+    // Ẩn modal booking details
+    document.getElementById('modal').style.display = 'none';
+    
+    // Lấy thông tin từ modal booking details
+    const guestName = document.getElementById('cust-name').textContent;
+    const deposit = document.getElementById('cust-deposit').textContent;
+    
+    // Hiển thị thông tin trong modal checkout
+    document.getElementById('checkout-guest-name').textContent = guestName;
+    
+    // Lấy thời gian hiện tại cho checkout
+    const now = new Date();
+    
+
+    // Tìm tất cả phòng trong currentBookings có cùng bookingid
+    const checkoutRooms = currentBookings.filter(booking => booking[0] === bookingid);
+    console.log(now);
+    console.log(checkoutRooms[0][7], checkoutRooms[1][7]);
+    // Chuẩn bị HTML cho bảng thông tin phòng
+    let roomDetailsHTML = '';
+    let totalRoomPrice = 0;
+    
+    if (checkoutRooms.length > 0) {
+        checkoutRooms.forEach(room => {
+            const roomNumber = room[3];
+            const timeIn = new Date(room[7]);
+            
+            const timeInFormatted = formatDateTimeLocal(timeIn);
+            const timeOutFormatted = formatDateTimeLocal(now);
+            
+            const roomPrice = room[9] ; 
+            
+            const timeUsed = Math.ceil((now - timeIn) / (1000 * 60 * 60));
+            
+            const roomTotalPrice = timeUsed * roomPrice;
+            totalRoomPrice += roomTotalPrice;
+            
+            roomDetailsHTML += `
+                <tr>
+                    <td>${roomNumber}</td>
+                    <td>
+                        <input type="datetime-local" value="${timeInFormatted}" class="checkout-time-input" id="checkout-time-in" readonly>
+                    </td>
+                    <td>
+                        <input type="datetime-local" value="${timeOutFormatted}" class="checkout-time-input" id="checkout-time-out" >
+                    </td>
+                    <td>${timeUsed.toFixed(2)}</td>
+                    <td>${roomPrice.toLocaleString()} VND/h</td>
+                    <td>${roomTotalPrice.toLocaleString()} VND</td>
+                </tr>
+            `;
+        });
+    } else {
+        roomDetailsHTML = `<tr><td colspan="6" class="text-center">Fan't find room infomation</td></tr>`;
+    }
+    
+    document.getElementById('checkout-room-details').innerHTML = roomDetailsHTML;
+    
+    // Thêm event listener cho input datetime để tính lại thời gian sử dụng và tổng tiền khi thay đổi
+    setTimeout(() => {
+        const timeInputs = document.querySelectorAll('.checkout-time-input');
+        timeInputs.forEach(input => {
+            input.addEventListener('change', updateCheckoutCalculations);
+        });
+    }, 100);
+    
+
+    try {
+        const response = await fetch(`http://localhost:5222/api/Package/FindUsedService?bookingId=${bookingid}`);
+        const data = await response.json();
+        var checkoutUsedservicesList = data.data;
+        if(checkoutUsedservicesList.length > 0){
+            document.getElementById('checkout-services-details').innerHTML = "";
+            var totalServicePrice = 0;
+            checkoutUsedservicesList.forEach((service) => {
+                const row = document.createElement("tr");
+                var servicetotalprice = service.sServiceSellPrice * service.quantity;
+                totalServicePrice += servicetotalprice;
+                row.innerHTML = `
+                    <td>${service.spPackageName}</td>
+                    <td>${service.productsInfo.split('\n').join('<br>')}</td>
+                    <td>${service.sServiceSellPrice.toLocaleString()}</td>
+                    <td>${service.quantity}</td>
+                    <td>${servicetotalprice.toLocaleString()}</td>
+                `;
+                document.getElementById('checkout-services-details').appendChild(row);        
+            });
+        }
+        else{
+            document.getElementById('checkout-services-details').innerHTML = `<tr><td colspan="5" class="text-center">There is no service</td></tr>`;
+        }   
+    } catch (error) {
+        console.error("Error fetching services:", error);
+    }
+      
+    // Tính tổng tiền
+    const grandTotal = totalRoomPrice + totalServicePrice;
+    const depositAmount = parseInt(deposit) || 0;
+    const remaining = grandTotal - depositAmount;
+        
+    document.getElementById('checkout-total-price').textContent = grandTotal.toLocaleString();
+    document.getElementById('checkout-deposit').textContent = depositAmount.toLocaleString();
+    document.getElementById('checkout-remaining').textContent = remaining.toLocaleString();
+    
+    
+    // Hiển thị modal checkout
+    document.getElementById('checkoutdetail-modal').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+}
+
+function updateCheckoutCalculations() {
+    const timeInInput = document.getElementById('checkout-time-in');
+    const timeOutInput = document.getElementById('checkout-time-out');
+    
+    if (!timeInInput || !timeOutInput) return;
+    
+    const timeIn = new Date(timeInInput.value);
+    const timeOut = new Date(timeOutInput.value);
+    
+    if (isNaN(timeIn) || isNaN(timeOut)) return;
+    
+    // Tìm phòng hiện tại trong currentBookings
+    const room = currentBookings.find(b => b[0] === bookingid);
+    if (!room) return;
+    
+    const roomPrice = room[9] || initialtotalMoney / 24;
+    
+    // Tính thời gian sử dụng (giờ)
+    const timeUsed = (timeOut - timeIn) / (1000 * 60 * 60);
+    
+    // Tính tổng tiền phòng
+    const roomTotalPrice = timeUsed * roomPrice;
+    
+    // Cập nhật UI
+    const row = timeInInput.closest('tr');
+    if (row) {
+        row.cells[3].textContent = timeUsed.toFixed(2);
+        row.cells[5].textContent = roomTotalPrice.toLocaleString() + ' VND';
+    }
+    
+    // Cập nhật tổng cộng
+    const servicesTotal = document.querySelectorAll('#checkout-services-details tr')
+        .reduce((total, row) => {
+            const priceCell = row.cells[4];
+            if (priceCell) {
+                const price = parseInt(priceCell.textContent.replace(/[^\d]/g, '')) || 0;
+                return total + price;
+            }
+            return total;
+        }, 0);
+    
+    const grandTotal = roomTotalPrice + servicesTotal;
+    const depositAmount = parseInt(document.getElementById('checkout-deposit').textContent.replace(/[^\d]/g, '')) || 0;
+    const remaining = grandTotal - depositAmount;
+    
+    document.getElementById('checkout-total-price').textContent = grandTotal.toLocaleString();
+    document.getElementById('checkout-remaining').textContent = remaining.toLocaleString();
+}
+
+function closeCheckoutModal() {
+    document.getElementById('checkoutdetail-modal').style.display = 'none';
+    document.getElementById('modal').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+}
 
 
+async function checkout() {
+    try {
+        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+        const grandTotal = document.getElementById('checkout-total-price').textContent;
+        console.log('Checkout với ID:', bookingid, 'và phương thức thanh toán:', paymentMethod, 'và total:', grandTotal);
+        
+        // Gọi API checkout - chú ý phương thức và định dạng parameter đúng với API
+        const response = await fetch(`http://localhost:5222/api/Booking/Checkout?id=${bookingid}&paymethod=${paymentMethod}&total=${grandTotal}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Error when checkout');
+        }
+        
+        // Thông báo thành công
+        alert('Payment successfully!');
+        
+        // Đóng modal và làm mới dữ liệu
+        closeCheckoutModal();
+        fetchBookings();
+        
+    } catch (error) {
+        console.error('Error when checkout:', error);
+    }
+}
+
+// Thêm hàm mới để định dạng đúng thời gian cho input datetime-local
+function formatDateTimeLocal(date) {
+    // Chuyển đổi thời gian để phù hợp với múi giờ địa phương
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
 }

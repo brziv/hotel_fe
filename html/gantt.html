@@ -48,13 +48,84 @@
             <p><strong>Status:</strong> <span id="cust-status"></span></p>
             <p><strong>Total Money:</strong> <span id="cust-total-money"></span> VND</p>
             <p><strong>Deposit:</strong> <span id="cust-deposit"></span> VND</p>
-            <p><strong>TimeIn:</strong> <span id="cust-time-in"></span></p>
-            <p><strong>TimeOut:</strong> <span id="cust-time-out"></span></p>
-            <button onclick="bookService()" id="book-service-btn">🛒 <b>Book Services</b></button>
-            <button onclick="checkout()" id="checkout-btn">💳 <b>Check Out</b></button>
-            <button onclick="checkin()" id="checkin-btn">💳 <b>Check In</b></button>
-            <button onclick="CancelBooking()" id="cancel-btn">🚫 <b>CancelBooking</b></button>
-            <button onclick="closeModal()" id="close-modal-btn"><b>Close</b></button>
+            <p><strong>Check In:</strong> <span id="cust-time-in"></span></p>
+            <p><strong>Check Out:</strong> <span id="cust-time-out"></span></p>
+            <button id="book-service-btn" onclick="bookService()">🛒 <b>Book Services</b></button>
+            <button id="checkout-btn" onclick="showCheckoutModal()">💳 <b>Check Out</b></button>
+            <button id="checkin-btn" onclick="checkin()">💳 <b>Check In</b></button>
+            <button id="cancel-btn" onclick="cancel()">🗑️ <b>Cancel Booking</b></button>
+            <button id="close-modal-btn" onclick="closeModal()"><b>Close</b></button>
+        </div>
+    </div>
+
+    <!-- Modal Checkout -->
+    <div id="checkoutdetail-modal" class="modal">
+        <div class="modal-content-checkout">
+            <h3>Check Out Details</h3>
+            <p><strong>Guest Name:</strong> <span id="checkout-guest-name"></span></p>
+            
+            <h4>Room Information</h4>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Room Number</th>
+                            <th>Check-in Time</th>
+                            <th>Check-out Time</th>
+                            <th>Duration (Hours)</th>
+                            <th>Price/Day</th>
+                            <th>Room Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="checkout-room-details">
+                        <!-- Room details will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <h4>Services</h4>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Service Name</th>
+                            <th>Details</th>
+                            <th>Price Each</th>
+                            <th>Quantity</th>
+                            <th>Service Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="checkout-services-details">
+                        <!-- Services will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="checkout-summary">
+                <p><strong>Total Price:</strong> <span id="checkout-total-price">0</span> VND</p>
+                <p><strong>Deposit:</strong> <span id="checkout-deposit">0</span> VND</p>
+                <p><strong>Customer Needs to Pay:</strong> <span id="checkout-remaining">0</span> VND</p>
+            </div>
+            
+            <div class="payment-methods" style="display: flex; justify-content: center; align-items: center;">
+                <div class="payment-options">
+                    <p><strong>Payment Method:</strong></p>
+                    <label>
+                        <input type="radio" name="paymentMethod" value="Cash" checked> Cash
+                    </label>
+                    <label>
+                        <input type="radio" name="paymentMethod" value="Visa"> Visa
+                    </label>
+                    <label>
+                        <input type="radio" name="paymentMethod" value="Bank"> Bank Transfer
+                    </label>
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button id="checkout-confirm-btn" onclick="checkout()">Confirm</button>
+                <button id="checkout-cancel-btn" onclick="closeCheckoutModal()">Cancel</button>
+            </div>
         </div>
     </div>
 
