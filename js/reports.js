@@ -61,27 +61,29 @@ async function generateReports() {
     }
 }
 
+const API_BASE_URL = "http://localhost:5222/api";
+
 // Data fetching functions
 async function fetchBookingData(start, end) {
-    const response = await fetch(`/api/reports/bookings?start=${start.toISOString()}&end=${end.toISOString()}`);
+    const response = await fetch(`${API_BASE_URL}/Report/GetBookingData?start=${start.toISOString()}&end=${end.toISOString()}`);
     if (!response.ok) throw new Error('Failed to fetch booking data');
     return await response.json();
 }
 
 async function fetchRoomData(start, end) {
-    const response = await fetch(`/api/reports/rooms?start=${start.toISOString()}&end=${end.toISOString()}`);
+    const response = await fetch(`${API_BASE_URL}/Report/GetRoomData?start=${start.toISOString()}&end=${end.toISOString()}`);
     if (!response.ok) throw new Error('Failed to fetch room data');
     return await response.json();
 }
 
 async function fetchServiceData(start, end) {
-    const response = await fetch(`/api/reports/services?start=${start.toISOString()}&end=${end.toISOString()}`);
+    const response = await fetch(`${API_BASE_URL}/Report/GetServiceData?start=${start.toISOString()}&end=${end.toISOString()}`);
     if (!response.ok) throw new Error('Failed to fetch service data');
     return await response.json();
 }
 
 async function fetchCostData(start, end) {
-    const response = await fetch(`/api/reports/costs?start=${start.toISOString()}&end=${end.toISOString()}`);
+    const response = await fetch(`${API_BASE_URL}/Report/GetCostData?start=${start.toISOString()}&end=${end.toISOString()}`);
     if (!response.ok) throw new Error('Failed to fetch cost data');
     return await response.json();
 }
