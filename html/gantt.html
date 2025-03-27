@@ -53,7 +53,7 @@
             <button id="book-service-btn" onclick="bookService()">🛒 <b>Book Services</b></button>
             <button id="checkout-btn" onclick="showCheckoutModal()">💳 <b>Check Out</b></button>
             <button id="checkin-btn" onclick="checkin()">💳 <b>Check In</b></button>
-            <button id="cancel-btn" onclick="cancel()">🗑️ <b>Cancel Booking</b></button>
+            <button id="cancel-btn" onclick="showCancelBookingModal()">🗑️ <b>Cancel Booking</b></button>
             <button id="close-modal-btn" onclick="closeModal()"><b>Close</b></button>
         </div>
     </div>
@@ -194,6 +194,39 @@
         <div class="modal-footer">
             <button onclick="addServicetoBooking()" class="btn">Add Services</button>
             <button onclick="closeAddServiceModal()" class="btn">Close</button>
+        </div>
+    </div>
+
+    <!-- Cancel Booking Modal -->
+    <div id="cancelbooking-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Cancel Booking</h2>
+            </div>
+            <div class="modal-body">
+                <div class="booking-info">
+                    <p><strong>Guest Name:</strong> <span id="cancelbooking-guest-name"></span></p>
+                    <p><strong>Deposit:</strong> <span id="cancelbooking-deposit"></span> VND</p>
+                </div>
+                <div class="payment-section">
+                    <h3>Payment Method</h3>
+                    <div class="payment-options">
+                        <label>
+                            <input type="radio" name="cancelPaymentMethod" value="Cash" checked> Cash
+                        </label>
+                        <label>
+                            <input type="radio" name="cancelPaymentMethod" value="Visa"> Visa
+                        </label>
+                        <label>
+                            <input type="radio" name="cancelPaymentMethod" value="Bank"> Bank Transfer
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="cancel-confirm-btn" onclick="confirmCancelBooking()">Confirm Cancel</button>
+                    <button id="cancel-cancel-btn" onclick="closeCancelBookingModal()">Cancel</button>
+                </div>
+            </div>
         </div>
     </div>
 </body>

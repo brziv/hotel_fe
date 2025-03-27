@@ -86,7 +86,7 @@ function processBookings(bookings) {
                 checkoutDate,
                 booking.priceperhour
             ]);
-        } else if (booking.bookingStatus === "Paid") {
+        } else if (booking.bookingStatus === "Paid" || booking.bookingStatus === "Cancel") {
             pastBookings.push([
                 booking.bookingId,
                 booking.firstName,
@@ -388,6 +388,7 @@ async function checkin() {
         });
         if (!response.ok) throw new Error("Lỗi khi tải dữ liệu!");
         fetchBookings();
+        closeModal();
     } catch (error) {
         console.error("Lỗi khi gọi API:", error);
     }
@@ -442,6 +443,15 @@ async function bookService() {
         console.error("Error fetching services:", error);
     }
 }
+function filterServices() {
+    const searchValue = document.getElementById("searchService").value.toLowerCase();
+    const rows = document.querySelectorAll("#addserviceTableBody tr");
+
+    rows.forEach(row => {
+        const serviceName = row.cells[0].innerText.toLowerCase(); // Cột Service Name
+        row.style.display = serviceName.includes(searchValue) ? "" : "none";
+    });
+}
 
 function addService(button) {
     let row = button.parentElement.parentElement;
@@ -470,6 +480,7 @@ function addService(button) {
             <td><button class="btn btn-remove" onclick="removeService(this)">-</button></td>
         `;
     }
+    document.getElementById('searchService').value ="";
 }
 document.addEventListener("DOMContentLoaded", function() {
     let tableBody = document.getElementById('addservice-selectedServices')?.querySelector('tbody');
@@ -559,6 +570,9 @@ function closeAddServiceModal() {
     document.getElementById('overlay').style.display = 'none';
     document.getElementById('addservice-UsedServices').querySelector('tbody').innerHTML = "";
     document.getElementById('addservice-selectedServices').querySelector('tbody').innerHTML = "";
+    document.getElementById('searchService').value ="";
+
+    document.body.classList.remove("modal-open");
 }
 
 async function showCheckoutModal() {
@@ -633,9 +647,9 @@ async function showCheckoutModal() {
         const response = await fetch(`http://localhost:5222/api/Package/FindUsedService?bookingId=${bookingid}`);
         const data = await response.json();
         var checkoutUsedservicesList = data.data;
+        var totalServicePrice = 0;
         if(checkoutUsedservicesList.length > 0){
             document.getElementById('checkout-services-details').innerHTML = "";
-            var totalServicePrice = 0;
             checkoutUsedservicesList.forEach((service) => {
                 const row = document.createElement("tr");
                 var servicetotalprice = service.sServiceSellPrice * service.quantity;
@@ -725,21 +739,30 @@ function closeCheckoutModal() {
     document.getElementById('checkoutdetail-modal').style.display = 'none';
     document.getElementById('modal').style.display = 'none';
     document.getElementById('overlay').style.display = 'none';
+    document.body.classList.remove("modal-open");
 }
 
 
 async function checkout() {
     try {
         const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-        const grandTotal = document.getElementById('checkout-total-price').textContent;
+        const grandTotalText = document.getElementById('checkout-total-price').textContent;
+
+        const grandTotal = parseFloat(grandTotalText.replace(/,/g, ''));
+        
         console.log('Checkout với ID:', bookingid, 'và phương thức thanh toán:', paymentMethod, 'và total:', grandTotal);
         
         // Gọi API checkout - chú ý phương thức và định dạng parameter đúng với API
-        const response = await fetch(`http://localhost:5222/api/Booking/Checkout?id=${bookingid}&paymethod=${paymentMethod}&total=${grandTotal}`, {
+        const response = await fetch(`http://localhost:5222/api/Booking/Checkout`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({
+                id: bookingid,
+                paymethod: paymentMethod,
+                total: grandTotal
+            })
         });
         
         if (!response.ok) {
@@ -752,6 +775,7 @@ async function checkout() {
         // Đóng modal và làm mới dữ liệu
         closeCheckoutModal();
         fetchBookings();
+        document.body.classList.remove("modal-open");
         
     } catch (error) {
         console.error('Error when checkout:', error);
@@ -768,4 +792,66 @@ function formatDateTimeLocal(date) {
     const minutes = String(date.getMinutes()).padStart(2, '0');
     
     return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+function showCancelBookingModal() {
+    // Ẩn modal booking details
+    document.getElementById('modal').style.display = 'none';
+    
+    // Lấy thông tin từ modal booking details
+    const guestName = document.getElementById('cust-name').textContent;
+    const deposit = document.getElementById('cust-deposit').textContent;
+    
+    // Hiển thị thông tin trong modal cancel booking
+    document.getElementById('cancelbooking-guest-name').textContent = guestName;
+    document.getElementById('cancelbooking-deposit').textContent = deposit;
+    
+    // Hiển thị modal cancel booking
+    document.getElementById('cancelbooking-modal').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+}
+
+function closeCancelBookingModal() {
+    document.getElementById('cancelbooking-modal').style.display = 'none';
+    document.getElementById('modal').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+    document.body.classList.remove("modal-open");
+}
+
+async function confirmCancelBooking() {
+    try {
+        const paymentMethod = document.querySelector('input[name="cancelPaymentMethod"]:checked').value;
+        const depositText = document.getElementById('cancelbooking-deposit').textContent;
+        const deposit = parseFloat(depositText.replace(/,/g, ''));
+        
+        console.log('Cancel booking với ID:', bookingid, 'và phương thức thanh toán:', paymentMethod, 'và deposit:', deposit);
+        
+        // Gọi API cancel booking
+        const response = await fetch(`http://localhost:5222/api/Booking/Cancelbooking`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: bookingid,
+                paymethod: paymentMethod,
+                total: deposit
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Error when cancel booking');
+        }
+        
+        // Thông báo thành công
+        alert('Cancel booking successfully!');
+        
+        // Đóng modal và làm mới dữ liệu
+        closeCancelBookingModal();
+        fetchBookings();
+        document.body.classList.remove("modal-open");
+        
+    } catch (error) {
+        console.error('Error when cancel booking:', error);
+    }
 }

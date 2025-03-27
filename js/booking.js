@@ -95,6 +95,11 @@ document.getElementById("bt_search").addEventListener("click", function () {
         return;
     }
 
+    if (floor === "") {
+        alert("Please select a floor.");
+        return;
+    }
+
     const formattedCheckin = encodeURIComponent(`${checkinDate}:00.000`);
     const formattedCheckout = encodeURIComponent(`${checkoutDate}:00.000`);
     const apiUrl = `http://localhost:5222/api/Booking/FindAvailableRooms?indate=${formattedCheckin}&outdate=${formattedCheckout}&floor=${encodeURIComponent(floor)}`;
@@ -236,9 +241,9 @@ document.getElementById("book-room").addEventListener("click", function () {
             SelectedRooms = [];
             document.getElementById("room-table-body").innerHTML = "";
             cusid = "";
-            document.getElementById("cid").value = "";
             document.getElementById("name").value = "";
             document.getElementById("phonenum").value = "";
+            document.getElementById("deposit").value = "";
             document.getElementById("total-money").value = "0.00";
         })
         .catch(error => {
