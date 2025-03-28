@@ -29,7 +29,7 @@ go
 CREATE TABLE tbl_Bookings (
     b_BookingID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     b_GuestID UNIQUEIDENTIFIER NOT NULL,
-    b_BookingStatus NVARCHAR(20) NOT NULL,--Pending, Confirmed, paid
+    b_BookingStatus NVARCHAR(20) NOT NULL,--Pending, Confirmed, Paid, Cancelled
 	b_TotalMoney DECIMAL(10,2) DEFAULT 0,
 	b_Deposit DECIMAL(10,2),
     b_CreatedAt DATETIME DEFAULT GETDATE(),
@@ -107,7 +107,7 @@ CREATE TABLE tbl_Goods (
     g_Unit NVARCHAR(30),                        --a bottle, a case, a pack...
 	g_CostPrice DECIMAL(10,2) NOT NULL,
 	g_SellingPrice DECIMAL(10,2) NOT NULL,
-	g_Currency NVARCHAR(30) NOT NULL                      ---- VND,USD                         
+	g_Currency NVARCHAR(30) NOT NULL                      ---- USD,USD                         
 );
 go
 CREATE TABLE tbl_ServiceGoods (
@@ -213,9 +213,9 @@ VALUES
 -- tbl_Goods
 INSERT INTO tbl_Goods (g_GoodsName, g_Category, g_Quantity, g_Unit, g_CostPrice, g_SellingPrice, g_Currency)
 VALUES 
-('Shampoo', 'Toiletries', 100, 'Bottle', 2.00, 5.00, 'VND'),
-('Towel', 'Linen', 50, 'Piece', 10.00, 20.00, 'VND'),
-('Water Bottle', 'Beverages', 200, 'Bottle', 1.00, 3.00, 'VND');
+('Shampoo', 'Toiletries', 100, 'Bottle', 2.00, 5.00, 'USD'),
+('Towel', 'Linen', 50, 'Piece', 10.00, 20.00, 'USD'),
+('Water Bottle', 'Beverages', 200, 'Bottle', 1.00, 3.00, 'USD');
 
 -- tbl_ServiceGoods
 INSERT INTO tbl_ServiceGoods (sg_ServiceID, sg_GoodsID, sg_Quantity)
@@ -227,9 +227,9 @@ VALUES
 -- tbl_ImportGoods
 INSERT INTO tbl_ImportGoods (ig_SumPrice, ig_Currency, ig_Supplier)
 VALUES 
-(500.00, 'VND', 'XYZ Suppliers'),
-(300.00, 'VND', 'ABC Travel Agency'),
-(700.00, 'VND', 'Luxury Car Rentals');
+(500.00, 'USD', 'XYZ Suppliers'),
+(300.00, 'USD', 'ABC Travel Agency'),
+(700.00, 'USD', 'Luxury Car Rentals');
 
 -- tbl_ImportGoodsDetails
 INSERT INTO tbl_ImportGoodsDetails (igd_ImportID, igd_GoodsID, igd_Quantity, igd_CostPrice)

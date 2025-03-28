@@ -3,46 +3,48 @@ const API_BASE_URL = "http://localhost:5222/api";
 
 // State
 const state = {
-    goodsList: [],
-    editGoodId: null,
+    productsList: [],
+    editProductId: null,
     importDetailsList: [],
-    servicesList: [],
-    editServiceId: null,
-    serviceGoodsList: [],
+    servicePackagesList: [],
+    editServicePackageId: null,
+    packageDetailsList: [],
 };
 
 // DOM Elements
 const domElements = {
     goodsTableBody: document.querySelector("#goods-table-body"),
-    goodHistoryTable: document.querySelector("#good-history-table"),
-    historyGoodName: document.querySelector("#history-good-name"),
-    addGoodsForm: document.querySelector("#add-goods-form"),
-    goodsNameInput: document.querySelector("#goods-name"),
-    categoryInput: document.querySelector("#category"),
-    unitInput: document.querySelector("#unit"),
-    costPriceInput: document.querySelector("#cost-price"),
-    sellingPriceInput: document.querySelector("#selling-price"),
-    addGoodBtn: document.querySelector("#add-good-btn"),
-    updateGoodBtn: document.querySelector("#update-good-btn"),
+    servicesTableBody: document.querySelector("#services-table-body"),
+    productHistoryTable: document.querySelector("#product-history-table"),
+    historyProductName: document.querySelector("#history-product-name"),
+    addProductForm: document.querySelector("#add-product-form"),
+    pProductNameInput: document.querySelector("#p-product-name"),
+    pCategoryInput: document.querySelector("#p-category"),
+    pUnitInput: document.querySelector("#p-unit"),
+    pCostPriceInput: document.querySelector("#p-cost-price"),
+    pSellingPriceInput: document.querySelector("#p-selling-price"),
+    pIsServiceCheckbox: document.querySelector("#p-is-service"),
+    addProductBtn: document.querySelector("#add-product-btn"),
+    updateProductBtn: document.querySelector("#update-product-btn"),
 
     importGoodsTableBody: document.querySelector("#import-goods-table-body"),
     addImportTable: document.querySelector("#add-import-table"),
     importDetailTable: document.querySelector("#import-detail-table"),
-    importSupplierInput: document.querySelector("#import-supplier"),
-    importGoodsSelect: document.querySelector("#import-goods-select"),
-    importQuantityInput: document.querySelector("#import-quantity"),
+    igSupplierInput: document.querySelector("#ig-supplier"),
+    igdProductSelect: document.querySelector("#igd-product-select"),
+    igdQuantityInput: document.querySelector("#igd-quantity"),
     addImportDetailBtn: document.querySelector("#add-import-detail-btn"),
     finalizeImportBtn: document.querySelector("#finalize-import-btn"),
 
     importHistoryTableBody: document.querySelector("#import-history-table-body"),
 
-    servicesTableBody: document.querySelector("#services-table-body"),
-    addServiceTable: document.querySelector("#add-service-table"),
-    serviceNameInput: document.querySelector("#service-name"),
-    serviceGoodsSelect: document.querySelector("#service-goods-select"),
-    serviceQuantityInput: document.querySelector("#service-quantity"),
-    addServiceGoodBtn: document.querySelector("#add-service-good-btn"),
-    finalizeServiceBtn: document.querySelector("#finalize-service-btn"),
+    servicePackagesTableBody: document.querySelector("#service-packages-table-body"),
+    addServicePackageForm: document.querySelector("#add-service-package-form"),
+    spPackageNameInput: document.querySelector("#sp-package-name"),
+    pdProductSelect: document.querySelector("#pd-product-select"),
+    pdQuantityInput: document.querySelector("#pd-quantity"),
+    addPackageDetailBtn: document.querySelector("#add-package-detail-btn"),
+    finalizeServicePackageBtn: document.querySelector("#finalize-service-package-btn"),
 };
 
 // Initialization
@@ -55,50 +57,51 @@ function initializeApp() {
 
 // Event Listeners
 function setupEventListeners() {
-    domElements.addGoodsForm.addEventListener("submit", handleAddGood);
-    domElements.goodsTableBody.addEventListener("click", handleGoodsTableActions);
-    domElements.updateGoodBtn.addEventListener("click", handleUpdateGood);
+    domElements.addProductForm.addEventListener("submit", handleAddProduct);
+    domElements.goodsTableBody.addEventListener("click", handleProductsTableActions);
+    domElements.servicesTableBody.addEventListener("click", handleProductsTableActions);
+    domElements.updateProductBtn.addEventListener("click", handleUpdateProduct);
 
     domElements.addImportDetailBtn.addEventListener("click", handleAddImportDetail);
     domElements.finalizeImportBtn.addEventListener("click", handleFinalizeImport);
 
-    domElements.addServiceGoodBtn.addEventListener("click", handleAddServiceGood);
-    domElements.finalizeServiceBtn.addEventListener("click", handleFinalizeService);
-    domElements.servicesTableBody.addEventListener("click", handleServicesTableActions);
+    domElements.addPackageDetailBtn.addEventListener("click", handleAddPackageDetail);
+    domElements.finalizeServicePackageBtn.addEventListener("click", handleFinalizeServicePackage);
+    domElements.servicePackagesTableBody.addEventListener("click", handleServicePackagesTableActions);
 }
 
 // Data Fetching
 async function fetchInitialData() {
     await Promise.all([
-        api.fetchGoods(),
+        api.fetchProducts(),
         api.fetchImportGoods(),
         api.fetchImportHistory(),
-        api.fetchServices(),
+        api.fetchServicePackages(),
     ]);
 }
 
 // API Calls
 const api = {
-    fetchGoods: async () => {
+    fetchProducts: async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/Product/GetProductList`);
             const data = await response.json();
-            state.goodsList = data.data;
-            renderGoodsTable();
-            populateImportGoodsSelect(data.data);
-            populateServiceGoodsSelect(data.data);
+            state.productsList = data.data;
+            renderProductsTable();
+            populateIgdProductSelect(data.data);
+            populatePdProductSelect(data.data);
         } catch (error) {
             console.error("Error fetching products:", error);
         }
     },
 
-    fetchGoodHistory: async (goodId) => {
+    fetchProductHistory: async (productId) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/Igd/GetImportGoodsDetailListByGood/${goodId}`);
+            const response = await fetch(`${API_BASE_URL}/Igd/GetImportGoodsDetailListByGood/${productId}`);
             const data = await response.json();
             return data.data;
         } catch (error) {
-            console.error("Error fetching good history:", error);
+            console.error("Error fetching product history:", error);
             return [];
         }
     },
@@ -133,40 +136,40 @@ const api = {
         }
     },
 
-    fetchServices: async () => {
+    fetchServicePackages: async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/Package/GetPackageList`);
             const data = await response.json();
-            state.servicesList = data.data;
-            renderServicesTable(data.data);
+            state.servicePackagesList = data.data;
+            renderServicePackagesTable(data.data);
         } catch (error) {
-            console.error("Error fetching packages:", error);
+            console.error("Error fetching service packages:", error);
         }
     },
 
-    addGood: async (good) => {
+    addProduct: async (product) => {
         return await fetch(`${API_BASE_URL}/Product/InsertTblProduct`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(good),
+            body: JSON.stringify(product),
         });
     },
 
-    updateGood: async (good) => {
+    updateProduct: async (product) => {
         return await fetch(`${API_BASE_URL}/Product/UpdateTblProduct`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(good),
+            body: JSON.stringify(product),
         });
     },
 
-    deleteGood: async (id) => {
+    deleteProduct: async (id) => {
         return await fetch(`${API_BASE_URL}/Product/XoaTblProduct?pProductId=${id}`, {
             method: "DELETE",
         });
     },
 
-    insertImport: async (importData) => {
+    insertImportGood: async (importData) => {
         return await fetch(`${API_BASE_URL}/ImportGood/InsertTblImportGood`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -174,7 +177,7 @@ const api = {
         });
     },
 
-    insertImportDetail: async (detailData) => {
+    insertImportGoodsDetail: async (detailData) => {
         return await fetch(`${API_BASE_URL}/Igd/InsertTblImportGoodsDetail`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -182,15 +185,15 @@ const api = {
         });
     },
 
-    addService: async (service) => {
+    addServicePackage: async (servicePackage) => {
         return await fetch(`${API_BASE_URL}/Package/InsertTblPackage`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(service),
+            body: JSON.stringify(servicePackage),
         });
     },
 
-    deleteService: async (id) => {
+    deleteServicePackage: async (id) => {
         return await fetch(`${API_BASE_URL}/Package/XoaTblPackage?spPackageId=${id}`, {
             method: "DELETE",
         });
@@ -198,117 +201,123 @@ const api = {
 };
 
 // Event Handlers
-async function handleAddGood(event) {
+async function handleAddProduct(event) {
     event.preventDefault();
-    const newGood = {
-        pProductName: domElements.goodsNameInput.value.trim(),
-        pCategory: domElements.categoryInput.value.trim(),
+    const newProduct = {
+        pProductName: domElements.pProductNameInput.value.trim(),
+        pCategory: domElements.pCategoryInput.value.trim(),
         pQuantity: 0,
-        pUnit: domElements.unitInput.value.trim(),
-        pCostPrice: parseFloat(domElements.costPriceInput.value),
-        pSellingPrice: parseFloat(domElements.sellingPriceInput.value),
-        pCurrency: "VND",
+        pUnit: domElements.pUnitInput.value.trim(),
+        pCostPrice: parseFloat(domElements.pCostPriceInput.value),
+        pSellingPrice: parseFloat(domElements.pSellingPriceInput.value),
+        pCurrency: "USD",
+        pIsService: isService ? 1 : 0,
     };
 
     try {
-        await api.addGood(newGood);
-        await api.fetchGoods();
-        domElements.addGoodsForm.reset();
+        await api.addProduct(newProduct);
+        await api.fetchProducts();
+        domElements.addProductForm.reset();
+        domElements.pIsServiceCheckbox.checked = false;
     } catch (error) {
-        console.error("Error adding good:", error);
+        console.error("Error adding product:", error);
     }
 }
 
-function handleGoodsTableActions(event) {
+function handleProductsTableActions(event) {
     const target = event.target;
-    const goodId = target.dataset.goodId;
+    const productId = target.dataset.productId;
 
-    if (target.classList.contains("update-good-btn")) {
-        editGood(goodId);
-    } else if (target.classList.contains("delete-good-btn")) {
-        deleteGood(goodId);
+    if (target.classList.contains("update-product-btn")) {
+        editProduct(productId);
+    } else if (target.classList.contains("delete-product-btn")) {
+        deleteProduct(productId);
     } else if (target.classList.contains("history-btn")) {
-        showGoodHistory(goodId, target.dataset.goodName);
+        showProductHistory(productId, target.dataset.productName);
     }
 }
 
-function editGood(goodId) {
-    const good = state.goodsList.find((g) => g.pProductId === goodId);
-    if (!good) return;
+function editProduct(productId) {
+    const product = state.productsList.find((p) => p.pProductId === productId);
+    if (!product) return;
 
-    domElements.goodsNameInput.value = good.pProductName;
-    domElements.categoryInput.value = good.pCategory;
-    domElements.unitInput.value = good.pUnit;
-    domElements.costPriceInput.value = good.pCostPrice;
-    domElements.sellingPriceInput.value = good.pSellingPrice;
+    domElements.pProductNameInput.value = product.pProductName;
+    domElements.pCategoryInput.value = product.pCategory;
+    domElements.pUnitInput.value = product.pUnit;
+    domElements.pCostPriceInput.value = product.pCostPrice;
+    domElements.pSellingPriceInput.value = product.pSellingPrice;
+    domElements.pIsServiceCheckbox.checked = product.pIsService === 1;
 
-    state.editGoodId = goodId;
-    domElements.addGoodBtn.style.display = "none";
-    domElements.updateGoodBtn.style.display = "inline-block";
+    state.editProductId = productId;
+    domElements.addProductBtn.style.display = "none";
+    domElements.updateProductBtn.style.display = "inline-block";
 }
 
-async function handleUpdateGood() {
-    const good = state.goodsList.find((g) => g.pProductId === state.editGoodId);
-    if (!good) return;
+async function handleUpdateProduct() {
+    const product = state.productsList.find((p) => p.pProductId === state.editProductId);
+    if (!product) return;
 
-    good.pProductName = domElements.goodsNameInput.value.trim();
-    good.pCategory = domElements.categoryInput.value.trim();
-    good.pUnit = domElements.unitInput.value.trim();
-    good.pCostPrice = parseFloat(domElements.costPriceInput.value);
-    good.pSellingPrice = parseFloat(domElements.sellingPriceInput.value);
-    good.pCurrency = "VND";
+    const isService = domElements.pIsServiceCheckbox.checked;
+    product.pProductName = domElements.pProductNameInput.value.trim();
+    product.pCategory = domElements.pCategoryInput.value.trim();
+    product.pUnit = domElements.pUnitInput.value.trim();
+    product.pCostPrice = parseFloat(domElements.pCostPriceInput.value);
+    product.pSellingPrice = parseFloat(domElements.pSellingPriceInput.value);
+    product.pCurrency = "USD";
+    product.pIsService = isService ? 1 : 0;
 
     try {
-        await api.updateGood(good);
-        await api.fetchGoods();
-        domElements.addGoodsForm.reset();
-        domElements.addGoodBtn.style.display = "inline-block";
-        domElements.updateGoodBtn.style.display = "none";
-        state.editGoodId = null;
+        await api.updateProduct(product);
+        await api.fetchProducts();
+        domElements.addProductForm.reset();
+        domElements.addProductBtn.style.display = "inline-block";
+        domElements.updateProductBtn.style.display = "none";
+        domElements.pIsServiceCheckbox.checked = false;
+        state.editProductId = null;
     } catch (error) {
-        console.error("Error updating good:", error);
+        console.error("Error updating product:", error);
     }
 }
 
-async function deleteGood(goodId) {
-    if (confirm("Are you sure you want to delete this good?")) {
+async function deleteProduct(productId) {
+    if (confirm("Are you sure you want to delete this product?")) {
         try {
-            const response = await api.deleteGood(goodId);
-            if (!response.ok) throw new Error("Failed to delete good");
-            await api.fetchGoods();
-            alert("Good deleted successfully!");
+            const response = await api.deleteProduct(productId);
+            if (!response.ok) throw new Error("Failed to delete product");
+            await api.fetchProducts();
+            alert("Product deleted successfully!");
         } catch (error) {
-            console.error("Error deleting good:", error);
-            alert("Failed to delete good");
+            console.error("Error deleting product:", error);
+            alert("Failed to delete product");
         }
     }
 }
 
-async function showGoodHistory(goodId, goodName) {
-    const history = await api.fetchGoodHistory(goodId);
-    renderGoodHistoryTable(history, goodName);
+async function showProductHistory(productId, productName) {
+    const history = await api.fetchProductHistory(productId);
+    renderProductHistoryTable(history, productName);
 }
 
 function handleAddImportDetail() {
-    const goodsId = domElements.importGoodsSelect.value;
-    const quantity = parseInt(domElements.importQuantityInput.value);
-    const selectedOption = domElements.importGoodsSelect.selectedOptions[0];
+    const productId = domElements.igdProductSelect.value;
+    const quantity = parseInt(domElements.igdQuantityInput.value);
+    const selectedOption = domElements.igdProductSelect.selectedOptions[0];
     const costPrice = parseFloat(selectedOption.dataset.cost);
-    const goodName = selectedOption.text;
+    const productName = selectedOption.text;
 
-    if (!goodsId || !quantity || quantity <= 0) {
-        alert("Please select a good and enter a valid quantity");
+    if (!productId || !quantity || quantity <= 0) {
+        alert("Please select a product and enter a valid quantity");
         return;
     }
 
-    if (state.importDetailsList.some((detail) => detail.goodsId === goodsId)) {
-        alert("This good is already added to the import");
+    if (state.importDetailsList.some((detail) => detail.productId === productId)) {
+        alert("This product is already added to the import");
         return;
     }
 
-    state.importDetailsList.push({ goodsId, quantity, costPrice, goodName });
+    state.importDetailsList.push({ productId, quantity, costPrice, productName });
     renderAddImportTable();
-    domElements.importQuantityInput.value = "";
+    domElements.igdQuantityInput.value = "";
 }
 
 function handleRemoveImportDetail(index) {
@@ -328,41 +337,41 @@ async function handleFinalizeImport() {
     );
 
     const importData = {
-        igSupplier: domElements.importSupplierInput.value.trim(),
+        igSupplier: domElements.igSupplierInput.value.trim(),
         igSumPrice: totalPrice,
-        igCurrency: "VND",
+        igCurrency: "USD",
         igImportDate: new Date().toISOString(),
     };
 
     try {
-        const importResponse = await api.insertImport(importData);
+        const importResponse = await api.insertImportGood(importData);
         const importResult = await importResponse.json();
         const importId = importResult.data.igImportId;
 
         const detailPromises = state.importDetailsList.map((detail) => {
             const detailData = {
                 igdImportId: importId,
-                igdGoodsId: detail.goodsId,
+                igdGoodsId: detail.productId,
                 igdQuantity: detail.quantity,
                 igdCostPrice: detail.costPrice,
             };
-            return api.insertImportDetail(detailData);
+            return api.insertImportGoodsDetail(detailData);
         });
 
         await Promise.all(detailPromises);
 
         const quantityUpdates = state.importDetailsList.map((detail) => {
-            const good = state.goodsList.find((p) => p.pProductId === detail.goodsId);
-            good.pQuantity += detail.quantity;
-            return api.updateGood(good);
+            const product = state.productsList.find((p) => p.pProductId === detail.productId);
+            product.pQuantity += detail.quantity;
+            return api.updateProduct(product);
         });
 
         await Promise.all(quantityUpdates);
 
         state.importDetailsList = [];
-        domElements.importSupplierInput.value = "";
+        domElements.igSupplierInput.value = "";
         renderAddImportTable();
-        await Promise.all([api.fetchGoods(), api.fetchImportGoods(), api.fetchImportHistory()]);
+        await Promise.all([api.fetchProducts(), api.fetchImportGoods(), api.fetchImportHistory()]);
         alert("Import successfully added!");
         bootstrap.Modal.getInstance(document.getElementById("import-modal")).hide();
     } catch (error) {
@@ -371,133 +380,155 @@ async function handleFinalizeImport() {
     }
 }
 
-function handleAddServiceGood() {
-    const goodsId = domElements.serviceGoodsSelect.value;
-    const quantity = parseInt(domElements.serviceQuantityInput.value);
-    const selectedOption = domElements.serviceGoodsSelect.selectedOptions[0];
-    const goodName = selectedOption.text;
+function handleAddPackageDetail() {
+    const productId = domElements.pdProductSelect.value;
+    const quantity = parseInt(domElements.pdQuantityInput.value);
+    const selectedOption = domElements.pdProductSelect.selectedOptions[0];
+    const productName = selectedOption.text;
     const costPrice = parseFloat(selectedOption.dataset.cost);
     const sellingPrice = parseFloat(selectedOption.dataset.sellingPrice || 0);
 
-    if (!goodsId || !quantity || quantity <= 0) {
-        alert("Please select a good and enter a valid quantity");
+    if (!productId || !quantity || quantity <= 0) {
+        alert("Please select a product and enter a valid quantity");
         return;
     }
 
-    if (state.serviceGoodsList.some((detail) => detail.goodsId === goodsId)) {
-        alert("This good is already added to the service");
+    if (state.packageDetailsList.some((detail) => detail.productId === productId)) {
+        alert("This product is already added to the package");
         return;
     }
 
-    state.serviceGoodsList.push({ goodsId, quantity, goodName, costPrice, sellingPrice });
-    renderServiceGoodsTable();
-    domElements.serviceQuantityInput.value = "";
+    state.packageDetailsList.push({ productId, quantity, productName, costPrice, sellingPrice });
+    renderPackageDetailsTable();
+    domElements.pdQuantityInput.value = "";
 }
 
-function handleRemoveServiceGood(index) {
-    state.serviceGoodsList.splice(index, 1);
-    renderServiceGoodsTable();
+function handleRemovePackageDetail(index) {
+    state.packageDetailsList.splice(index, 1);
+    renderPackageDetailsTable();
 }
 
-async function handleFinalizeService() {
-    if (state.serviceGoodsList.length === 0) {
-        alert("Please add at least one good to the service");
+async function handleFinalizeServicePackage() {
+    if (state.packageDetailsList.length === 0) {
+        alert("Please add at least one product to the package");
         return;
     }
 
-    const totalCostPrice = state.serviceGoodsList.reduce(
+    const totalCostPrice = state.packageDetailsList.reduce(
         (sum, detail) => sum + detail.costPrice * detail.quantity,
         0
     );
-    const totalSellPrice = state.serviceGoodsList.reduce(
+    const totalSellPrice = state.packageDetailsList.reduce(
         (sum, detail) => sum + detail.sellingPrice * detail.quantity,
         0
     );
 
-    const serviceData = {
-        spPackageName: domElements.serviceNameInput.value.trim(),
+    const servicePackageData = {
+        spPackageName: domElements.spPackageNameInput.value.trim(),
         sServiceCostPrice: totalCostPrice,
         sServiceSellPrice: totalSellPrice,
-        packageDetails: state.serviceGoodsList.map(detail => ({
-            pdProductId: detail.goodsId,
+        packageDetails: state.packageDetailsList.map(detail => ({
+            pdProductId: detail.productId,
             pdQuantity: detail.quantity
         }))
     };
 
     try {
-        const response = await api.addService(serviceData);
+        const response = await api.addServicePackage(servicePackageData);
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(JSON.stringify(errorData));
         }
-        await api.fetchServices();
-        state.serviceGoodsList = [];
-        domElements.addServiceTable.reset();
-        renderServiceGoodsTable();
-        alert("Service added successfully!");
+        await api.fetchServicePackages();
+        state.packageDetailsList = [];
+        domElements.addServicePackageForm.reset();
+        renderPackageDetailsTable();
+        alert("Service package added successfully!");
         bootstrap.Modal.getInstance(document.getElementById("service-modal")).hide();
     } catch (error) {
-        console.error("Error adding service:", error);
-        alert("Failed to add service: " + error.message);
+        console.error("Error adding service package:", error);
+        alert("Failed to add service package: " + error.message);
     }
 }
 
-function handleServicesTableActions(event) {
+function handleServicePackagesTableActions(event) {
     const target = event.target;
-    const serviceId = target.dataset.serviceId;
+    const servicePackageId = target.dataset.servicePackageId;
 
-    if (target.classList.contains("delete-service-btn")) {
-        deleteService(serviceId);
+    if (target.classList.contains("delete-service-package-btn")) {
+        deleteServicePackage(servicePackageId);
     }
 }
 
-async function deleteService(serviceId) {
-    if (confirm("Are you sure you want to delete this service?")) {
+async function deleteServicePackage(servicePackageId) {
+    if (confirm("Are you sure you want to delete this service package?")) {
         try {
-            const response = await api.deleteService(serviceId);
-            if (!response.ok) throw new Error("Failed to delete service");
-            await api.fetchServices();
-            alert("Service deleted successfully!");
+            const response = await api.deleteServicePackage(servicePackageId);
+            if (!response.ok) throw new Error("Failed to delete service package");
+            await api.fetchServicePackages();
+            alert("Service package deleted successfully!");
         } catch (error) {
-            console.error("Error deleting service:", error);
-            alert("Failed to delete service");
+            console.error("Error deleting service package:", error);
+            alert("Failed to delete service package");
         }
     }
 }
 
 // Rendering Functions
-function renderGoodsTable() {
+function renderProductsTable() {
     domElements.goodsTableBody.innerHTML = "";
+    domElements.servicesTableBody.innerHTML = "";
 
-    state.goodsList.forEach((good) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${good.pProductName}</td>
-            <td>${good.pCategory}</td>
-            <td>${good.pQuantity}</td>
-            <td>${good.pUnit}</td>
-            <td>${good.pCostPrice}</td>
-            <td>${good.pSellingPrice}</td>
-            <td>${good.pCurrency}</td>
-            <td>
-                <button class="history-btn btn btn-sm btn-info" data-good-id="${good.pProductId}" data-good-name="${good.pProductName}" data-bs-toggle="modal" data-bs-target="#good-history-modal">History</button>
-                <button class="update-good-btn btn btn-sm btn-primary" data-good-id="${good.pProductId}">Update</button>
-                <button class="delete-good-btn btn btn-sm btn-danger" data-good-id="${good.pProductId}">Delete</button>
-            </td>
-        `;
-        domElements.goodsTableBody.appendChild(row);
-    });
-}
-
-function renderGoodHistoryTable(history, goodName) {
-    domElements.historyGoodName.textContent = goodName;
-    domElements.goodHistoryTable.innerHTML = "";
-
-    if (history && history.length > 0) {
-        const sortedHistory = [...history].sort((a, b) => {
-            return new Date(b.igImportDate) - new Date(a.igImportDate);
+    // Filter and render Goods (p_IsService = 0)
+    state.productsList
+        .filter((product) => product.pIsService === false)
+        .forEach((product) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${product.pProductName}</td>
+                <td>${product.pCategory}</td>
+                <td>${product.pQuantity}</td>
+                <td>${product.pUnit}</td>
+                <td>${product.pCostPrice}</td>
+                <td>${product.pSellingPrice}</td>
+                <td>${product.pCurrency}</td>
+                <td>
+                    <button class="history-btn btn btn-sm btn-info" data-product-id="${product.pProductId}" data-product-name="${product.pProductName}" data-bs-toggle="modal" data-bs-target="#product-history-modal">History</button>
+                    <button class="update-product-btn btn btn-sm btn-primary" data-product-id="${product.pProductId}">Update</button>
+                    <button class="delete-product-btn btn btn-sm btn-danger" data-product-id="${product.pProductId}">Delete</button>
+                </td>
+            `;
+            domElements.goodsTableBody.appendChild(row);
         });
 
+    // Filter and render Services (p_IsService = 1)
+    state.productsList
+        .filter((product) => product.pIsService === true)
+        .forEach((product) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${product.pProductName}</td>
+                <td>${product.pCategory}</td>
+                <td>${product.pUnit}</td>
+                <td>${product.pCostPrice}</td>
+                <td>${product.pSellingPrice}</td>
+                <td>${product.pCurrency}</td>
+                <td>
+                    <button class="history-btn btn btn-sm btn-info" data-product-id="${product.pProductId}" data-product-name="${product.pProductName}" data-bs-toggle="modal" data-bs-target="#product-history-modal">History</button>
+                    <button class="update-product-btn btn btn-sm btn-primary" data-product-id="${product.pProductId}">Update</button>
+                    <button class="delete-product-btn btn btn-sm btn-danger" data-product-id="${product.pProductId}">Delete</button>
+                </td>
+            `;
+            domElements.servicesTableBody.appendChild(row);
+        });
+}
+
+function renderProductHistoryTable(history, productName) {
+    domElements.historyProductName.textContent = productName;
+    domElements.productHistoryTable.innerHTML = "";
+
+    if (history && history.length > 0) {
+        const sortedHistory = [...history].sort((a, b) => new Date(b.igImportDate) - new Date(a.igImportDate));
         sortedHistory.forEach((record) => {
             const row = document.createElement("tr");
             row.innerHTML = `
@@ -506,21 +537,18 @@ function renderGoodHistoryTable(history, goodName) {
                 <td>${record.igdCostPrice}</td>
                 <td>${new Date(record.igImportDate).toLocaleDateString()}</td>
             `;
-            domElements.goodHistoryTable.appendChild(row);
+            domElements.productHistoryTable.appendChild(row);
         });
     } else {
-        domElements.goodHistoryTable.innerHTML = '<tr><td colspan="4">No import history found</td></tr>';
+        domElements.productHistoryTable.innerHTML = '<tr><td colspan="4">No import history found</td></tr>';
     }
 }
 
-function renderImportGoodsTable(imports) {
+function renderImportGoodsTable(importGoods) {
     domElements.importGoodsTableBody.innerHTML = "";
 
-    const sortedImport = [...imports].sort((a, b) => {
-        return new Date(b.igImportDate) - new Date(a.igImportDate);
-    });
-
-    sortedImport.forEach((importGood) => {
+    const sortedImportGoods = [...importGoods].sort((a, b) => new Date(b.igImportDate) - new Date(a.igImportDate));
+    sortedImportGoods.forEach((importGood) => {
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${importGood.igSupplier}</td>
@@ -542,11 +570,11 @@ function renderImportGoodsTable(imports) {
     });
 }
 
-function populateImportGoodsSelect(goods) {
-    domElements.importGoodsSelect.innerHTML = '<option value="">Select a good</option>';
-    goods.forEach((good) => {
-        domElements.importGoodsSelect.innerHTML += `
-            <option value="${good.pProductId}" data-cost="${good.pCostPrice}">${good.pProductName}</option>
+function populateIgdProductSelect(products) {
+    domElements.igdProductSelect.innerHTML = '<option value="">Select a product</option>';
+    products.forEach((product) => {
+        domElements.igdProductSelect.innerHTML += `
+            <option value="${product.pProductId}" data-cost="${product.pCostPrice}">${product.pProductName}</option>
         `;
     });
 }
@@ -557,7 +585,7 @@ function renderAddImportTable() {
     state.importDetailsList.forEach((detail, index) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td>${detail.goodName}</td>
+            <td>${detail.productName}</td>
             <td>${detail.quantity}</td>
             <td><button class="btn btn-danger btn-sm" onclick="handleRemoveImportDetail(${index})">Remove</button></td>
         `;
@@ -565,15 +593,15 @@ function renderAddImportTable() {
     });
 }
 
-function renderImportDetails(imports) {
+function renderImportDetails(importDetails) {
     domElements.importDetailTable.innerHTML = "";
 
-    imports.forEach((importGood) => {
+    importDetails.forEach((importDetail) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td>${importGood.pProductName}</td>
-            <td>${importGood.igdQuantity}</td>
-            <td>${importGood.igdCostPrice}</td>
+            <td>${importDetail.pProductName}</td>
+            <td>${importDetail.igdQuantity}</td>
+            <td>${importDetail.igdCostPrice}</td>
         `;
         domElements.importDetailTable.appendChild(row);
     });
@@ -583,10 +611,7 @@ function renderImportHistoryTable(history) {
     domElements.importHistoryTableBody.innerHTML = "";
 
     if (history && history.length > 0) {
-        const sortedHistory = [...history].sort((a, b) => {
-            return new Date(b.igImportDate) - new Date(a.igImportDate);
-        });
-
+        const sortedHistory = [...history].sort((a, b) => new Date(b.igImportDate) - new Date(a.igImportDate));
         sortedHistory.forEach((record) => {
             const row = document.createElement("tr");
             row.innerHTML = `
@@ -601,46 +626,46 @@ function renderImportHistoryTable(history) {
     }
 }
 
-function renderServicesTable(services) {
-    domElements.servicesTableBody.innerHTML = "";
+function renderServicePackagesTable(servicePackages) {
+    domElements.servicePackagesTableBody.innerHTML = "";
 
-    services.forEach((service) => {
+    servicePackages.forEach((servicePackage) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td>${service.spPackageName}</td>
-            <td>${service.productsInfo.split('\n').join('<br>')}</td>
-            <td>${service.sServiceCostPrice.toLocaleString()} VND</td>
-            <td>${service.sServiceSellPrice.toLocaleString()} VND</td>
+            <td>${servicePackage.spPackageName}</td>
+            <td>${servicePackage.productsInfo.split('\n').join('<br>')}</td>
+            <td>${servicePackage.sServiceCostPrice.toLocaleString()} USD</td>
+            <td>${servicePackage.sServiceSellPrice.toLocaleString()} USD</td>
             <td>
-                <button class="delete-service-btn btn btn-sm btn-danger" data-service-id="${service.spPackageId}">Delete</button>
+                <button class="delete-service-package-btn btn btn-sm btn-danger" data-service-package-id="${servicePackage.spPackageId}">Delete</button>
             </td>
         `;
-        domElements.servicesTableBody.appendChild(row);
+        domElements.servicePackagesTableBody.appendChild(row);
     });
 }
 
-function renderServiceGoodsTable() {
-    const tableBody = document.querySelector("#service-goods-table-body");
+function renderPackageDetailsTable() {
+    const tableBody = document.querySelector("#package-details-table-body");
     tableBody.innerHTML = "";
 
-    state.serviceGoodsList.forEach((detail, index) => {
+    state.packageDetailsList.forEach((detail, index) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td>${detail.goodName}</td>
+            <td>${detail.productName}</td>
             <td>${detail.quantity}</td>
-            <td>${(detail.costPrice * detail.quantity).toLocaleString()} VND</td>
-            <td>${(detail.sellingPrice * detail.quantity).toLocaleString()} VND</td>
-            <td><button class="btn btn-danger btn-sm" onclick="handleRemoveServiceGood(${index})">Remove</button></td>
+            <td>${(detail.costPrice * detail.quantity).toLocaleString()} USD</td>
+            <td>${(detail.sellingPrice * detail.quantity).toLocaleString()} USD</td>
+            <td><button class="btn btn-danger btn-sm" onclick="handleRemovePackageDetail(${index})">Remove</button></td>
         `;
         tableBody.appendChild(row);
     });
 }
 
-function populateServiceGoodsSelect(goods) {
-    domElements.serviceGoodsSelect.innerHTML = '<option value="">Select a good</option>';
-    goods.forEach((good) => {
-        domElements.serviceGoodsSelect.innerHTML += `
-            <option value="${good.pProductId}" data-cost="${good.pCostPrice}" data-selling-price="${good.pSellingPrice}">${good.pProductName}</option>
+function populatePdProductSelect(products) {
+    domElements.pdProductSelect.innerHTML = '<option value="">Select a product</option>';
+    products.forEach((product) => {
+        domElements.pdProductSelect.innerHTML += `
+            <option value="${product.pProductId}" data-cost="${product.pCostPrice}" data-selling-price="${product.pSellingPrice}">${product.pProductName}</option>
         `;
     });
 }

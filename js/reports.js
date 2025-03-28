@@ -123,7 +123,7 @@ function generateBookingTrendChart(data) {
 function generateRevenueTrendChart(data) {
     const chartData = new google.visualization.DataTable();
     chartData.addColumn('date', 'Date');
-    chartData.addColumn('number', 'Revenue (VND)');
+    chartData.addColumn('number', 'Revenue (USD)');
 
     // Process data
     const revenueByDate = new Map();
@@ -147,7 +147,7 @@ function generateRevenueTrendChart(data) {
         legend: { position: 'bottom' },
         hAxis: { title: 'Date' },
         vAxis: { 
-            title: 'Revenue (VND)',
+            title: 'Revenue (USD)',
             format: 'short'
         }
     };
@@ -192,7 +192,7 @@ function generatePopularRoomChart(data) {
     const options = {
         title: 'Revenue by Room Type',
         legend: { position: 'none' },
-        hAxis: { title: 'Revenue (VND)' },
+        hAxis: { title: 'Revenue (USD)' },
         vAxis: { title: 'Room Type' }
     };
 
@@ -224,7 +224,7 @@ function generateServiceRevenueChart(data) {
         .map(service => `
             <tr>
                 <td>${service.name}</td>
-                <td>${service.revenue.toLocaleString()} VND</td>
+                <td>${service.revenue.toLocaleString()} USD</td>
                 <td>${service.count}</td>
             </tr>
         `).join('');
@@ -233,7 +233,7 @@ function generateServiceRevenueChart(data) {
 function generateProfitChart(bookingData, serviceData, costData) {
     const chartData = new google.visualization.DataTable();
     chartData.addColumn('string', 'Category');
-    chartData.addColumn('number', 'Amount (VND)');
+    chartData.addColumn('number', 'Amount (USD)');
 
     const totalRevenue = calculateTotalRevenue(bookingData, serviceData);
     const totalCosts = calculateTotalCosts(costData);
@@ -274,9 +274,9 @@ function updateProfitSummary(bookingData, serviceData, costData) {
     const totalCosts = calculateTotalCosts(costData);
     const netProfit = totalRevenue - totalCosts;
 
-    document.getElementById('totalRevenue').textContent = `${totalRevenue.toLocaleString()} VND`;
-    document.getElementById('totalCosts').textContent = `${totalCosts.toLocaleString()} VND`;
-    document.getElementById('netProfit').textContent = `${netProfit.toLocaleString()} VND`;
+    document.getElementById('totalRevenue').textContent = `${totalRevenue.toLocaleString()} USD`;
+    document.getElementById('totalCosts').textContent = `${totalCosts.toLocaleString()} USD`;
+    document.getElementById('netProfit').textContent = `${netProfit.toLocaleString()} USD`;
 }
 
 // Chart refresh function

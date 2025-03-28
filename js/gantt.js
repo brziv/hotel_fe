@@ -593,7 +593,6 @@ async function showCheckoutModal() {
     // Tìm tất cả phòng trong currentBookings có cùng bookingid
     const checkoutRooms = currentBookings.filter(booking => booking[0] === bookingid);
     console.log(now);
-    console.log(checkoutRooms[0][7], checkoutRooms[1][7]);
     // Chuẩn bị HTML cho bảng thông tin phòng
     let roomDetailsHTML = '';
     let totalRoomPrice = 0;
@@ -623,8 +622,8 @@ async function showCheckoutModal() {
                         <input type="datetime-local" value="${timeOutFormatted}" class="checkout-time-input" id="checkout-time-out" >
                     </td>
                     <td>${timeUsed.toFixed(2)}</td>
-                    <td>${roomPrice.toLocaleString()} VND/h</td>
-                    <td>${roomTotalPrice.toLocaleString()} VND</td>
+                    <td>${roomPrice.toLocaleString()} USD/h</td>
+                    <td>${roomTotalPrice.toLocaleString()} USD</td>
                 </tr>
             `;
         });
@@ -713,7 +712,7 @@ function updateCheckoutCalculations() {
     const row = timeInInput.closest('tr');
     if (row) {
         row.cells[3].textContent = timeUsed.toFixed(2);
-        row.cells[5].textContent = roomTotalPrice.toLocaleString() + ' VND';
+        row.cells[5].textContent = roomTotalPrice.toLocaleString() + ' USD';
     }
     
     // Cập nhật tổng cộng
@@ -749,21 +748,16 @@ async function checkout() {
         const grandTotalText = document.getElementById('checkout-total-price').textContent;
 
         const grandTotal = parseFloat(grandTotalText.replace(/,/g, ''));
-        
-        console.log('Checkout với ID:', bookingid, 'và phương thức thanh toán:', paymentMethod, 'và total:', grandTotal);
-        
-        // Gọi API checkout - chú ý phương thức và định dạng parameter đúng với API
-        const response = await fetch(`http://localhost:5222/api/Booking/Checkout`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id: bookingid,
-                paymethod: paymentMethod,
-                total: grandTotal
-            })
-        });
+                
+        const response = await fetch(
+            `http://localhost:5222/api/Booking/Checkout?id=${bookingid}&paymethod=${paymentMethod}&total=${grandTotal}`, 
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }
+        );
         
         if (!response.ok) {
             throw new Error('Error when checkout');

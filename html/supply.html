@@ -15,48 +15,57 @@
         <h2 class="text-center">Supply & Services</h2>
 
         <!-- Navigation Tabs -->
-        <ul class="nav nav-tabs" id="goods-tabs">
-            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#goods">Products</a></li>
+        <ul class="nav nav-tabs" id="products-tabs">
+            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#products">Products</a></li>
             <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#import-goods">Import Goods</a></li>
             <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#import-history">Import History</a></li>
-            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#services">Service Packages</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#service-packages">Service Packages</a>
+            </li>
         </ul>
 
         <!-- Tab Content -->
         <div class="tab-content mt-3">
-            <!-- Goods Tab -->
-            <div id="goods" class="tab-pane fade show active">
+            <!-- Products Tab -->
+            <div id="products" class="tab-pane fade show active">
                 <div class="form-section">
                     <h4>Product Management</h4>
-                    <form id="add-goods-form">
+                    <form id="add-product-form">
                         <div class="row mt-4 mb-4">
                             <div class="col-md-2">
-                                <input type="text" class="form-control" id="goods-name" placeholder="Product Name"
+                                <input type="text" class="form-control" id="p-product-name" placeholder="Product Name"
                                     required>
                             </div>
                             <div class="col-md-2">
-                                <input type="text" class="form-control" id="category" placeholder="Category">
+                                <input type="text" class="form-control" id="p-category" placeholder="Category">
                             </div>
                             <div class="col-md-2">
-                                <input type="text" class="form-control" id="unit" placeholder="Unit">
+                                <input type="text" class="form-control" id="p-unit" placeholder="Unit">
                             </div>
                             <div class="col-md-2">
-                                <input type="number" class="form-control" id="cost-price" min="0"
+                                <input type="number" class="form-control" id="p-cost-price" min="0"
                                     placeholder="Cost Price" required>
                             </div>
                             <div class="col-md-2">
-                                <input type="number" class="form-control" id="selling-price" min="0"
+                                <input type="number" class="form-control" id="p-selling-price" min="0"
                                     placeholder="Selling Price" required>
                             </div>
                             <div class="col-md-1">
-                                <button type="submit" class="btn btn-primary" id="add-good-btn">Add</button>
-                                <button type="button" class="btn btn-success" id="update-good-btn"
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="p-is-service"
+                                        name="p-is-service">
+                                    <label class="form-check-label" for="p-is-service">Service</label>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="submit" class="btn btn-primary" id="add-product-btn">Add</button>
+                                <button type="button" class="btn btn-success" id="update-product-btn"
                                     style="display:none;">Update</button>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="table-container">
+                    <h5>Goods</h5>
                     <table class="table">
                         <thead>
                             <tr>
@@ -71,6 +80,21 @@
                             </tr>
                         </thead>
                         <tbody id="goods-table-body"></tbody>
+                    </table>
+                    <h5>Services</h5>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Unit</th>
+                                <th>Cost Price</th>
+                                <th>Selling Price</th>
+                                <th>Currency</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="services-table-body"></tbody>
                     </table>
                 </div>
             </div>
@@ -109,7 +133,7 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Good Name</th>
+                                <th>Product Name</th>
                                 <th>Quantity</th>
                                 <th>Cost Price</th>
                                 <th>Supplier</th>
@@ -121,8 +145,8 @@
                 </div>
             </div>
 
-            <!-- Services Tab -->
-            <div id="services" class="tab-pane fade">
+            <!-- Service Packages Tab -->
+            <div id="service-packages" class="tab-pane fade">
                 <div class="form-section">
                     <h4>Package Management</h4>
                     <div class="text-center">
@@ -141,21 +165,21 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="services-table-body"></tbody>
+                        <tbody id="service-packages-table-body"></tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Good Import History Modal -->
-    <div class="modal fade" id="good-history-modal" tabindex="-1" aria-labelledby="good-history-modal-label"
+    <!-- Product Import History Modal -->
+    <div class="modal fade" id="product-history-modal" tabindex="-1" aria-labelledby="product-history-modal-label"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="good-history-modal-label">Import History for <span
-                            id="history-good-name"></span></h5>
+                    <h5 class="modal-title" id="product-history-modal-label">Import History for <span
+                            id="history-product-name"></span></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -168,7 +192,7 @@
                                 <th>Import Date</th>
                             </tr>
                         </thead>
-                        <tbody id="good-history-table"></tbody>
+                        <tbody id="product-history-table"></tbody>
                     </table>
                 </div>
             </div>
@@ -185,16 +209,17 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="import-supplier" class="form-label">Supplier</label>
-                        <input type="text" class="form-control" id="import-supplier" placeholder="Supplier" required>
+                        <label for="ig-supplier" class="form-label">Supplier</label>
+                        <input type="text" class="form-control" id="ig-supplier" placeholder="Supplier" required>
                     </div>
                     <div class="mb-3">
-                        <label for="import-goods-select" class="form-label">Select Good</label>
-                        <select class="form-control" id="import-goods-select"></select>
+                        <label for="igd-product-select" class="form-label">Select Product</label>
+                        <select class="form-control" id="igd-product-select"></select>
                     </div>
                     <div class="mb-3">
-                        <label for="import-quantity" class="form-label">Quantity</label>
-                        <input type="number" class="form-control" id="import-quantity" placeholder="Quantity" min="1" required>
+                        <label for="igd-quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="igd-quantity" placeholder="Quantity" min="1"
+                            required>
                     </div>
                     <button class="btn btn-primary mb-3" id="add-import-detail-btn">Add to Import</button>
                     <hr>
@@ -202,7 +227,7 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Good Name</th>
+                                <th>Product Name</th>
                                 <th>Quantity</th>
                                 <th>Actions</th>
                             </tr>
@@ -231,7 +256,7 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Good Name</th>
+                                <th>Product Name</th>
                                 <th>Quantity</th>
                                 <th>Cost Price</th>
                             </tr>
@@ -243,29 +268,30 @@
         </div>
     </div>
 
-    <!-- Add Service Modal -->
-    <div class="modal fade" id="service-modal" tabindex="-1" aria-labelledby="serviceModalLabel" aria-hidden="true">
+    <!-- Add Service Package Modal -->
+    <div class="modal fade" id="service-modal" tabindex="-1" aria-labelledby="service-modal-label" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="serviceModalLabel">Add/Edit Package</h5>
+                    <h5 class="modal-title" id="service-modal-label">Add/Edit Package</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="add-service-table">
+                    <form id="add-service-package-form">
                         <div class="mb-3">
-                            <label for="service-name">Package Name:</label>
-                            <input type="text" id="service-name" class="form-control" required>
+                            <label for="sp-package-name">Package Name:</label>
+                            <input type="text" id="sp-package-name" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label for="service-goods-select">Select Product:</label>
-                            <select id="service-goods-select" class="form-control"></select>
+                            <label for="pd-product-select">Select Product:</label>
+                            <select id="pd-product-select" class="form-control"></select>
                         </div>
                         <div class="mb-3">
-                            <label for="service-quantity">Quantity:</label>
-                            <input type="number" id="service-quantity" class="form-control" min="1">
+                            <label for="pd-quantity">Quantity:</label>
+                            <input type="number" id="pd-quantity" class="form-control" min="1">
                         </div>
-                        <button type="button" id="add-service-good-btn" class="btn btn-primary mb-3">Add Product</button>
+                        <button type="button" id="add-package-detail-btn" class="btn btn-primary mb-3">Add
+                            Product</button>
                         <table class="table">
                             <thead>
                                 <tr>
@@ -276,12 +302,13 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="service-goods-table-body"></tbody>
+                            <tbody id="package-details-table-body"></tbody>
                         </table>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="finalize-service-btn" class="btn btn-success">Save Package</button>
+                    <button type="button" id="finalize-service-package-btn" class="btn btn-success">Save
+                        Package</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
