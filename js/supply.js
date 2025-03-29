@@ -203,6 +203,7 @@ const api = {
 // Event Handlers
 async function handleAddProduct(event) {
     event.preventDefault();
+    console.log("Add Product Button Clicked");
     const newProduct = {
         pProductName: domElements.pProductNameInput.value.trim(),
         pCategory: domElements.pCategoryInput.value.trim(),
@@ -211,8 +212,9 @@ async function handleAddProduct(event) {
         pCostPrice: parseFloat(domElements.pCostPriceInput.value),
         pSellingPrice: parseFloat(domElements.pSellingPriceInput.value),
         pCurrency: "USD",
-        pIsService: isService ? 1 : 0,
+        pIsService: domElements.pIsServiceCheckbox.checked,
     };
+    console.log("Sending Product:", newProduct);
 
     try {
         await api.addProduct(newProduct);
@@ -246,7 +248,7 @@ function editProduct(productId) {
     domElements.pUnitInput.value = product.pUnit;
     domElements.pCostPriceInput.value = product.pCostPrice;
     domElements.pSellingPriceInput.value = product.pSellingPrice;
-    domElements.pIsServiceCheckbox.checked = product.pIsService === 1;
+    domElements.pIsServiceCheckbox.checked = product.pIsService === true;
 
     state.editProductId = productId;
     domElements.addProductBtn.style.display = "none";
@@ -264,7 +266,7 @@ async function handleUpdateProduct() {
     product.pCostPrice = parseFloat(domElements.pCostPriceInput.value);
     product.pSellingPrice = parseFloat(domElements.pSellingPriceInput.value);
     product.pCurrency = "USD";
-    product.pIsService = isService ? 1 : 0;
+    product.pIsService = isService ? true : false;
 
     try {
         await api.updateProduct(product);
@@ -479,7 +481,7 @@ function renderProductsTable() {
     domElements.goodsTableBody.innerHTML = "";
     domElements.servicesTableBody.innerHTML = "";
 
-    // Filter and render Goods (p_IsService = 0)
+    // Filter and render Goods
     state.productsList
         .filter((product) => product.pIsService === false)
         .forEach((product) => {
@@ -501,7 +503,7 @@ function renderProductsTable() {
             domElements.goodsTableBody.appendChild(row);
         });
 
-    // Filter and render Services (p_IsService = 1)
+    // Filter and render Services
     state.productsList
         .filter((product) => product.pIsService === true)
         .forEach((product) => {
@@ -514,7 +516,6 @@ function renderProductsTable() {
                 <td>${product.pSellingPrice}</td>
                 <td>${product.pCurrency}</td>
                 <td>
-                    <button class="history-btn btn btn-sm btn-info" data-product-id="${product.pProductId}" data-product-name="${product.pProductName}" data-bs-toggle="modal" data-bs-target="#product-history-modal">History</button>
                     <button class="update-product-btn btn btn-sm btn-primary" data-product-id="${product.pProductId}">Update</button>
                     <button class="delete-product-btn btn btn-sm btn-danger" data-product-id="${product.pProductId}">Delete</button>
                 </td>
