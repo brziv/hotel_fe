@@ -53,6 +53,17 @@
     </div>
 
     <script>
+        // Check if user is already logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            const remember = localStorage.getItem('remember');
+            
+            if (token && remember === 'true') {
+                // User is already logged in and chose to be remembered
+                window.location.href = 'gantt.html';
+            }
+        });
+
         document.getElementById("signupLink").addEventListener("click", function (event) {
             event.preventDefault();
             window.parent.document.querySelector("iframe[name='contentFrame']").src = "html/signup.html";
@@ -83,9 +94,13 @@
                     // Store token and role in localStorage
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('role', data.role);
+                    localStorage.setItem('username', username);
 
                     if (remember) {
                         localStorage.setItem('remember', 'true');
+                    } else {
+                        // If not checked, we still save the token but don't remember
+                        localStorage.setItem('remember', 'false');
                     }
                     window.location.href = 'gantt.html';
                 } else {

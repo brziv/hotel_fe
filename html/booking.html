@@ -15,11 +15,12 @@
 
         <!-- Họ và Tên + Nút tạo khách hàng -->
         <label for="input-group">Find Customer:</label>
-        <div class="input-group">
+        <div class="input-group" id="input-group">
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" required>
             <label for="phonenum">PhoneNumber:</label>
             <input type="text" id="phonenum" name="phonenum" required>
+            <select id="customer-list" size="4" style="display:none;"></select>
             <button type="button" id="add-customer">Add</button>
         </div>
 

@@ -95,6 +95,11 @@ document.getElementById("bt_search").addEventListener("click", function () {
         return;
     }
 
+    if (floor === "") {
+        alert("Please select a floor.");
+        return;
+    }
+
     const formattedCheckin = encodeURIComponent(`${checkinDate}:00.000`);
     const formattedCheckout = encodeURIComponent(`${checkoutDate}:00.000`);
     const apiUrl = `https://hotel-bed.onrender.com/api/Booking/FindAvailableRooms?indate=${formattedCheckin}&outdate=${formattedCheckout}&floor=${encodeURIComponent(floor)}`;
@@ -236,9 +241,9 @@ document.getElementById("book-room").addEventListener("click", function () {
             SelectedRooms = [];
             document.getElementById("room-table-body").innerHTML = "";
             cusid = "";
-            document.getElementById("cid").value = "";
             document.getElementById("name").value = "";
             document.getElementById("phonenum").value = "";
+            document.getElementById("deposit").value = "";
             document.getElementById("total-money").value = "0.00";
         })
         .catch(error => {
@@ -320,3 +325,44 @@ function calculateTotalMoney() {
 
     document.getElementById("total-money").value = totalMoney.toFixed(2);
 }
+
+document.getElementById("phonenum").addEventListener("input", async function () {
+    let phone = this.value.trim();
+    if (phone.length < 2) {
+        document.getElementById("customer-list").style.display = "none";
+        return;
+    }
+
+    try {
+        let response = await fetch(`http://localhost:5222/api/Guest/SearchTblGuest?s=${phone}`);
+        let data = await response.json();
+
+        let selectBox = document.getElementById("customer-list");
+        selectBox.innerHTML = ""; // Xóa danh sách cũ
+
+        if (data.data.length > 0) {
+            data.data.forEach(guest => {
+                let option = document.createElement("option");
+                option.value = guest.gGuestId;
+                option.textContent = `${guest.gFirstName} ${guest.gLastName} - ${guest.gPhoneNumber}`;
+                option.dataset.name = `${guest.gFirstName} ${guest.gLastName}`;
+                option.dataset.phone = guest.gPhoneNumber;
+                selectBox.appendChild(option);
+            });
+
+            selectBox.style.display = "block";
+        } else {
+            selectBox.style.display = "none";
+        }
+    } catch (error) {
+        console.error("Lỗi khi gọi API:", error);
+    }
+});
+
+document.getElementById("customer-list").addEventListener("change", function () {
+    let selectedOption = this.options[this.selectedIndex];
+    document.getElementById("name").value = selectedOption.dataset.name;
+    document.getElementById("phonenum").value = selectedOption.dataset.phone;
+    cusid = selectedOption.value;
+    this.style.display = "none"; // Ẩn danh sách sau khi chọn
+});

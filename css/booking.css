@@ -5,6 +5,7 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
+    padding-top: 30px;
 }
 
 .container {
@@ -398,4 +399,10 @@ td {
         transform: translateY(0);
         opacity: 1;
     }
+}
+.input-group {
+    min-height: 200px;  /* Đảm bảo đủ không gian kể cả khi `#customer-list` hiển thị */
+}
+#customer-list {
+    width: 230px;
 }

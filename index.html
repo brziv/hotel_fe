@@ -16,7 +16,7 @@
                 
                 <!-- Staff and Admin only -->
                 <li class="tab-customers"><a href="html/customer.html" target="contentFrame">Customers</a></li>
-                <li class="tab-supply"><a href="html/supply.html" target="contentFrame">Supply</a></li>
+                <li class="tab-inventory"><a href="html/inventory.html" target="contentFrame">Inventory</a></li>
                 
                 <!-- Admin only -->
                 <li class="tab-employees"><a href="html/employee.html" target="contentFrame">Employees</a></li>
@@ -42,7 +42,7 @@
             const bookingTab = document.querySelector('.tab-booking');
             const customersTab = document.querySelector('.tab-customers');
             const partnersTab = document.querySelector('.tab-partners');
-            const supplyTab = document.querySelector('.tab-supply');
+            const inventoryTab = document.querySelector('.tab-inventory');
             const employeesTab = document.querySelector('.tab-employees');
             const reportsTab = document.querySelector('.tab-reports');
             const loginTab = document.querySelector('.tab-login');
@@ -68,14 +68,14 @@
                     case 'Staff':
                         bookingTab.style.display = 'block';
                         customersTab.style.display = 'block';
-                        supplyTab.style.display = 'block';
+                        inventoryTab.style.display = 'block';
                         break;
                     case 'Admin':
                         bookingTab.style.display = 'block';
                         customersTab.style.display = 'block';
                         partnersTab.style.display = 'block';
                         employeesTab.style.display = 'block';
-                        supplyTab.style.display = 'block';
+                        inventoryTab.style.display = 'block';
                         reportsTab.style.display = 'block';
                         break;
                 }
