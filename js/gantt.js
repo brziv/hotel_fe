@@ -379,7 +379,7 @@ async function checkin() {
         }
 
     }
-    let apiUrl = `http://localhost:5222/api/Booking/Checkin?id=${bookingId}`;
+    let apiUrl = `https://hotel-bed.onrender.com/api/Booking/Checkin?id=${bookingId}`;
 
     try {
         let response = await fetch(apiUrl, {
@@ -403,7 +403,7 @@ async function bookService() {
     document.getElementById('addservice-roomNumber').value = document.getElementById('cust-room-num').textContent;
 
     try {
-        const response = await fetch(`http://localhost:5222/api/Package/GetPackageList`);
+        const response = await fetch(`https://hotel-bed.onrender.com/api/Package/GetPackageList`);
         const data = await response.json();
         servicesList = data.data;
 
@@ -423,7 +423,7 @@ async function bookService() {
     }
 
     try {
-        const response = await fetch(`http://localhost:5222/api/Package/FindUsedService?bookingId=${bookingid}`);
+        const response = await fetch(`https://hotel-bed.onrender.com/api/Package/FindUsedService?bookingId=${bookingid}`);
         const data = await response.json();
         var UsedservicesList = data.data;
       
@@ -544,7 +544,7 @@ async function addServicetoBooking() {
         }
         
         // Gọi API để thêm dịch vụ với BookingID và danh sách dịch vụ
-        const response = await fetch(`http://localhost:5222/api/Package/AddService?BookingID=${bookingid}`, {
+        const response = await fetch(`https://hotel-bed.onrender.com/api/Package/AddService?BookingID=${bookingid}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -643,7 +643,7 @@ async function showCheckoutModal() {
     
 
     try {
-        const response = await fetch(`http://localhost:5222/api/Package/FindUsedService?bookingId=${bookingid}`);
+        const response = await fetch(`https://hotel-bed.onrender.com/api/Package/FindUsedService?bookingId=${bookingid}`);
         const data = await response.json();
         var checkoutUsedservicesList = data.data;
         var totalServicePrice = 0;
@@ -750,7 +750,7 @@ async function checkout() {
         const grandTotal = parseFloat(grandTotalText.replace(/,/g, ''));
                 
         const response = await fetch(
-            `http://localhost:5222/api/Booking/Checkout?id=${bookingid}&paymethod=${paymentMethod}&total=${grandTotal}`, 
+            `https://hotel-bed.onrender.com/api/Booking/Checkout?id=${bookingid}&paymethod=${paymentMethod}&total=${grandTotal}`, 
             {
                 method: 'POST',
                 headers: {
@@ -821,7 +821,7 @@ async function confirmCancelBooking() {
         console.log('Cancel booking với ID:', bookingid, 'và phương thức thanh toán:', paymentMethod, 'và deposit:', deposit);
         
         // Gọi API cancel booking
-        const response = await fetch(`http://localhost:5222/api/Booking/Cancelbooking`, {
+        const response = await fetch(`https://hotel-bed.onrender.com/api/Booking/Cancelbooking`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

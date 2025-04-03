@@ -334,7 +334,7 @@ document.getElementById("phonenum").addEventListener("input", async function () 
     }
 
     try {
-        let response = await fetch(`http://localhost:5222/api/Guest/SearchTblGuest?s=${phone}`);
+        let response = await fetch(`https://hotel-bed.onrender.com/api/Guest/SearchTblGuest?s=${phone}`);
         let data = await response.json();
 
         let selectBox = document.getElementById("customer-list");

@@ -61,7 +61,7 @@ async function generateReports() {
     }
 }
 
-const API_BASE_URL = "http://localhost:5222/api";
+const API_BASE_URL = "https://hotel-bed.onrender.com/api";
 
 // Data fetching functions
 async function fetchBookingData(start, end) {
