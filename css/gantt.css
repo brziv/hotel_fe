@@ -51,12 +51,32 @@ input[type="datetime-local"] {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: white;
+    background: rgb(255, 255, 255);
     padding: 20px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
     z-index: 1000;
-    width: 300px;
-    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    border-radius: 10px;
+}
+
+.modal-content {
+    line-height: 1.5;
+    padding: 0 50px;
+}
+
+.modal-content h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.modal-content p {
+    font-size: 16px;
+    margin: 15px 0;
+    display: flex;
+    justify-content: space-between;
+    max-width: 500px;
 }
 
 .overlay {
@@ -75,10 +95,10 @@ input[type="datetime-local"] {
 }
 
 button {
-    background-color: #f0f0f0;
+    background-color: #ebebeb;
     color: #333;
     border: 1px solid #bbb;
-    padding: 12px;
+    padding: 10px;
     font-size: 15px;
     cursor: pointer;
     border-radius: 5px;
@@ -86,7 +106,7 @@ button {
 }
 
 button:hover {
-    background-color: #e6e6e6;
+    background-color: #c9c9c9;
 }
 
 button:last-child {
@@ -111,8 +131,6 @@ button:last-child:hover {
         max-width: 250px;
     }
 }
-
-
 
 /* addservice-modal */
 #addservice-modal {
@@ -371,4 +389,3 @@ button:last-child:hover {
 .modal-buttons button:hover {
     opacity: 0.9;
 }
-
