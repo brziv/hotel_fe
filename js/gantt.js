@@ -15,20 +15,6 @@ async function fetchBookings() {
     let inDate = document.getElementById("startDate").value;
     let outDate = document.getElementById("endDate").value;
 
-    if (!inDate || !outDate) {
-        let today = new Date();
-        let sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(today.getDate() - 7);
-
-        const formatDateTimeLocal = date => date.toISOString().slice(0, 16);
-
-        inDate = formatDateTimeLocal(sevenDaysAgo);
-        outDate = formatDateTimeLocal(today);
-
-        document.getElementById("startDate").value = inDate;
-        document.getElementById("endDate").value = outDate;
-    }
-
     let formattedInDate = encodeURIComponent(inDate.replace("T", " ") + ":00.000");
     let formattedOutDate = encodeURIComponent(outDate.replace("T", " ") + ":00.000");
 
