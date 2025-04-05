@@ -12,17 +12,25 @@
 <body>
     <div class="container">
         <h2>Booking Rooms</h2>
-
         <!-- Họ và Tên + Nút tạo khách hàng -->
-        <label for="input-group">Find Customer:</label>
+        <label for="input-group">Customer Information:</label>
         <div class="input-group" id="input-group">
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
+            <div id="input-name">
+                <label for="name">Name:</label>
+                <br>
+                <input type="text" id="name" name="name" placeholder="Customer name" required>
+                <button type="button" id="add-customer">+</button>
+            </div>
             <label for="phonenum">PhoneNumber:</label>
-            <input type="text" id="phonenum" name="phonenum" required>
-            <select id="customer-list" size="4" style="display:none;"></select>
-            <button type="button" id="add-customer">Add</button>
+            <div class="search-customer">
+                <div class="search-row">
+                    <input type="text" id="phonenum" name="phonenum" placeholder="Search Phonenum here" autocomplete="off">  
+                </div>
+                <div class="search-customer-result" id="customer-result-list" style="display: none;"></div>
+            </div>
+            
         </div>
+
 
         <div id="room_list">
             <h3>Room List</h3>

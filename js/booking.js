@@ -174,12 +174,12 @@ document.getElementById("choose-room").addEventListener("click", function () {
         const tableBody = document.getElementById("room-table-body");
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td><input type="text" class="form-control form-control-sm" value="${room.roomNumber}" readonly></td>
-            <td><input type="text" class="form-control form-control-sm" value="${room.floor}" readonly></td>
-            <td><input type="text" class="form-control form-control-sm" value="${room.roomType}" readonly></td>
-            <td><input type="text" class="form-control form-control-sm" value="${room.pricePerHour}" readonly></td>
-            <td><input type="datetime-local" class="form-control" value="${checkinDate}" readonly></td>
-            <td><input type="datetime-local" class="form-control" value="${checkoutDate}" readonly></td>
+            <td><input type="text" class="form-control form-control-sm" style="border: none; box-shadow: none;" value="${room.roomNumber}" readonly></td>
+            <td><input type="text" class="form-control form-control-sm" style="border: none; box-shadow: none;" value="${room.floor}" readonly></td>
+            <td><input type="text" class="form-control form-control-sm" style="border: none; box-shadow: none;" value="${room.roomType}" readonly></td>
+            <td><input type="text" class="form-control form-control-sm" style="border: none; box-shadow: none;" value="${room.pricePerHour}" readonly></td>
+            <td><input type="datetime-local" class="form-control" style="border: none; box-shadow: none;" value="${checkinDate}" readonly></td>
+            <td><input type="datetime-local" class="form-control" style="border: none; box-shadow: none;" value="${checkoutDate}" readonly></td>
             <td>
                 <button class="btn btn-danger btn-sm delete-room">
                     <i class="bi bi-trash"></i> Delete
@@ -327,9 +327,12 @@ function calculateTotalMoney() {
 }
 
 document.getElementById("phonenum").addEventListener("input", async function () {
+    const resultList = document.getElementById("customer-result-list");
+    resultList.innerHTML = ""; // Clear cũ
+
     let phone = this.value.trim();
     if (phone.length < 2) {
-        document.getElementById("customer-list").style.display = "none";
+        resultList.style.display = "none";
         return;
     }
 
@@ -337,32 +340,32 @@ document.getElementById("phonenum").addEventListener("input", async function () 
         let response = await fetch(`http://localhost:5222/api/Guest/SearchTblGuest?s=${phone}`);
         let data = await response.json();
 
-        let selectBox = document.getElementById("customer-list");
-        selectBox.innerHTML = ""; // Xóa danh sách cũ
-
         if (data.data.length > 0) {
             data.data.forEach(guest => {
-                let option = document.createElement("option");
-                option.value = guest.gGuestId;
-                option.textContent = `${guest.gFirstName} ${guest.gLastName} - ${guest.gPhoneNumber}`;
-                option.dataset.name = `${guest.gFirstName} ${guest.gLastName}`;
-                option.dataset.phone = guest.gPhoneNumber;
-                selectBox.appendChild(option);
+                let item = document.createElement("div");
+                item.classList.add("customer-item");
+                item.textContent = `${guest.gFirstName} ${guest.gLastName} - ${guest.gPhoneNumber}`;
+                item.dataset.name = `${guest.gFirstName} ${guest.gLastName}`;
+                item.dataset.phone = guest.gPhoneNumber;
+                item.dataset.id = guest.gGuestId;
+            
+                item.addEventListener("click", function () {
+                    document.getElementById("name").value = this.dataset.name;
+                    document.getElementById("phonenum").value = this.dataset.phone;
+                    cusid = this.dataset.id;
+                    resultList.style.display = "none";
+                });
+            
+                resultList.appendChild(item);
             });
-
-            selectBox.style.display = "block";
+            resultList.style.display = "block";
         } else {
-            selectBox.style.display = "none";
+            resultList.style.display = "none";
         }
     } catch (error) {
-        console.error("Lỗi khi gọi API:", error);
+        console.error("Error when call API:", error);
     }
 });
 
-document.getElementById("customer-list").addEventListener("change", function () {
-    let selectedOption = this.options[this.selectedIndex];
-    document.getElementById("name").value = selectedOption.dataset.name;
-    document.getElementById("phonenum").value = selectedOption.dataset.phone;
-    cusid = selectedOption.value;
-    this.style.display = "none"; // Ẩn danh sách sau khi chọn
-});
+
+

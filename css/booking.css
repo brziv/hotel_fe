@@ -9,7 +9,7 @@ body {
 }
 
 .container {
-    background: white;
+    background: blanchedalmond;
     padding: 25px;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -26,7 +26,7 @@ h3 {
 
 .input-group {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 10px;
     margin-bottom: 15px;
 }
@@ -400,9 +400,44 @@ td {
         opacity: 1;
     }
 }
-.input-group {
-    min-height: 200px;  /* Đảm bảo đủ không gian kể cả khi `#customer-list` hiển thị */
+/*autocomplete*/
+
+.search-customer {
+    display: flex;
+    flex-direction: column; /* Sắp xếp các phần tử theo chiều dọc */
+    align-items: flex-start; /* Căn tất cả về bên trái */
+    max-width: 300px;
 }
-#customer-list {
-    width: 230px;
+
+.search-row {
+    position: relative; /* Giúp các phần tử con absolute nằm trong đây */
+    width: 100%;
 }
+#phonenum{
+    width: 100%;
+    box-sizing: border-box;
+}
+#customer-result-list {
+    position: absolute; /* Đè lên thay vì đẩy xuống */
+    top: 100%; /* Hiện ngay bên dưới input */
+    left: 0;
+    width: 300px;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    z-index: 999; /* Đảm bảo nằm trên các phần khác */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.customer-item {
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.customer-item:hover {
+    background-color: #55b8f1;
+}
+
+/*autocomplete*/
