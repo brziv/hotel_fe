@@ -9,6 +9,7 @@ let guestName;
 let deposit;
 let initialtotalMoney;
 let servicesList = [];
+let allroom=[];
 
 async function fetchBookings() {
     let floor = document.getElementById("floorSelect").value;
@@ -18,10 +19,21 @@ async function fetchBookings() {
     let formattedInDate = encodeURIComponent(inDate.replace("T", " ") + ":00.000");
     let formattedOutDate = encodeURIComponent(outDate.replace("T", " ") + ":00.000");
 
-    let apiUrl = `http://localhost:5222/api/Booking/FindBookings?indate=${formattedInDate}&outdate=${formattedOutDate}&floornum=${floor}`;
+    let apiUrl1 = `http://localhost:5222/api/Booking/FindBookings?indate=${formattedInDate}&outdate=${formattedOutDate}&floornum=${floor}`;
+    let apiUrl2 = `http://localhost:5222/api/Booking/FindAllRooms?floornum=${floor}`;
 
     try {
-        let response = await fetch(apiUrl);
+        let response = await fetch(apiUrl2);
+        if (!response.ok) throw new Error("Lỗi khi tải dữ liệu!");
+
+        let data = await response.json();
+        allroom=[];
+        allroom = data;
+    } catch (error) {
+        console.error("Lỗi khi gọi API:", error);
+    }
+    try {
+        let response = await fetch(apiUrl1);
         if (!response.ok) throw new Error("Lỗi khi tải dữ liệu!");
 
         let data = await response.json();
@@ -34,6 +46,8 @@ async function fetchBookings() {
     } catch (error) {
         console.error("Lỗi khi gọi API:", error);
     }
+    
+
 }
 
 function processBookings(bookings) {
@@ -121,10 +135,7 @@ function drawChart() {
     dataTable.addColumn({ type: "datetime", id: "End" });
     
 
-    if (!allBookings || allBookings.length === 0) {
-        container.innerHTML = "<p>No booking data available.</p>";
-        return;
-    }
+
     let sortedAllBooking = [...upcomingBookings, ...currentBookings, ...pastBookings];
     console.log("sortedAllBooking",sortedAllBooking);
 
@@ -172,47 +183,45 @@ function drawChart() {
             return null;
         }
     }).filter(row => row !== null);
+   
 
-    
-    if (formattedData.length === 0) {
-        container.innerHTML = "<p>No valid booking data to display.</p>";
-        return;
-    }
-
-    // Add empty rooms to the timeline
-    const floor = document.getElementById("floorSelect").value;
-    const roomsPerFloor = 10; // Suppose each floor has 10 rooms
-    const roomsOnSelectedFloor = [];
-    
-    // Create room numbers for the selected floor
-    for (let i = 1; i <= roomsPerFloor; i++) {
-        const roomNumber = `${floor}${i.toString().padStart(2, '0')}`;
-        roomsOnSelectedFloor.push(roomNumber);
-    }
-    
-    // Find all booked rooms
-    const bookedRooms = formattedData.map(row => row[0]);
-    
-    // Find empty rooms
-    const emptyRooms = roomsOnSelectedFloor.filter(room => !bookedRooms.includes(room));
-    
-    // Add empty rooms to the timeline
+    // Add all rooms to the timeline
+    // Lấy ngày bắt đầu và kết thúc từ input
     const startDate = new Date(document.getElementById("startDate").value);
     const endDate = new Date(document.getElementById("endDate").value);
-    
-    emptyRooms.forEach(roomNum => {
+
+    // // Thêm tất cả phòng vào timeline
+    for (let i = 0; i < allroom.length; i++) {
+        let roomNum = allroom[i];
         formattedData.push([
             roomNum,
             "",
-            `<div style="padding:10px;"><strong>Room:</strong> ${roomNum} <br><strong>Status:</strong> Available</div>`,
+            `<div style="padding:10px;">
+                <strong>Room:</strong> ${roomNum}
+            </div>`,
             "#DDDDDD", // Light gray
             startDate,
-            startDate // Set start and end date to the same date
+            startDate
+        ]);
+    }
+    
+    allroom.forEach(roomNum => {
+        formattedData.push([
+            roomNum,
+            "",
+            `<div style="padding:10px;">
+                <strong>Room:</strong> ${roomNum} 
+            </div>`,
+            "#DDDDDD", // Light gray
+            endDate,
+            endDate
         ]);
     });
     
     dataTable.addRows(formattedData);
+    
     console.log('datatable',dataTable);
+    console.log('formateđât',formattedData);
     var options = {
         alternatingRowStyle: false,
         hAxis: {
@@ -587,13 +596,14 @@ async function showCheckoutModal() {
         checkoutRooms.forEach(room => {
             const roomNumber = room[3];
             const timeIn = new Date(room[7]);
+            const timeOut = new Date(room[8]);
             
             const timeInFormatted = formatDateTimeLocal(timeIn);
-            const timeOutFormatted = formatDateTimeLocal(now);
+            const timeOutFormatted = formatDateTimeLocal(timeOut);
             
             const roomPrice = room[9] ; 
             
-            const timeUsed = Math.ceil((now - timeIn) / (1000 * 60 * 60));
+            const timeUsed = Math.ceil((timeOut - timeIn) / (1000 * 60 * 60));
             
             const roomTotalPrice = timeUsed * roomPrice;
             totalRoomPrice += roomTotalPrice;
