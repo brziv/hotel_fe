@@ -11,29 +11,26 @@
 
 <body>
     <div class="container">
-        <h2>Booking Rooms</h2>
-        <!-- Họ và Tên + Nút tạo khách hàng -->
-        <label for="input-group">Customer Information:</label>
+        <h2 style="text-align: center;">Booking Rooms</h2>
+        <!-- Customer Info and Add New -->
         <div class="input-group" id="input-group">
             <div id="input-name">
                 <label for="name">Name:</label>
                 <br>
-                <input type="text" id="name" name="name" placeholder="Customer name" required>
-                <button type="button" id="add-customer">+</button>
+                <input type="text" id="name" name="name" placeholder="Customer Name" required>
+                <button type="button" id="add-customer">Add</button>
             </div>
-            <label for="phonenum">PhoneNumber:</label>
+            <label for="phonenum">Phone Number:</label>
             <div class="search-customer">
                 <div class="search-row">
-                    <input type="text" id="phonenum" name="phonenum" placeholder="Search Phonenum here" autocomplete="off">  
+                    <input type="text" id="phonenum" name="phonenum" placeholder="Phone Number" autocomplete="off">
                 </div>
                 <div class="search-customer-result" id="customer-result-list" style="display: none;"></div>
             </div>
-            
         </div>
 
-
         <div id="room_list">
-            <h3>Room List</h3>
+            <h3 style="text-align: center;">Room List</h3>
             <div class="table-responsive">
                 <table class="table">
                     <thead>
@@ -86,7 +83,7 @@
         </div>
     </div>
 
-    <!-- Modal tìm phòng -->
+    <!-- Modal Find Room -->
     <div id="find-room-modal" class="modal">
         <div class="modal-content-findroom">
             <h3 class="text-center mb-4">Tìm Phòng</h3>

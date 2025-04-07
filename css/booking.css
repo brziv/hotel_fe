@@ -1,21 +1,20 @@
 body {
+    background: rgb(241, 241, 241);
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    padding-top: 30px;
 }
 
 .container {
-    background: blanchedalmond;
-    padding: 25px;
+    background: white;
+    padding: 50px;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 1000px;
-    margin: 20px;
+    width: 93%;
+    max-width: 1100px;
 }
 
 h2,
@@ -27,7 +26,6 @@ h3 {
 .input-group {
     display: flex;
     flex-direction: column;
-    gap: 10px;
     margin-bottom: 15px;
 }
 
@@ -143,7 +141,7 @@ td {
 #add-customer,
 #bt_findroom,
 #bt_search {
-    padding: 10px 20px;
+    padding: 8px 20px;
     border: none;
     cursor: pointer;
     border-radius: 5px;
@@ -152,8 +150,9 @@ td {
 }
 
 #add-customer {
-    background-color: #28a745;
+    background-color: #007bff;
     color: white;
+    margin-left: 5px;
 }
 
 #bt_findroom,
@@ -289,7 +288,45 @@ td {
     width: 60px;
 }
 
+#name,
+#phonenum {
+    width: 100%;
+    max-width: 300px;
+    box-sizing: border-box;
+    margin-top: 10px;
+}
+
+#customer-result-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 300px;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    z-index: 999;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.customer-item {
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.customer-item:hover {
+    background-color: #55b8f1;
+}
+
 @media (max-width: 768px) {
+    body {
+        padding-top: 50px;
+    }
+
+    .container {
+        padding: 30px;
+    }
 
     .input-group,
     .findrooms {
@@ -386,6 +423,7 @@ td {
     #add-customer {
         width: 100%;
         margin-top: 5px;
+        margin-left: 0;
     }
 }
 
@@ -400,44 +438,3 @@ td {
         opacity: 1;
     }
 }
-/*autocomplete*/
-
-.search-customer {
-    display: flex;
-    flex-direction: column; /* Sắp xếp các phần tử theo chiều dọc */
-    align-items: flex-start; /* Căn tất cả về bên trái */
-    max-width: 300px;
-}
-
-.search-row {
-    position: relative; /* Giúp các phần tử con absolute nằm trong đây */
-    width: 100%;
-}
-#phonenum{
-    width: 100%;
-    box-sizing: border-box;
-}
-#customer-result-list {
-    position: absolute; /* Đè lên thay vì đẩy xuống */
-    top: 100%; /* Hiện ngay bên dưới input */
-    left: 0;
-    width: 300px;
-    max-height: 200px;
-    overflow-y: auto;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    z-index: 999; /* Đảm bảo nằm trên các phần khác */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.customer-item {
-    padding: 8px 10px;
-    cursor: pointer;
-}
-
-.customer-item:hover {
-    background-color: #55b8f1;
-}
-
-/*autocomplete*/

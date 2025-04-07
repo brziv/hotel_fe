@@ -23,20 +23,12 @@
             </div>
             <div class="select-group">
                 <label for="startDate">From:</label>
-                <input type="datetime-local" id="startDate" onchange="changeTimePeriod()"
-                value = '2025-03-27T00:00'>
+                <input type="datetime-local" id="startDate" onchange="changeTimePeriod()" value='2025-04-01T00:00'>
                 <label for="endDate">To:</label>
-                <input type="datetime-local" id="endDate" onchange="changeTimePeriod()"
-                value = '2025-04-05T00:00'>
+                <input type="datetime-local" id="endDate" onchange="changeTimePeriod()" value='2025-04-07T00:00'>
             </div>
         </div>
         <div id="timeline"></div>
-
-        <script src="../js/gantt.js"></script>
-        <script type="text/javascript">
-            google.charts.load("current", { packages: ["timeline"] });
-            google.charts.setOnLoadCallback(fetchBookings);
-        </script>
     </div>
 
     <div class="overlay" id="overlay"></div>
@@ -63,7 +55,7 @@
         <div class="modal-content-checkout">
             <h3>Check Out Details</h3>
             <p><strong>Guest Name:</strong> <span id="checkout-guest-name"></span></p>
-            
+
             <h4>Room Information</h4>
             <div class="table-responsive">
                 <table class="table">
@@ -82,7 +74,7 @@
                     </tbody>
                 </table>
             </div>
-            
+
             <h4>Services</h4>
             <div class="table-responsive">
                 <table class="table">
@@ -100,13 +92,13 @@
                     </tbody>
                 </table>
             </div>
-            
+
             <div class="checkout-summary">
                 <p><strong>Total Price:</strong> <span id="checkout-total-price">0</span> USD</p>
                 <p><strong>Deposit:</strong> <span id="checkout-deposit">0</span> USD</p>
                 <p><strong>Customer Needs to Pay:</strong> <span id="checkout-remaining">0</span> USD</p>
             </div>
-            
+
             <div class="payment-methods" style="display: flex; justify-content: center; align-items: center;">
                 <div class="payment-options">
                     <p><strong>Payment Method:</strong></p>
@@ -121,9 +113,9 @@
                     </label>
                 </div>
             </div>
-            
+
             <div class="modal-buttons">
-                <button id="checkout-confirm-btn" onclick="checkout()">Confirm</button>
+                <button id="checkout-confirm-btn" onclick="checkOut()">Confirm</button>
                 <button id="checkout-cancel-btn" onclick="closeCheckoutModal()">Cancel</button>
             </div>
         </div>
@@ -135,9 +127,10 @@
             <h2>Choose Services</h2>
         </div>
         <div class="modal-content">
-            <!-- Bên Trái: Danh sách dịch vụ -->
+            <!-- Left: Service List -->
             <div class="modal-left">
-                <input type="text" id="searchService" placeholder="Search Service..." onkeyup="filterServices()" style="margin-top: 10px;">
+                <input type="text" id="searchService" placeholder="Search Service..." onkeyup="filterServices()"
+                    style="margin-top: 10px;">
                 <table id="serviceTable">
                     <thead>
                         <tr>
@@ -151,12 +144,12 @@
                 </table>
             </div>
 
-            <!-- Bên Phải: Dịch vụ đã chọn -->
+            <!-- Right: Selected Services -->
             <div class="modal-right">
                 <div class="customer-info" style="margin-top: 10px;">
                     <label for="addservice-customerName">Customer Name:</label>
                     <input type="text" id="addservice-customerName" placeholder="Customer Name" readonly>
-                
+
                     <label for="addservice-roomNumber">Room Number:</label>
                     <input type="text" id="addservice-roomNumber" placeholder="Room Number" readonly>
                 </div>
@@ -170,10 +163,10 @@
                             <th>Quantity</th>
                             <th>Total Price</th>
                         </tr>
-                    </thead>    
+                    </thead>
                     <tbody></tbody>
                 </table>
-               <hr>
+                <hr>
                 <h3>Selected Services</h3>
                 <table id="addservice-selectedServices">
                     <thead>
@@ -185,7 +178,7 @@
                             <th>Total Price</th>
                             <th></th>
                         </tr>
-                    </thead>    
+                    </thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -229,6 +222,12 @@
             </div>
         </div>
     </div>
+    
+    <script src="../js/gantt.js"></script>
+    <script type="text/javascript">
+        google.charts.load("current", { packages: ["timeline"] });
+        google.charts.setOnLoadCallback(fetchBookings);
+    </script>
 </body>
 
 </html>

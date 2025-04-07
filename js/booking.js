@@ -85,6 +85,14 @@ document.getElementById("bt_search").addEventListener("click", function () {
     const checkoutDate = document.getElementById("checkout").value;
     const floor = document.getElementById("floor").value.trim();
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (new Date(checkinDate) < today) {
+        alert("Check-in date cannot be in the past.");
+        return;
+    }
+
     if (!checkinDate || !checkoutDate) {
         alert("Please select both check-in and check-out dates.");
         return;
@@ -328,7 +336,7 @@ function calculateTotalMoney() {
 
 document.getElementById("phonenum").addEventListener("input", async function () {
     const resultList = document.getElementById("customer-result-list");
-    resultList.innerHTML = ""; // Clear cũ
+    resultList.innerHTML = ""; // Clear previous results
 
     let phone = this.value.trim();
     if (phone.length < 2) {
@@ -348,14 +356,14 @@ document.getElementById("phonenum").addEventListener("input", async function () 
                 item.dataset.name = `${guest.gFirstName} ${guest.gLastName}`;
                 item.dataset.phone = guest.gPhoneNumber;
                 item.dataset.id = guest.gGuestId;
-            
+
                 item.addEventListener("click", function () {
                     document.getElementById("name").value = this.dataset.name;
                     document.getElementById("phonenum").value = this.dataset.phone;
                     cusid = this.dataset.id;
                     resultList.style.display = "none";
                 });
-            
+
                 resultList.appendChild(item);
             });
             resultList.style.display = "block";

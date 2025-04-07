@@ -1,7 +1,7 @@
 # Hotel Management System
 
 ## Overview
-The **Hotel Management System** is a web-based application designed to streamline hotel operations, including room booking, customer management, employee management, partner management, supply management, and service management. The system also features a room state view using a Gantt chart and generates reports to assist in decision-making.
+The **Hotel Management System** is a web-based application designed to streamline hotel operations, including room booking, room management, customer management, employee management, partner management, and inventory management. The system also features a room state view using a Gantt chart and generates reports to assist in decision-making.
 
 ## Features
 - **Room Booking:**
@@ -11,12 +11,13 @@ The **Hotel Management System** is a web-based application designed to streamlin
   - Add, edit, delete, and view customer information
 - **Employee Management:**
   - Manage employee data (CRUD operations)
+  - Add new accounts for employee
 - **Partner Management:**
   - Maintain partner information
-- **Supply Management:**
-  - Manage goods, import stock, and view import history
+- **Inventory Management:**
+  - Manage products, import goods, and view import history
 - **Service Management:**
-  - Create and manage services containing multiple goods
+  - Create and manage service packages containing multiple products
 - **Room State Management:**
   - Visualize room states using a Gantt chart
   - Perform check-in, check-out, service booking, and payment
@@ -28,20 +29,29 @@ The **Hotel Management System** is a web-based application designed to streamlin
 
 ## User Roles and Permissions
 - **Admin:** Access to all functions.
-- **Staff:** Access to booking, customer management, and supply management.
+- **Staff:** Access to booking, room management, customer management, and inventory management.
 - **User:** Access to room booking only.
 
 ## Technologies Used
-- **Frontend:** HTML, CSS, JavaScript
-- **Backend:** ASP.NET WebAPI
-- **Database:** SQL Server
-- **Libraries and Frameworks:**
-  - Bootstrap for responsive design
-  - Google Charts for data visualization
-- **Testing:**
-  - Swagger UI for API documentation and testing
-  - Postman for endpoint verification
-- **Version Control:** Git and GitHub
+* **Frontend:** HTML, CSS, JavaScript
+* **Backend:** ASP.NET WebAPI
+* **Database:** SQL Server  
+  * Indexed tables for optimized query performance
+* **Data Access:**  
+  * Dapper for lightweight and efficient database operations
+* **Caching:**  
+  * IMemoryCache for in-memory data caching
+* **Authentication & Authorization:**  
+  * ASP.NET Identity for user management  
+  * JWT (JSON Web Tokens) for stateless authentication  
+  * Role-based authorization (Admin, Staff, User policies)
+* **Libraries and Frameworks:**  
+  * Bootstrap for responsive UI design  
+  * Google Charts for data visualization
+* **Testing:**  
+  * Swagger UI for API documentation and testing  
+  * Postman for manual endpoint verification
+* **Version Control:** Git and GitHub
 
 ## Installation
 ### Backend (ASP.NET WebAPI)
@@ -65,9 +75,3 @@ The **Hotel Management System** is a web-based application designed to streamlin
     ```
 2. Open `index.html` in a browser or use a local server (e.g., Live Server for Visual Studio Code).  
 3. Ensure the API is running and update API endpoint URLs in the JavaScript files if necessary.  
-
-
-## Future Plans
-- Implement report generation.
-- Enhance Gantt chart interactions.
-- Add additional authentication and authorization features.

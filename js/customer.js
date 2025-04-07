@@ -166,24 +166,27 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    window.deleteGuest = function (index) {
-        if (confirm("Bạn có chắc chắn muốn xóa khách hàng này không?")) {
-            deleteGuest(index);
+    window.deleteGuest = async function (index) {
+        if (confirm("Are you sure to delete this customer?")) {
+            const guest = guests[index];
+            try {
+                const response = await fetch(`http://localhost:5222/api/Guest/XoaTblGuest?gGuestId=${guest.gGuestId}`, {
+                    method: "DELETE",
+                });
+
+                if (!response.ok) {
+                    alert("Cannot delete customer with bookings.");
+                    return;
+                }
+
+                alert("Customer deleted successfully.");
+                await fetchGuests();
+
+            } catch (error) {
+                console.error("Error deleting guest:", error);
+            }
         }
     };
-
-    async function deleteGuest(index) {
-        try {
-            const guest = guests[index];
-            await fetch(`http://localhost:5222/api/Guest/XoaTblGuest?gGuestId=${guest.gGuestId}`, {
-                method: "DELETE",
-            });
-            await fetchGuests();
-
-        } catch (error) {
-            console.error("Error deleting guest:", error);
-        }
-    }
 
     fetchGuests();
 });

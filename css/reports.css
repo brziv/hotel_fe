@@ -1,10 +1,20 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: rgb(241, 241, 241);
+    font-size: 100%;
+}
+
 .container {
-    margin-top: 100px !important;
+    margin-top: 70px !important;
     max-width: 1200px;
+    width: 95%;
 }
 
 h2 {
     font-size: 32px;
+    font-weight: bold;
 }
 
 .chart {
@@ -35,7 +45,8 @@ h2 {
 }
 
 .report-container .nav-tabs .nav-link.active {
-    background-color: #007bff; /* Bootstrap primary color */
+    background-color: #007bff;
+    /* Bootstrap primary color */
     color: white;
     border-color: #007bff;
 }
@@ -43,15 +54,19 @@ h2 {
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .chart {
-        min-height: 300px; /* Smaller charts on mobile */
+        min-height: 300px;
+        /* Smaller charts on mobile */
     }
 
     .report-container {
-        padding: 10px; /* Reduced padding on smaller screens */
+        padding: 10px;
+        /* Reduced padding on smaller screens */
     }
 
     .report-container .nav-tabs .nav-link {
-        font-size: 14px; /* Smaller tab text */
-        padding: 8px 12px; /* Adjust padding */
+        font-size: 14px;
+        /* Smaller tab text */
+        padding: 8px 12px;
+        /* Adjust padding */
     }
 }
