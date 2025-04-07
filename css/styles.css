@@ -82,8 +82,9 @@ body {
     font-size: 1.1rem;
     color: white;
     font-weight: bold;
-    transition: 0.3s;
+    transition: color 0.3s;
     padding: 5px 10px;
+    -webkit-text-fill-color: white; /* Force text color on iOS */
 }
 
 .nav-links a:hover {
@@ -118,20 +119,14 @@ iframe {
     z-index: 1001;
     position: relative;
     margin-right: 15px;
-    -webkit-tap-highlight-color: transparent; /* Prevent tap highlight on iOS */
 }
 
 .hamburger-menu .bar {
     height: 3px;
     width: 100%;
-    background-color: red;
+    background-color: white;
     border-radius: 3px;
     transition: 0.3s all;
-    transform-origin: center; /* Consistent transform pivot */
-    -webkit-transform: translateZ(0); /* Force hardware acceleration */
-    transform: translateZ(0); /* Force hardware acceleration */
-    backface-visibility: hidden; /* Prevent flicker */
-    -webkit-backface-visibility: hidden; /* For older iOS */
 }
 
 /* Animation states */
@@ -178,12 +173,13 @@ iframe {
         width: 100%;
         max-height: 0;
         overflow: hidden;
-        transition: height 0.3s ease-in-out;
+        transition: max-height 0.3s ease-in-out;
         z-index: 1001;
         display: flex;
         align-items: center;
         box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
-        padding: 0;
+        -webkit-transform: translateZ(0); /* Force hardware acceleration */
+        transform: translateZ(0);
     }
 
     .nav-links.active {
@@ -208,6 +204,8 @@ iframe {
         display: block;
         padding: 8px 0;
         font-size: 1.05rem;
+        color: white !important; /* Override any inherited styles */
+        -webkit-text-fill-color: white; /* Ensure visibility on iOS */
     }
 
     .nav-links a.btn {
