@@ -85,6 +85,14 @@ body {
     transition: color 0.3s;
     padding: 5px 10px;
     -webkit-text-fill-color: white; /* Force text color on iOS */
+    overflow: visible;
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 1) {
+    .nav-links a {
+        color: white !important;
+        -webkit-text-fill-color: white !important;
+    }
 }
 
 .nav-links a:hover {
@@ -204,8 +212,6 @@ iframe {
         display: block;
         padding: 8px 0;
         font-size: 1.05rem;
-        color: white !important; /* Override any inherited styles */
-        -webkit-text-fill-color: white; /* Ensure visibility on iOS */
     }
 
     .nav-links a.btn {
