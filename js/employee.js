@@ -9,6 +9,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const employeeSalaryInput = document.querySelector("#employeeSalary");
     const employeeSubmitBtn = document.querySelector("button[type='submit']");
     const employeeUpdateBtn = document.querySelector("#employeeUpdateBtn");
+    const addStaffBtn = document.querySelector("#addStaffBtn");
+    const staffForm = document.querySelector("#staffForm");
+    const staffUsernameInput = document.querySelector("#staffUsername");
+    const staffPasswordInput = document.querySelector("#staffPassword");
+    const staffEmployeeSelect = document.querySelector("#staffEmployee");
+    const saveStaffBtn = document.querySelector("#saveStaffBtn");
+    const addStaffModal = new bootstrap.Modal(document.getElementById('addStaffModal'));
 
     let employees = [];
     let editEmployeeIndex = null;
@@ -19,6 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = await response.json();
             employees = data.data;
             renderEmployees();
+            populateEmployeeDropdown();
         } catch (error) {
             console.error("Error fetching employees:", error);
         }
@@ -43,6 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
             `;
             employeeTable.innerHTML += row;
         });
+        populateEmployeeDropdown();
     }
 
     const employeeSearchInput = document.querySelector("#employeeSearch");
@@ -181,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     window.deleteEmployee = function (index) {
-        if (confirm("Bạn có chắc chắn muốn xóa nhân viên này không?")) {
+        if (confirm("Are you sure to delete this employee?")) {
             deleteEmployee(index);
         }
     };
@@ -200,4 +209,62 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     fetchEmployees();
+
+    // Add event listeners
+    addStaffBtn.addEventListener("click", () => {
+        populateEmployeeDropdown();
+        addStaffModal.show();
+    });
+
+    saveStaffBtn.addEventListener("click", () => {
+        const username = staffUsernameInput.value.trim();
+        const password = staffPasswordInput.value.trim();
+        const employeeId = staffEmployeeSelect.value;
+
+        if (username && password && employeeId) {
+            addStaffAccount(username, password, employeeId);
+        } else {
+            alert("Please fill in all fields");
+        }
+    });
+
+    // Function to populate employee dropdown
+    function populateEmployeeDropdown() {
+        staffEmployeeSelect.innerHTML = '<option value="">Select an employee</option>';
+        employees.forEach(employee => {
+            const option = document.createElement('option');
+            option.value = employee.eEmployeeId;
+            option.textContent = `${employee.eFirstName} ${employee.eLastName} (${employee.eEmail})`;
+            staffEmployeeSelect.appendChild(option);
+        });
+    }
+
+    // Function to add staff account
+    async function addStaffAccount(username, password) {
+        try {
+            const response = await fetch("http://localhost:5222/api/Auth/AddStaff", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    Username: username,
+                    Password: password,
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.code === 100) {
+                alert("Staff account created successfully!");
+                addStaffModal.hide();
+                staffForm.reset();
+            } else {
+                alert("Error creating staff account: " + data.msg);
+            }
+        } catch (error) {
+            console.error("Error adding staff account:", error);
+            alert("An error occurred while creating the staff account");
+        }
+    }
 });

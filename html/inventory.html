@@ -44,6 +44,13 @@
             <div id="products" class="tab-pane fade show active">
                 <div class="form-section">
                     <h4>Product Management</h4>
+                    <!-- Search Bar -->
+                    <div class="search-container mb-4 d-flex justify-content-center">
+                        <div class="col-md-4">
+                            <input type="text" id="product-search-input" placeholder="Search by product name"
+                                class="form-control">
+                        </div>
+                    </div>
                     <form id="add-product-form">
                         <div class="row mt-4 mb-4">
                             <div class="col-md-2">
@@ -72,7 +79,10 @@
                                 </div>
                             </div>
                             <div class="col-md-1">
-                                <button type="submit" class="btn btn-primary" id="add-product-btn">Add</button>
+                                <div class="col-12 col-sm-12 col-md-6">
+                                    <button type="submit" class="btn btn-primary w-100"
+                                        id="add-product-btn">Add</button>
+                                </div>
                                 <button type="button" class="btn btn-success" id="update-product-btn"
                                     style="display:none;">Update</button>
                             </div>
@@ -179,9 +189,17 @@
             <div id="service-packages" class="tab-pane fade">
                 <div class="form-section">
                     <h4>Package Management</h4>
+                    <!-- Search Bar -->
+                    <div class="search-container mb-4 d-flex justify-content-center">
+                        <div class="col-md-4">
+                            <input type="text" id="package-search-input" placeholder="Search by package name"
+                                class="form-control">
+                        </div>
+                    </div>
                     <div class="text-center">
-                        <button class="btn btn-primary mt-3 mb-4" data-bs-toggle="modal"
-                            data-bs-target="#service-modal">New Package</button>
+                        <button class="btn btn-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#service-modal"
+                            style="margin-top: 5px !important">
+                            New Package</button>
                     </div>
                 </div>
                 <div class="table-container">

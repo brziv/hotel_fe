@@ -1,6 +1,6 @@
 body {
-    background: linear-gradient(135deg, #f6f7fb 0%, #eef1f5 100%);
-    padding-top: 60px;
+    background: rgb(241, 241, 241);
+    padding-top: 50px;
 }
 
 .container {
@@ -8,6 +8,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     max-width: 1200px;
+    width: 93%;
 }
 
 .btn-primary {
@@ -34,7 +35,7 @@ body {
     .container {
         padding: 15px;
     }
-    
+
     .table {
         font-size: 0.9rem;
     }

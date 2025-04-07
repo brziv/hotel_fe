@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     window.deletePartner = function (index) {
-        if (confirm("Bạn có chắc chắn muốn xóa đối tác này không?")) {
+        if (confirm("Are you sure to delete this partner?")) {
             deletePartner(index);
         }
     };

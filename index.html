@@ -1,43 +1,89 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hotel Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
     <div class="nav-container">
         <nav class="navbar">
-            <a href="#" class="logo" id="logoLink">Hotel Management</a>
-            <ul class="nav-links">
+            <a href="#" class="logo" id="logoLink">Horizon</a>
+
+            <!-- Hamburger menu for mobile -->
+            <div class="hamburger-menu" id="hamburger-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+
+            <ul class="nav-links" id="nav-links">
                 <!-- Common tabs for all logged-in users -->
                 <li class="tab-booking"><a href="html/booking.html" target="contentFrame">Booking</a></li>
-                
+
                 <!-- Staff and Admin only -->
                 <li class="tab-customers"><a href="html/customer.html" target="contentFrame">Customers</a></li>
                 <li class="tab-inventory"><a href="html/inventory.html" target="contentFrame">Inventory</a></li>
-                
+
                 <!-- Admin only -->
                 <li class="tab-employees"><a href="html/employee.html" target="contentFrame">Employees</a></li>
                 <li class="tab-partners"><a href="html/partner.html" target="contentFrame">Partners</a></li>
                 <li class="tab-reports"><a href="html/reports.html" target="contentFrame">Reports</a></li>
-                
+
                 <!-- Authentication tabs -->
-                <li class="tab-login"><a href="html/login.html" id="btnlogin" class="btn" target="contentFrame">Login</a></li>
-                <li class="tab-signup"><a href="html/signup.html" id="btnsignup" class="btn" target="contentFrame">Sign Up</a></li>
+                <li class="tab-login"><a href="html/login.html" id="btnlogin" class="btn"
+                        target="contentFrame">Login</a></li>
+                <li class="tab-signup"><a href="html/signup.html" id="btnsignup" class="btn" target="contentFrame">Sign
+                        Up</a></li>
                 <li class="tab-logout" style="display: none;"><a href="#" id="btnlogout" class="btn">Logout</a></li>
             </ul>
         </nav>
     </div>
-    
-    <iframe name="contentFrame" src="html/login.html" width="100%" height="800px" style="border:none; margin-top: 50px;"></iframe>
+
+    <!-- Remove the hardcoded src and set it dynamically in JavaScript -->
+    <iframe name="contentFrame" class="iframe-container"></iframe>
 
     <script>
+        // Mobile menu toggle
+        document.getElementById('hamburger-menu').addEventListener('click', function () {
+            document.getElementById('nav-links').classList.toggle('active');
+            this.classList.toggle('active');
+        });
+
+        // Close mobile menu when a link is clicked
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', function () {
+                document.getElementById('nav-links').classList.remove('active');
+                document.getElementById('hamburger-menu').classList.remove('active');
+            });
+        });
+
+        // Function to set the appropriate content based on login status
+        function setContentFrame() {
+            const token = localStorage.getItem('token');
+            const iframe = document.querySelector('iframe[name="contentFrame"]');
+            const role = localStorage.getItem('role');
+
+            if (token) {
+                if (role === 'User') {
+                    iframe.src = 'html/gantt-user.html';
+                } else {
+                    iframe.src = 'html/gantt.html';
+                }
+            } else {
+                iframe.src = 'html/home.html';
+            }
+        }
+
         function updateNavigation() {
             const role = localStorage.getItem('role');
             const token = localStorage.getItem('token');
-            
+
             // Get all tab elements
             const bookingTab = document.querySelector('.tab-booking');
             const customersTab = document.querySelector('.tab-customers');
@@ -61,7 +107,7 @@
                 // Show tabs based on role
                 logoutTab.style.display = 'block';
 
-                switch(role) {
+                switch (role) {
                     case 'User':
                         bookingTab.style.display = 'block';
                         break;
@@ -80,34 +126,61 @@
                         break;
                 }
             }
+
+            // Update content frame when navigation changes
+            setContentFrame();
         }
 
         // Logo click handler
-        document.getElementById('logoLink').addEventListener('click', function(e) {
+        document.getElementById('logoLink').addEventListener('click', function (e) {
             e.preventDefault();
-            const token = localStorage.getItem('token');
-            if (token) {
-                document.querySelector('iframe[name="contentFrame"]').src = 'html/gantt.html';
-            } else {
-                document.querySelector('iframe[name="contentFrame"]').src = 'html/login.html';
+            try {
+                const token = localStorage.getItem('token');
+                const role = localStorage.getItem('role');
+                
+                if (token) {
+                    if (role === 'User') {
+                        document.querySelector('iframe[name="contentFrame"]').src = 'html/gantt-user.html';
+                    } else {
+                        document.querySelector('iframe[name="contentFrame"]').src = 'html/gantt.html';
+                    }
+                } else {
+                    document.querySelector('iframe[name="contentFrame"]').src = 'html/home.html';
+                }
+            } catch (error) {
+                console.error("Error in logo click handler:", error);
             }
         });
 
         // Logout functionality
-        document.getElementById('btnlogout').addEventListener('click', function(e) {
+        document.getElementById('btnlogout').addEventListener('click', function (e) {
             e.preventDefault();
             localStorage.removeItem('token');
             localStorage.removeItem('role');
             localStorage.removeItem('remember');
             updateNavigation();
-            document.querySelector('iframe[name="contentFrame"]').src = 'html/login.html';
+            document.querySelector('iframe[name="contentFrame"]').src = 'html/home.html';
         });
 
-        // Update navigation on page load
-        window.addEventListener('load', updateNavigation);
+        // Check login status on page load
+        window.addEventListener('load', function () {
+            updateNavigation();
 
-        // Update navigation when storage changes (useful for multi-tab scenarios)
-        window.addEventListener('storage', updateNavigation);
+            // Set up storage event listener for changes in other tabs
+            window.addEventListener('storage', function (e) {
+                if (e.key === 'token' || e.key === 'role' || e.key === 'remember') {
+                    updateNavigation();
+                }
+            });
+
+            // Check for auth messages from the iframe
+            window.addEventListener('message', function (e) {
+                if (e.data && e.data.type === 'authStateChange') {
+                    updateNavigation();
+                }
+            });
+        });
     </script>
 </body>
+
 </html>

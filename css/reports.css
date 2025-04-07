@@ -1,93 +1,72 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 20px;
-    background-color: #f4f4f4;
+    padding: 0;
+    background: rgb(241, 241, 241);
+    font-size: 100%;
 }
 
 .container {
+    margin-top: 70px !important;
     max-width: 1200px;
-    margin: 0 auto;
-    background: #fff;
+    width: 95%;
+}
+
+h2 {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.chart {
+    min-height: 400px;
+    margin-bottom: 20px;
+}
+
+/* Reports container styling */
+.report-container {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
 
-.card {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    transition: transform 0.2s;
+/* Adjust tab styling to fit container */
+.report-container .nav-tabs {
+    border-bottom: none;
+    margin-bottom: 20px;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+.report-container .nav-tabs .nav-link {
+    border: 1px solid #dee2e6;
+    border-radius: 5px 5px 0 0;
+    margin-right: 5px;
 }
 
-.card-title {
-    color: #333;
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
+.report-container .nav-tabs .nav-link.active {
+    background-color: #007bff;
+    /* Bootstrap primary color */
+    color: white;
+    border-color: #007bff;
 }
 
-.date-range-selector {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 30px;
-}
-
-.nav-tabs .nav-link {
-    color: #666;
-    font-weight: 500;
-}
-
-.nav-tabs .nav-link.active {
-    color: #007bff;
-    font-weight: 600;
-}
-
-#bookingTrendChart,
-#revenueTrendChart,
-#roomOccupancyChart,
-#popularRoomChart,
-#serviceRevenueChart,
-#profitChart {
-    height: 300px;
-    width: 100%;
-}
-
-.table th {
-    background-color: #f8f9fa;
-    font-weight: 600;
-}
-
-.table td {
-    vertical-align: middle;
-}
-
-/* Responsive Design */
+/* Responsive adjustments */
 @media (max-width: 768px) {
-    .container {
+    .chart {
+        min-height: 300px;
+        /* Smaller charts on mobile */
+    }
+
+    .report-container {
         padding: 10px;
+        /* Reduced padding on smaller screens */
     }
 
-    .row {
-        margin: 0;
-    }
-
-    .card {
-        margin-bottom: 15px;
-    }
-
-    .date-range-selector .row {
-        flex-direction: column;
-    }
-
-    .date-range-selector .col-md-3,
-    .date-range-selector .col-md-2 {
-        width: 100%;
-        margin-bottom: 10px;
+    .report-container .nav-tabs .nav-link {
+        font-size: 14px;
+        /* Smaller tab text */
+        padding: 8px 12px;
+        /* Adjust padding */
     }
 }

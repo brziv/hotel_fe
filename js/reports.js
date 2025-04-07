@@ -1,300 +1,352 @@
-// Load Google Charts
-google.charts.load('current', {
-    'packages': ['corechart', 'line', 'bar']
-});
-google.charts.setOnLoadCallback(initializeCharts);
+google.charts.load('current', { packages: ['corechart', 'timeline'] });
+google.charts.setOnLoadCallback(fetchAndDrawCharts);
 
-// Global variables
-let startDate = document.getElementById('startDate');
-let endDate = document.getElementById('endDate');
-let generateReportBtn = document.getElementById('generateReport');
+const baseUrl = 'http://localhost:5222/api/Report';
 
-// Initialize date inputs with default values
-const today = new Date();
-const thirtyDaysAgo = new Date(today);
-thirtyDaysAgo.setDate(today.getDate() - 30);
-
-startDate.value = thirtyDaysAgo.toISOString().split('T')[0];
-endDate.value = today.toISOString().split('T')[0];
-
-// Event listeners
-generateReportBtn.addEventListener('click', generateReports);
-document.querySelectorAll('.nav-link').forEach(tab => {
-    tab.addEventListener('click', (e) => {
-        const targetId = e.target.getAttribute('data-bs-target').substring(1);
-        refreshChart(targetId);
-    });
-});
-
-// Initialize charts
-function initializeCharts() {
-    generateReports();
+function getFilterParams() {
+    return {
+        interval: document.getElementById('interval').value,
+        startDate: document.getElementById('startDate').value,
+        endDate: document.getElementById('endDate').value
+    };
 }
 
-// Main report generation function
-async function generateReports() {
-    const start = new Date(startDate.value);
-    const end = new Date(endDate.value);
+async function fetchData(endpoint) {
+    const params = new URLSearchParams(getFilterParams()).toString();
+    const response = await fetch(`${baseUrl}/${endpoint}?${params}`);
+    return await response.json();
+}
+
+function fetchAndDrawCharts() {
+    drawBookingCharts();
+    drawRevenueCharts();
+    drawInventoryCharts();
+    drawTrendsCharts();
+
+    // Redraw on filter change
+    document.getElementById('interval').addEventListener('change', fetchAndDrawCharts);
+    document.getElementById('startDate').addEventListener('change', fetchAndDrawCharts);
+    document.getElementById('endDate').addEventListener('change', fetchAndDrawCharts);
+
+    // Redraw on tab switch
+    document.querySelectorAll('.nav-link').forEach(tab => {
+        tab.addEventListener('shown.bs.tab', fetchAndDrawCharts);
+    });
+}
+
+// 1. Booking Charts
+async function drawBookingCharts() {
+    const activeTab = document.querySelector('#booking-tab').classList.contains('active');
+    if (!activeTab) return;
+
+    const [totalData, statusData, timelineData] = await Promise.all([
+        fetchData('BookingTotal'),
+        fetchData('BookingStatus'),
+        fetchData('RoomTimeline')
+    ]);
+
+    // Total Rooms Booked (Column Chart)
+    const totalChart = new google.visualization.ColumnChart(document.getElementById('totalBookingsChart'));
+    const totalChartData = new google.visualization.DataTable();
+    totalChartData.addColumn('string', 'Room Number');
+    totalChartData.addColumn('number', 'Bookings');
+    // totalData.forEach(d => totalChartData.addRow([d.roomNumber, d.totalBookings]));
+    // totalChart.draw(totalChartData, { title: 'Total Rooms Booked', height: 400 });
+    const aggregatedTotal = {};
+    totalData.forEach(d => {
+        if (aggregatedTotal[d.roomNumber]) {
+            aggregatedTotal[d.roomNumber] += d.totalBookings;
+        } else {
+            aggregatedTotal[d.roomNumber] = d.totalBookings;
+        }
+    });
+    Object.entries(aggregatedTotal).forEach(([roomNumber, bookings]) => {
+        totalChartData.addRow([roomNumber, bookings]);
+    });
+    totalChart.draw(totalChartData, {
+        title: 'Total Rooms Booked',
+        height: 400,
+        titleTextStyle: { fontSize: 16 },
+        hAxis: { textStyle: { fontSize: 14 } },
+        vAxis: { textStyle: { fontSize: 14 } }
+    });
+
+    // Booking Status (Pie Chart)
+    const statusChart = new google.visualization.PieChart(document.getElementById('bookingStatusChart'));
+    const statusChartData = new google.visualization.DataTable();
+    statusChartData.addColumn('string', 'Status');
+    statusChartData.addColumn('number', 'Rooms');
+    // statusData.forEach(d => statusChartData.addRow([d.bookingStatus, d.roomCount]));
+    // statusChart.draw(statusChartData, { title: 'Booking Status', height: 400 });
+    const aggregatedStatus = {};
+    statusData.forEach(d => {
+        if (aggregatedStatus[d.bookingStatus]) {
+            aggregatedStatus[d.bookingStatus] += d.roomCount;
+        } else {
+            aggregatedStatus[d.bookingStatus] = d.roomCount;
+        }
+    });
+    Object.entries(aggregatedStatus).forEach(([bookingStatus, roomCount]) => {
+        statusChartData.addRow([bookingStatus, roomCount]);
+    });
+    statusChart.draw(statusChartData, {
+        title: 'Booking Status',
+        height: 400,
+        titleTextStyle: { fontSize: 16 },
+        legend: { textStyle: { fontSize: 14 } }
+    });
+
+    // Room Timeline (Timeline Chart)
+    const timelineChart = new google.visualization.Timeline(document.getElementById('roomTimelineChart'));
+    const timelineChartData = new google.visualization.DataTable();
+    timelineChartData.addColumn({ type: 'string', id: 'Room' });
+    timelineChartData.addColumn({ type: 'date', id: 'Start' });
+    timelineChartData.addColumn({ type: 'date', id: 'End' });
+    timelineData.forEach(d => {
+        timelineChartData.addRow([
+            d.roomNumber,
+            new Date(d.checkInDate),
+            new Date(d.checkOutDate)
+        ]);
+    });
+    timelineChart.draw(timelineChartData, { height: 400 });
+}
+
+// 2. Revenue Charts
+// 2. Revenue Charts
+async function drawRevenueCharts() {
+    const activeTab = document.querySelector('#revenue-tab').classList.contains('active');
+    if (!activeTab) return;
+
+    // Get the current interval for labeling
+    const interval = document.getElementById('interval').value;
 
     try {
-        // Fetch all required data
-        const [bookingData, roomData, serviceData, costData] = await Promise.all([
-            fetchBookingData(start, end),
-            fetchRoomData(start, end),
-            fetchServiceData(start, end),
-            fetchCostData(start, end)
+        // Fetch all revenue data
+        const [totalData, bookingData, serviceData] = await Promise.all([
+            fetchData('Revenue/Total'),
+            fetchData('Revenue/Bookings'),
+            fetchData('Revenue/Services')
         ]);
 
-        // Generate all charts
-        generateBookingTrendChart(bookingData);
-        generateRevenueTrendChart(bookingData);
-        generateRoomOccupancyChart(roomData);
-        generatePopularRoomChart(roomData);
-        generateServiceRevenueChart(serviceData);
-        generateProfitChart(bookingData, serviceData, costData);
+        console.log('Revenue data:', { totalData, bookingData, serviceData });
 
-        // Update summary data
-        updateProfitSummary(bookingData, serviceData, costData);
+        // Create combined dataset of all periods
+        const allPeriods = new Set([
+            ...totalData.map(d => d.period),
+            ...bookingData.map(d => d.period),
+            ...serviceData.map(d => d.period)
+        ]);
+        const periodArray = Array.from(allPeriods).sort((a, b) => a - b);
+
+        // Create the data table
+        const revenueChart = new google.visualization.ComboChart(document.getElementById('revenueChart'));
+        const revenueChartData = new google.visualization.DataTable();
+
+        // First column is string for better labels according to interval type
+        revenueChartData.addColumn('string', 'Period');
+        revenueChartData.addColumn('number', 'Total Revenue');
+        revenueChartData.addColumn('number', 'Booking Revenue');
+        revenueChartData.addColumn('number', 'Service Revenue');
+
+        // Add data rows for each period
+        periodArray.forEach(period => {
+            const totalItem = totalData.find(d => d.period === period);
+            const bookingItem = bookingData.find(d => d.period === period);
+            const serviceItem = serviceData.find(d => d.period === period);
+
+            // Format period label based on interval
+            let periodLabel = String(period);
+            if (interval === 'monthly') {
+                // Convert month number to name (1-12)
+                const monthNames = [
+                    'January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'
+                ];
+                periodLabel = monthNames[period - 1] || `Month ${period}`;
+            } else if (interval === 'weekly') {
+                periodLabel = `Week ${period}`;
+            } else {
+                periodLabel = `Day ${period}`;
+            }
+
+            revenueChartData.addRow([
+                periodLabel,
+                totalItem ? totalItem.amount : 0,
+                bookingItem ? bookingItem.amount : 0,
+                serviceItem ? serviceItem.amount : 0
+            ]);
+        });
+
+        // Format options
+        const chartOptions = {
+            title: 'Revenue Over Time',
+            height: 400,
+            titleTextStyle: { fontSize: 16, bold: true },
+            hAxis: {
+                title: getIntervalLabel(),
+                titleTextStyle: { fontSize: 14, bold: true },
+                textStyle: { fontSize: 12 }
+            },
+            vAxis: {
+                title: 'Revenue (USD)',
+                titleTextStyle: { fontSize: 14, bold: true },
+                textStyle: { fontSize: 12 },
+                format: 'currency'
+            },
+            seriesType: 'bars',
+            series: {
+                0: { type: 'line', color: '#4285F4', lineWidth: 4 }, // Total as line
+                1: { color: '#34A853' }, // Booking as bar
+                2: { color: '#FBBC05' }  // Service as bar
+            },
+            legend: {
+                position: 'top',
+                alignment: 'center',
+                textStyle: { fontSize: 12 }
+            },
+            animation: {
+                startup: true,
+                duration: 1000,
+                easing: 'out'
+            },
+            tooltip: { showColorCode: true }
+        };
+
+        // Draw chart
+        revenueChart.draw(revenueChartData, chartOptions);
     } catch (error) {
-        console.error('Error generating reports:', error);
-        alert('Error generating reports. Please try again.');
+        console.error('Error drawing revenue charts:', error);
+        document.getElementById('revenueChart').innerHTML = `
+            <div class="alert alert-danger">
+                Error loading revenue data. Please try again later.
+            </div>
+        `;
     }
 }
 
-const API_BASE_URL = "https://hotel-bed.onrender.com/api";
-
-// Data fetching functions
-async function fetchBookingData(start, end) {
-    const response = await fetch(`${API_BASE_URL}/Report/GetBookingData?start=${start.toISOString()}&end=${end.toISOString()}`);
-    if (!response.ok) throw new Error('Failed to fetch booking data');
-    return await response.json();
-}
-
-async function fetchRoomData(start, end) {
-    const response = await fetch(`${API_BASE_URL}/Report/GetRoomData?start=${start.toISOString()}&end=${end.toISOString()}`);
-    if (!response.ok) throw new Error('Failed to fetch room data');
-    return await response.json();
-}
-
-async function fetchServiceData(start, end) {
-    const response = await fetch(`${API_BASE_URL}/Report/GetServiceData?start=${start.toISOString()}&end=${end.toISOString()}`);
-    if (!response.ok) throw new Error('Failed to fetch service data');
-    return await response.json();
-}
-
-async function fetchCostData(start, end) {
-    const response = await fetch(`${API_BASE_URL}/Report/GetCostData?start=${start.toISOString()}&end=${end.toISOString()}`);
-    if (!response.ok) throw new Error('Failed to fetch cost data');
-    return await response.json();
-}
-
-// Chart generation functions
-function generateBookingTrendChart(data) {
-    const chartData = new google.visualization.DataTable();
-    chartData.addColumn('date', 'Date');
-    chartData.addColumn('number', 'Number of Bookings');
-
-    // Process data
-    const bookingsByDate = new Map();
-    data.bookings.forEach(booking => {
-        const date = new Date(booking.checkInTime);
-        const dateStr = date.toDateString();
-        bookingsByDate.set(dateStr, (bookingsByDate.get(dateStr) || 0) + 1);
-    });
-
-    // Convert to chart data
-    const rows = Array.from(bookingsByDate.entries()).map(([dateStr, count]) => {
-        return [new Date(dateStr), count];
-    });
-    chartData.addRows(rows);
-
-    const options = {
-        title: 'Booking Trend',
-        curveType: 'function',
-        legend: { position: 'bottom' },
-        hAxis: { title: 'Date' },
-        vAxis: { title: 'Number of Bookings' }
-    };
-
-    const chart = new google.visualization.LineChart(document.getElementById('bookingTrendChart'));
-    chart.draw(chartData, options);
-}
-
-function generateRevenueTrendChart(data) {
-    const chartData = new google.visualization.DataTable();
-    chartData.addColumn('date', 'Date');
-    chartData.addColumn('number', 'Revenue (USD)');
-
-    // Process data
-    const revenueByDate = new Map();
-    data.bookings.forEach(booking => {
-        if (booking.status === 'Paid') {
-            const date = new Date(booking.checkInTime);
-            const dateStr = date.toDateString();
-            revenueByDate.set(dateStr, (revenueByDate.get(dateStr) || 0) + booking.totalMoney);
-        }
-    });
-
-    // Convert to chart data
-    const rows = Array.from(revenueByDate.entries()).map(([dateStr, revenue]) => {
-        return [new Date(dateStr), revenue];
-    });
-    chartData.addRows(rows);
-
-    const options = {
-        title: 'Revenue Trend',
-        curveType: 'function',
-        legend: { position: 'bottom' },
-        hAxis: { title: 'Date' },
-        vAxis: { 
-            title: 'Revenue (USD)',
-            format: 'short'
-        }
-    };
-
-    const chart = new google.visualization.LineChart(document.getElementById('revenueTrendChart'));
-    chart.draw(chartData, options);
-}
-
-function generateRoomOccupancyChart(data) {
-    const chartData = new google.visualization.DataTable();
-    chartData.addColumn('string', 'Status');
-    chartData.addColumn('number', 'Rooms');
-
-    const totalRooms = data.totalRooms;
-    const occupiedRooms = data.occupiedRooms;
-    const availableRooms = totalRooms - occupiedRooms;
-
-    chartData.addRows([
-        ['Occupied', occupiedRooms],
-        ['Available', availableRooms]
-    ]);
-
-    const options = {
-        title: 'Room Occupancy',
-        pieHole: 0.4,
-        colors: ['#007bff', '#28a745']
-    };
-
-    const chart = new google.visualization.PieChart(document.getElementById('roomOccupancyChart'));
-    chart.draw(chartData, options);
-}
-
-function generatePopularRoomChart(data) {
-    const chartData = new google.visualization.DataTable();
-    chartData.addColumn('string', 'Room Type');
-    chartData.addColumn('number', 'Revenue');
-
-    // Process data
-    const rows = data.roomTypes.map(type => [type.name, type.revenue]);
-    chartData.addRows(rows);
-
-    const options = {
-        title: 'Revenue by Room Type',
-        legend: { position: 'none' },
-        hAxis: { title: 'Revenue (USD)' },
-        vAxis: { title: 'Room Type' }
-    };
-
-    const chart = new google.visualization.BarChart(document.getElementById('popularRoomChart'));
-    chart.draw(chartData, options);
-}
-
-function generateServiceRevenueChart(data) {
-    const chartData = new google.visualization.DataTable();
-    chartData.addColumn('string', 'Service');
-    chartData.addColumn('number', 'Revenue');
-
-    // Process data
-    const rows = data.services.map(service => [service.name, service.revenue]);
-    chartData.addRows(rows);
-
-    const options = {
-        title: 'Service Revenue Distribution',
-        pieHole: 0.4
-    };
-
-    const chart = new google.visualization.PieChart(document.getElementById('serviceRevenueChart'));
-    chart.draw(chartData, options);
-
-    // Update service revenue table
-    const tableBody = document.getElementById('serviceRevenueTable');
-    tableBody.innerHTML = data.services
-        .sort((a, b) => b.revenue - a.revenue)
-        .map(service => `
-            <tr>
-                <td>${service.name}</td>
-                <td>${service.revenue.toLocaleString()} USD</td>
-                <td>${service.count}</td>
-            </tr>
-        `).join('');
-}
-
-function generateProfitChart(bookingData, serviceData, costData) {
-    const chartData = new google.visualization.DataTable();
-    chartData.addColumn('string', 'Category');
-    chartData.addColumn('number', 'Amount (USD)');
-
-    const totalRevenue = calculateTotalRevenue(bookingData, serviceData);
-    const totalCosts = calculateTotalCosts(costData);
-
-    chartData.addRows([
-        ['Revenue', totalRevenue],
-        ['Costs', totalCosts]
-    ]);
-
-    const options = {
-        title: 'Revenue vs Costs',
-        legend: { position: 'none' },
-        colors: ['#28a745', '#dc3545']
-    };
-
-    const chart = new google.visualization.ColumnChart(document.getElementById('profitChart'));
-    chart.draw(chartData, options);
-}
-
-// Helper functions
-function calculateTotalRevenue(bookingData, serviceData) {
-    const roomRevenue = bookingData.bookings
-        .filter(booking => booking.status === 'Paid')
-        .reduce((sum, booking) => sum + booking.totalMoney, 0);
-
-    const serviceRevenue = serviceData.services
-        .reduce((sum, service) => sum + service.revenue, 0);
-
-    return roomRevenue + serviceRevenue;
-}
-
-function calculateTotalCosts(costData) {
-    return costData.costs.reduce((sum, cost) => sum + cost.amount, 0);
-}
-
-function updateProfitSummary(bookingData, serviceData, costData) {
-    const totalRevenue = calculateTotalRevenue(bookingData, serviceData);
-    const totalCosts = calculateTotalCosts(costData);
-    const netProfit = totalRevenue - totalCosts;
-
-    document.getElementById('totalRevenue').textContent = `${totalRevenue.toLocaleString()} USD`;
-    document.getElementById('totalCosts').textContent = `${totalCosts.toLocaleString()} USD`;
-    document.getElementById('netProfit').textContent = `${netProfit.toLocaleString()} USD`;
-}
-
-// Chart refresh function
-function refreshChart(tabId) {
-    switch (tabId) {
-        case 'overview':
-            generateBookingTrendChart(window.lastBookingData);
-            generateRevenueTrendChart(window.lastBookingData);
-            break;
-        case 'room-revenue':
-            generateRoomOccupancyChart(window.lastRoomData);
-            generatePopularRoomChart(window.lastRoomData);
-            break;
-        case 'service-revenue':
-            generateServiceRevenueChart(window.lastServiceData);
-            break;
-        case 'profit':
-            generateProfitChart(window.lastBookingData, window.lastServiceData, window.lastCostData);
-            break;
+// Helper function to get interval label
+function getIntervalLabel() {
+    const interval = document.getElementById('interval').value;
+    switch (interval) {
+        case 'daily':
+            return 'Day';
+        case 'weekly':
+            return 'Week';
+        case 'monthly':
+            return 'Month';
+        default:
+            return 'Period';
     }
+}
+
+// 3. Inventory Charts
+async function drawInventoryCharts() {
+    const activeTab = document.querySelector('#inventory-tab').classList.contains('active');
+    if (!activeTab) return;
+
+    const [importData, serviceData, stockData] = await Promise.all([
+        fetchData('Inventory/Imports'),
+        fetchData('Inventory/Services'),
+        fetchData('Inventory/Stock')
+    ]);
+
+    // Import Cost (Line Chart)
+    const importChart = new google.visualization.LineChart(document.getElementById('importCostChart'));
+    const importChartData = new google.visualization.DataTable();
+    importChartData.addColumn('number', 'Period');
+    importChartData.addColumn('number', 'Cost');
+    importData.forEach(d => importChartData.addRow([d.period, d.amount]));
+    importChart.draw(importChartData, {
+        title: 'Cost of Imported Goods',
+        height: 400,
+        titleTextStyle: { fontSize: 16 },
+        hAxis: { textStyle: { fontSize: 14 } },
+        vAxis: { textStyle: { fontSize: 14 } }
+    });
+
+    // Service Cost (Line Chart)
+    const serviceChart = new google.visualization.LineChart(document.getElementById('serviceCostChart'));
+    const serviceChartData = new google.visualization.DataTable();
+    serviceChartData.addColumn('number', 'Period');
+    serviceChartData.addColumn('number', 'Cost');
+    serviceData.forEach(d => serviceChartData.addRow([d.period, d.amount]));
+    serviceChart.draw(serviceChartData, {
+        title: 'Cost of Services',
+        height: 400,
+        titleTextStyle: { fontSize: 16 },
+        hAxis: { textStyle: { fontSize: 14 } },
+        vAxis: { textStyle: { fontSize: 14 } }
+    });
+
+    // Stock Levels (Column Chart)
+    const stockChart = new google.visualization.ColumnChart(document.getElementById('stockLevelsChart'));
+    const stockChartData = new google.visualization.DataTable();
+    stockChartData.addColumn('string', 'Product');
+    stockChartData.addColumn('number', 'Stock');
+    stockData.forEach(d => stockChartData.addRow([d.productName, d.stockLevel]));
+    stockChart.draw(stockChartData, { title: 'Stock Levels', height: 400 });
+}
+
+// 4. Trends Charts
+async function drawTrendsCharts() {
+    const activeTab = document.querySelector('#trends-tab').classList.contains('active');
+    if (!activeTab) return;
+
+    const [roomTypesData, servicesData] = await Promise.all([
+        fetchData('Trends/RoomTypes'),
+        fetchData('Trends/Services')
+    ]);
+
+    // Popular Room Types (Column Chart)
+    const roomTypesChart = new google.visualization.ColumnChart(document.getElementById('roomTypesChart'));
+    const roomTypesChartData = new google.visualization.DataTable();
+    roomTypesChartData.addColumn('string', 'Room Type');
+    roomTypesChartData.addColumn('number', 'Bookings');
+    // roomTypesData.forEach(d => roomTypesChartData.addRow([d.roomType, d.bookingCount]));
+    // roomTypesChart.draw(roomTypesChartData, { title: 'Popular Room Types', height: 400 });
+    const aggregatedRoomTypes = {};
+    roomTypesData.forEach(d => {
+        if (aggregatedRoomTypes[d.roomType]) {
+            aggregatedRoomTypes[d.roomType] += d.bookingCount;
+        } else {
+            aggregatedRoomTypes[d.roomType] = d.bookingCount;
+        }
+    });
+    Object.entries(aggregatedRoomTypes).forEach(([roomType, bookingCount]) => {
+        roomTypesChartData.addRow([roomType, bookingCount]);
+    });
+    roomTypesChart.draw(roomTypesChartData, {
+        title: 'Popular Room Types',
+        height: 400,
+        titleTextStyle: { fontSize: 16 },
+        hAxis: { textStyle: { fontSize: 14 } },
+        vAxis: { textStyle: { fontSize: 14 } }
+    });
+
+    // Popular Services (Column Chart)
+    const servicesChart = new google.visualization.ColumnChart(document.getElementById('servicesChart'));
+    const servicesChartData = new google.visualization.DataTable();
+    servicesChartData.addColumn('string', 'Service');
+    servicesChartData.addColumn('number', 'Usage');
+    // servicesData.forEach(d => servicesChartData.addRow([d.packageName, d.usageCount]));
+    // servicesChart.draw(servicesChartData, { title: 'Popular Services', height: 400 });
+    const aggregatedServices = {};
+    servicesData.forEach(d => {
+        if (aggregatedServices[d.packageName]) {
+            aggregatedServices[d.packageName] += d.usageCount;
+        } else {
+            aggregatedServices[d.packageName] = d.usageCount;
+        }
+    });
+    Object.entries(aggregatedServices).forEach(([packageName, usageCount]) => {
+        servicesChartData.addRow([packageName, usageCount]);
+    });
+    servicesChart.draw(servicesChartData, {
+        title: 'Popular Service Packages',
+        height: 400,
+        titleTextStyle: { fontSize: 16 },
+        hAxis: { textStyle: { fontSize: 14 } },
+        vAxis: { textStyle: { fontSize: 14 } }
+    });
 }
