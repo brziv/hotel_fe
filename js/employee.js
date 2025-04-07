@@ -242,7 +242,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to add staff account
     async function addStaffAccount(username, password) {
         try {
-            const response = await fetch("http://localhost:5222/api/Auth/AddStaff", {
+            const response = await fetch("https://hotel-bed.onrender.com/api/Auth/AddStaff", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

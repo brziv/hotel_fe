@@ -1,7 +1,7 @@
 google.charts.load('current', { packages: ['corechart', 'timeline'] });
 google.charts.setOnLoadCallback(fetchAndDrawCharts);
 
-const baseUrl = 'http://localhost:5222/api/Report';
+const baseUrl = 'https://hotel-bed.onrender.com/api/Report';
 
 function getFilterParams() {
     return {

@@ -19,8 +19,8 @@ async function fetchBookings() {
     let formattedInDate = encodeURIComponent(inDate.replace("T", " ") + ":00.000");
     let formattedOutDate = encodeURIComponent(outDate.replace("T", " ") + ":00.000");
 
-    let apiUrl1 = `http://localhost:5222/api/Booking/FindBookings?indate=${formattedInDate}&outdate=${formattedOutDate}&floornum=${floor}`;
-    let apiUrl2 = `http://localhost:5222/api/Booking/FindAllRooms?floornum=${floor}`;
+    let apiUrl1 = `https://hotel-bed.onrender.com/api/Booking/FindBookings?indate=${formattedInDate}&outdate=${formattedOutDate}&floornum=${floor}`;
+    let apiUrl2 = `https://hotel-bed.onrender.com/api/Booking/FindAllRooms?floornum=${floor}`;
 
     try {
         let response = await fetch(apiUrl2);
@@ -530,7 +530,7 @@ async function addServicetoBooking() {
         }
 
         // Call API to add services with BookingID and service list
-        const response = await fetch(`http://localhost:5222/api/Package/AddService?BookingID=${bookingid}`, {
+        const response = await fetch(`https://hotel-bed.onrender.com/api/Package/AddService?BookingID=${bookingid}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -730,7 +730,7 @@ async function checkOut() {
         const grandTotalText = document.getElementById('checkout-total-price').textContent;
         const grandTotal = parseFloat(grandTotalText.replace(/,/g, ''));
 
-        const response = await fetch('http://localhost:5222/api/Booking/Checkout', {
+        const response = await fetch('https://hotel-bed.onrender.com/api/Booking/Checkout', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -800,7 +800,7 @@ async function confirmCancelBooking() {
         console.log('Cancel booking with ID:', bookingid, 'and payment method:', paymentMethod, 'and deposit:', deposit);
 
         // Call API to cancel booking
-        const response = await fetch(`http://localhost:5222/api/Booking/Cancelbooking`, {
+        const response = await fetch(`https://hotel-bed.onrender.com/api/Booking/Cancelbooking`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

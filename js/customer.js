@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (confirm("Are you sure to delete this customer?")) {
             const guest = guests[index];
             try {
-                const response = await fetch(`http://localhost:5222/api/Guest/XoaTblGuest?gGuestId=${guest.gGuestId}`, {
+                const response = await fetch(`https://hotel-bed.onrender.com/api/Guest/XoaTblGuest?gGuestId=${guest.gGuestId}`, {
                     method: "DELETE",
                 });
 
