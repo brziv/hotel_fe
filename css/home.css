@@ -13,7 +13,7 @@ body {
     color: var(--secondary-color);
     line-height: 1.6;
     animation: fadeIn 0.5s ease-out;
-    margin-top: 20px;
+    margin-top: 34px;
 }
 
 /* Hero section */
@@ -168,9 +168,15 @@ body {
 }
 
 /* Responsive adjustments */
+@media (min-width: 768px) {
+    body {
+        margin-top: 15px;
+    }
+}
+
 @media (max-width: 768px) {
     .hero-section {
-        min-height: 60vh;
+        min-height: 65vh;
     }
 
     .hero-section h1 {
@@ -197,10 +203,6 @@ body {
 }
 
 @media (max-width: 576px) {
-    .hero-section {
-        min-height: 50vh;
-    }
-
     .feature-card {
         padding: 1.5rem;
     }
