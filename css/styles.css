@@ -118,6 +118,7 @@ iframe {
     z-index: 1001;
     position: relative;
     margin-right: 15px;
+    -webkit-tap-highlight-color: transparent; /* Prevent tap highlight on iOS */
 }
 
 .hamburger-menu .bar {
@@ -126,27 +127,14 @@ iframe {
     background-color: white;
     border-radius: 3px;
     transition: 0.3s all;
-    /* Fix for iOS Safari */
-    position: relative;
-    display: block;
-    /* Force hardware acceleration for smoother animations */
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
+    transform-origin: center; /* Consistent transform pivot */
+    -webkit-transform: translateZ(0); /* Force hardware acceleration */
+    transform: translateZ(0); /* Force hardware acceleration */
+    backface-visibility: hidden; /* Prevent flicker */
+    -webkit-backface-visibility: hidden; /* For older iOS */
 }
 
-/* Ensure each bar has a specific position */
-.hamburger-menu .bar:nth-child(1) {
-    top: 0;
-}
-
-.hamburger-menu .bar:nth-child(2) {
-    top: 0;
-}
-
-.hamburger-menu .bar:nth-child(3) {
-    top: 0;
-}
-
+/* Animation states */
 .hamburger-menu.active .bar:nth-child(1) {
     -webkit-transform: translateY(9px) rotate(45deg);
     transform: translateY(9px) rotate(45deg);
