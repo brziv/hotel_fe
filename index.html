@@ -26,23 +26,20 @@
                 <!-- User tab -->
                 <li class="tab-booking-user"><a href="html/booking-user.html" target="contentFrame">Booking</a></li>
                 <li class="tab-booking-service"><a href="html/booking-service.html" target="contentFrame">Services</a></li>
+                <li class="tab-profile-user"><a href="html/profile-user.html" target="contentFrame">Profile</a></li>
 
                 <!-- Staff tab -->
                 <li class="tab-booking-request"><a href="html/booking-request.html" target="contentFrame">Requests</a></li>
-
-                <!-- Staff and Admin tab -->
                 <li class="tab-booking-room"><a href="html/booking-room.html" target="contentFrame">Booking</a></li>
                 <li class="tab-customers"><a href="html/customer.html" target="contentFrame">Customers</a></li>
                 <li class="tab-inventory"><a href="html/inventory.html" target="contentFrame">Inventory</a></li>
+                <li class="tab-profile-staff"><a href="html/profile-staff.html" target="contentFrame">Profile</a></li>
 
                 <!-- Admin tab -->
                 <li class="tab-employees"><a href="html/employee.html" target="contentFrame">Employees</a></li>
                 <li class="tab-partners"><a href="html/partner.html" target="contentFrame">Partners</a></li>
                 <li class="tab-rooms"><a href="html/room.html" target="contentFrame">Rooms</a></li>
                 <li class="tab-report"><a href="html/report.html" target="contentFrame">Reports</a></li>
-
-                <!-- Common tab -->
-                <li class="tab-profile"><a href="html/profile.html" target="contentFrame">Profile</a></li>
 
                 <!-- Authentication tab -->
                 <li class="tab-login"><a href="html/login.html" id="btnlogin" class="btn"
@@ -104,7 +101,8 @@
             const employeesTab = document.querySelector('.tab-employees');
             const roomsTab = document.querySelector('.tab-rooms');
             const reportTab = document.querySelector('.tab-report');
-            const profileTab = document.querySelector('.tab-profile');
+            const profileStaffTab = document.querySelector('.tab-profile-staff');
+            const profileUserTab = document.querySelector('.tab-profile-user');
             const loginTab = document.querySelector('.tab-login');
             const signupTab = document.querySelector('.tab-signup');
             const logoutTab = document.querySelector('.tab-logout');
@@ -125,17 +123,16 @@
                     case 'User':
                         bookingUserTab.style.display = 'block';
                         bookingServiceTab.style.display = 'block';
-                        profileTab.style.display = 'block';
+                        profileUserTab.style.display = 'block';
                         break;
                     case 'Staff':
                         bookingRequestTab.style.display = 'block';
                         bookingRoomTab.style.display = 'block';
                         customersTab.style.display = 'block';
                         inventoryTab.style.display = 'block';
-                        profileTab.style.display = 'block';
+                        profileStaffTab.style.display = 'block';
                         break;
                     case 'Admin':
-                        bookingRoomTab.style.display = 'block';
                         customersTab.style.display = 'block';
                         partnersTab.style.display = 'block';
                         employeesTab.style.display = 'block';
@@ -177,6 +174,7 @@
             localStorage.removeItem('token');
             localStorage.removeItem('role');
             localStorage.removeItem('remember');
+            localStorage.removeItem('userId');
             updateNavigation();
             document.querySelector('iframe[name="contentFrame"]').src = 'html/home.html';
         });
