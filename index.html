@@ -23,19 +23,28 @@
             </div>
 
             <ul class="nav-links" id="nav-links">
-                <!-- Common tabs for all logged-in users -->
-                <li class="tab-booking"><a href="html/booking.html" target="contentFrame">Booking</a></li>
+                <!-- User tab -->
+                <li class="tab-booking-user"><a href="html/booking-user.html" target="contentFrame">Booking</a></li>
+                <li class="tab-booking-service"><a href="html/booking-service.html" target="contentFrame">Services</a></li>
 
-                <!-- Staff and Admin only -->
+                <!-- Staff tab -->
+                <li class="tab-booking-request"><a href="html/booking-request.html" target="contentFrame">Requests</a></li>
+
+                <!-- Staff and Admin tab -->
+                <li class="tab-booking-room"><a href="html/booking-room.html" target="contentFrame">Booking</a></li>
                 <li class="tab-customers"><a href="html/customer.html" target="contentFrame">Customers</a></li>
                 <li class="tab-inventory"><a href="html/inventory.html" target="contentFrame">Inventory</a></li>
 
-                <!-- Admin only -->
+                <!-- Admin tab -->
                 <li class="tab-employees"><a href="html/employee.html" target="contentFrame">Employees</a></li>
                 <li class="tab-partners"><a href="html/partner.html" target="contentFrame">Partners</a></li>
-                <li class="tab-reports"><a href="html/reports.html" target="contentFrame">Reports</a></li>
+                <li class="tab-rooms"><a href="html/room.html" target="contentFrame">Rooms</a></li>
+                <li class="tab-report"><a href="html/report.html" target="contentFrame">Reports</a></li>
 
-                <!-- Authentication tabs -->
+                <!-- Common tab -->
+                <li class="tab-profile"><a href="html/profile.html" target="contentFrame">Profile</a></li>
+
+                <!-- Authentication tab -->
                 <li class="tab-login"><a href="html/login.html" id="btnlogin" class="btn"
                         target="contentFrame">Login</a></li>
                 <li class="tab-signup"><a href="html/signup.html" id="btnsignup" class="btn" target="contentFrame">Sign
@@ -45,7 +54,7 @@
         </nav>
     </div>
 
-    <!-- Remove the hardcoded src and set it dynamically in JavaScript -->
+    <!-- Dynamic src in JS -->
     <iframe name="contentFrame" class="iframe-container"></iframe>
 
     <script>
@@ -63,7 +72,7 @@
             });
         });
 
-        // Function to set the appropriate content based on login status
+        // Set content based on login status
         function setContentFrame() {
             const token = localStorage.getItem('token');
             const iframe = document.querySelector('iframe[name="contentFrame"]');
@@ -85,12 +94,17 @@
             const token = localStorage.getItem('token');
 
             // Get all tab elements
-            const bookingTab = document.querySelector('.tab-booking');
+            const bookingUserTab = document.querySelector('.tab-booking-user');
+            const bookingServiceTab = document.querySelector('.tab-booking-service');
+            const bookingRequestTab = document.querySelector('.tab-booking-request');
+            const bookingRoomTab = document.querySelector('.tab-booking-room');
             const customersTab = document.querySelector('.tab-customers');
             const partnersTab = document.querySelector('.tab-partners');
             const inventoryTab = document.querySelector('.tab-inventory');
             const employeesTab = document.querySelector('.tab-employees');
-            const reportsTab = document.querySelector('.tab-reports');
+            const roomsTab = document.querySelector('.tab-rooms');
+            const reportTab = document.querySelector('.tab-report');
+            const profileTab = document.querySelector('.tab-profile');
             const loginTab = document.querySelector('.tab-login');
             const signupTab = document.querySelector('.tab-signup');
             const logoutTab = document.querySelector('.tab-logout');
@@ -109,20 +123,25 @@
 
                 switch (role) {
                     case 'User':
-                        bookingTab.style.display = 'block';
+                        bookingUserTab.style.display = 'block';
+                        bookingServiceTab.style.display = 'block';
+                        profileTab.style.display = 'block';
                         break;
                     case 'Staff':
-                        bookingTab.style.display = 'block';
+                        bookingRequestTab.style.display = 'block';
+                        bookingRoomTab.style.display = 'block';
                         customersTab.style.display = 'block';
                         inventoryTab.style.display = 'block';
+                        profileTab.style.display = 'block';
                         break;
                     case 'Admin':
-                        bookingTab.style.display = 'block';
+                        bookingRoomTab.style.display = 'block';
                         customersTab.style.display = 'block';
                         partnersTab.style.display = 'block';
                         employeesTab.style.display = 'block';
                         inventoryTab.style.display = 'block';
-                        reportsTab.style.display = 'block';
+                        roomsTab.style.display = 'block';
+                        reportTab.style.display = 'block';
                         break;
                 }
             }
