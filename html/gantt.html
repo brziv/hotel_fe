@@ -16,9 +16,7 @@
             <div class="select-group">
                 <label for="floorSelect">Choose Floor:</label>
                 <select id="floorSelect" onchange="changeFloor()">
-                    <option value="1">Floor 1</option>
-                    <option value="2">Floor 2</option>
-                    <option value="3">Floor 3</option>
+                    <!-- Floors will be loaded dynamically -->
                 </select>
             </div>
             <div class="select-group">
@@ -226,7 +224,7 @@
     <script src="../js/gantt.js"></script>
     <script type="text/javascript">
         google.charts.load("current", { packages: ["timeline"] });
-        google.charts.setOnLoadCallback(fetchBookings);
+        google.charts.setOnLoadCallback(loadFloorList);
     </script>
 </body>
 

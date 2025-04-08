@@ -11,6 +11,42 @@ let initialtotalMoney;
 let servicesList = [];
 let allroom = [];
 
+// Hàm để tải danh sách tầng từ API
+async function loadFloorList() {
+    try {
+        const response = await fetch('http://localhost:5222/api/Room/GetFloorList');
+        if (!response.ok) throw new Error("Error loading floor data!");
+        
+        const data = await response.json();
+        
+        // Lấy select box
+        const floorSelect = document.getElementById('floorSelect');
+        
+        // Xóa tất cả các option hiện tại
+        floorSelect.innerHTML = '';
+        
+        // Thêm các option mới từ dữ liệu API
+        if (data && data.data && Array.isArray(data.data)) {
+            data.data.forEach(floor => {
+                const option = document.createElement('option');
+                option.value = floor.fFloor;
+                option.textContent = `Floor ${floor.fFloor}`;
+                floorSelect.appendChild(option);
+            });
+            
+            // Nếu có ít nhất một tầng, gọi fetchBookings để tải dữ liệu
+            if (data.data.length > 0) {
+                fetchBookings();
+            }
+            else{
+                alert("There is no floors")
+            }
+        }
+    } catch (error) {
+        console.error("Error loading floor list:", error);
+    }
+}
+
 async function fetchBookings() {
     let floor = document.getElementById("floorSelect").value;
     let inDate = document.getElementById("startDate").value;
