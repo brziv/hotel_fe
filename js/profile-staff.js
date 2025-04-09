@@ -66,7 +66,7 @@ async function loadProfile() {
         const userId = localStorage.getItem('userId');
 
         // API endpoints
-        let apiUrl = `http://localhost:5222/api/Employee/GetEmployeeByUserId?userId=${userId}`;
+        let apiUrl = `https://hotel-bed.onrender.com/api/Employee/GetEmployeeByUserId?userId=${userId}`;
 
         const response = await fetch(apiUrl, {
             headers: {
@@ -110,7 +110,7 @@ async function updateProfile() {
         let apiUrl, requestBody;
 
         // Update employee profile
-        apiUrl = 'http://localhost:5222/api/Employee/UpdateTblEmployee';
+        apiUrl = 'https://hotel-bed.onrender.com/api/Employee/UpdateTblEmployee';
         requestBody = {
             eEmployeeId: localStorage.getItem('userId'),
             eFirstName: firstName,
@@ -170,7 +170,7 @@ async function changePassword() {
             return;
         }
 
-        const response = await fetch('http://localhost:5222/api/Auth/ChangePassword', {
+        const response = await fetch('https://hotel-bed.onrender.com/api/Auth/ChangePassword', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

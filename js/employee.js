@@ -232,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
     async function populateEmployeeDropdown() {
         try {
             // Fetch employees without linked accounts
-            const response = await fetch("http://localhost:5222/api/Employee/GetEmployeesWithoutAccounts");
+            const response = await fetch("https://hotel-bed.onrender.com/api/Employee/GetEmployeesWithoutAccounts");
             const data = await response.json();
             const availableEmployees = data.data || [];
 

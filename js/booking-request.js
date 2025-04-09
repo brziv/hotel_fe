@@ -61,7 +61,7 @@ async function loadServiceRequests() {
         const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
         
         // Call API to get service requests
-        const response = await fetch(`http://localhost:5222/api/Package/FindServiceRequest${queryString}`);
+        const response = await fetch(`https://hotel-bed.onrender.com/api/Package/FindServiceRequest${queryString}`);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -254,7 +254,7 @@ async function approveRequest(request) {
 
         console.log('Approving request with data:', requestBody);
 
-        const response = await fetch('http://localhost:5222/api/Package/ApproveServiceRequest', {
+        const response = await fetch('https://hotel-bed.onrender.com/api/Package/ApproveServiceRequest', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'

@@ -14,7 +14,7 @@ let allroom = [];
 // Hàm để tải danh sách tầng từ API
 async function loadFloorList() {
     try {
-        const response = await fetch('http://localhost:5222/api/Room/GetFloorList');
+        const response = await fetch('https://hotel-bed.onrender.com/api/Room/GetFloorList');
         if (!response.ok) throw new Error("Error loading floor data!");
 
         const data = await response.json();

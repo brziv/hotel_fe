@@ -11,7 +11,7 @@ let usedServices = [];
 // Function to get customer name from ID
 async function getCustomerName() {
     try {
-        const response = await fetch(`http://localhost:5222/api/Guest/GetGuestByUserId?userId=${cusid}`);
+        const response = await fetch(`https://hotel-bed.onrender.com/api/Guest/GetGuestByUserId?userId=${cusid}`);
 
         const data = await response.json();
         cusname = data.data.gFirstName + ' ' + data.data.gLastName;
@@ -23,7 +23,7 @@ async function getCustomerName() {
 // Function to load bookings from API
 async function loadBookings() {
     try {
-        const response = await fetch(`http://localhost:5222/api/Room/GetConfirmedBookingsByGuestId?guestId=${cusid}`);
+        const response = await fetch(`https://hotel-bed.onrender.com/api/Room/GetConfirmedBookingsByGuestId?guestId=${cusid}`);
         if (!response.ok) throw new Error("Error loading bookings!");
 
         const data = await response.json();
@@ -209,7 +209,7 @@ function selectBooking(bookingId) {
 // Function to load service packages from API
 async function loadServicePackages() {
     try {
-        const response = await fetch('http://localhost:5222/api/Package/GetPackageList');
+        const response = await fetch('https://hotel-bed.onrender.com/api/Package/GetPackageList');
         if (!response.ok) throw new Error("Error loading data!");
 
         const data = await response.json();
@@ -324,7 +324,7 @@ function openOrderModal(serviceId) {
 // Function to load used services for a booking
 async function loadUsedServices(bookingId) {
     try {
-        const response = await fetch(`http://localhost:5222/api/Package/FindUsedService?bookingId=${bookingId}`);
+        const response = await fetch(`https://hotel-bed.onrender.com/api/Package/FindUsedService?bookingId=${bookingId}`);
         const data = await response.json();
         usedServices = data.data;
 
@@ -556,7 +556,7 @@ function confirmOrder() {
     }));
 
     // Call API to add services
-    fetch(`http://localhost:5222/api/Package/AddService?BookingID=${selectedBookingId}`, {
+    fetch(`https://hotel-bed.onrender.com/api/Package/AddService?BookingID=${selectedBookingId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

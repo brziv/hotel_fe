@@ -1,7 +1,7 @@
 // Fetch and display floors and rooms
 async function fetchFloorsAndRooms() {
     try {
-        const response = await fetch('http://localhost:5222/api/Room/GetFloorsWithRooms');
+        const response = await fetch('https://hotel-bed.onrender.com/api/Room/GetFloorsWithRooms');
         const data = await response.json();
 
         if (data && data.data) {
@@ -186,7 +186,7 @@ async function addFloor() {
     const floorNumber = document.getElementById('floorNumber').value;
 
     try {
-        const response = await fetch(`http://localhost:5222/api/Room/AddFloor?floornum=${floorNumber}`, {
+        const response = await fetch(`https://hotel-bed.onrender.com/api/Room/AddFloor?floornum=${floorNumber}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -219,7 +219,7 @@ async function addRoom() {
     const pricePerHour = document.getElementById('pricePerHour').value;
 
     try {
-        const response = await fetch(`http://localhost:5222/api/Room/AddRoom?roomNumber=${roomNumber}&floorId=${floorId}&roomType=${roomType}&pricePerHour=${pricePerHour}`, {
+        const response = await fetch(`https://hotel-bed.onrender.com/api/Room/AddRoom?roomNumber=${roomNumber}&floorId=${floorId}&roomType=${roomType}&pricePerHour=${pricePerHour}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -248,7 +248,7 @@ async function addRoom() {
 async function deleteFloor(floorId) {
     if (confirm('Are you sure you want to delete this floor?')) {
         try {
-            const response = await fetch(`http://localhost:5222/api/Room/DeleteFloor?floorId=${floorId}`, {
+            const response = await fetch(`https://hotel-bed.onrender.com/api/Room/DeleteFloor?floorId=${floorId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -275,7 +275,7 @@ async function deleteFloor(floorId) {
 async function deleteRoom(roomId) {
     if (confirm('Are you sure you want to delete this room?')) {
         try {
-            const response = await fetch(`http://localhost:5222/api/Room/DeleteRoom?roomId=${roomId}`, {
+            const response = await fetch(`https://hotel-bed.onrender.com/api/Room/DeleteRoom?roomId=${roomId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'

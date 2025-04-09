@@ -46,7 +46,7 @@ document.getElementById("bt_search").addEventListener("click", function () {
 
     const formattedCheckin = encodeURIComponent(`${checkinDate}:00.000`);
     const formattedCheckout = encodeURIComponent(`${checkoutDate}:00.000`);
-    const apiUrl = `http://localhost:5222/api/Booking/FindAvailableRooms?indate=${formattedCheckin}&outdate=${formattedCheckout}&floor=${encodeURIComponent(floor)}`;
+    const apiUrl = `https://hotel-bed.onrender.com/api/Booking/FindAvailableRooms?indate=${formattedCheckin}&outdate=${formattedCheckout}&floor=${encodeURIComponent(floor)}`;
 
     fetch(apiUrl, {
         method: "GET",
@@ -179,7 +179,7 @@ document.getElementById("pre-book").addEventListener("click", function () {
         })),
     };
 
-    fetch("http://localhost:5222/api/Booking/BookInAdvance", {
+    fetch("https://hotel-bed.onrender.com/api/Booking/BookInAdvance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),

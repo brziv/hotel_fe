@@ -84,7 +84,7 @@ async function loadProfile() {
         const userId = localStorage.getItem('userId');
 
         // API endpoints
-        let apiUrl = `http://localhost:5222/api/Guest/GetGuestByUserId?userId=${userId}`;
+        let apiUrl = `https://hotel-bed.onrender.com/api/Guest/GetGuestByUserId?userId=${userId}`;
 
         const response = await fetch(apiUrl, {
         });
@@ -118,7 +118,7 @@ async function loadBookingHistory() {
         const token = localStorage.getItem('token');
         const userId = localStorage.getItem('userId');
 
-        const response = await fetch(`http://localhost:5222/api/Booking/GetBookingsByUserId?userId=${userId}`, {
+        const response = await fetch(`https://hotel-bed.onrender.com/api/Booking/GetBookingsByUserId?userId=${userId}`, {
             headers: {
             }
         });
@@ -220,7 +220,7 @@ async function updateProfile() {
         let apiUrl, requestBody;
 
         // Update guest profile
-        apiUrl = 'http://localhost:5222/api/Guest/UpdateGuestProfile';
+        apiUrl = 'https://hotel-bed.onrender.com/api/Guest/UpdateGuestProfile';
         requestBody = {
             gGuestId: localStorage.getItem('userId'),
             gFirstName: firstName,
@@ -277,7 +277,7 @@ async function changePassword() {
             return;
         }
 
-        const response = await fetch('http://localhost:5222/api/Auth/ChangePassword', {
+        const response = await fetch('https://hotel-bed.onrender.com/api/Auth/ChangePassword', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
