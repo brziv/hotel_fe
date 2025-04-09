@@ -128,7 +128,6 @@ function drawChart() {
     dataTable.addColumn({ type: "datetime", id: "End" });
 
     let sortedAllBooking = [...upcomingBookings, ...currentBookings, ...pastBookings];
-    console.log("sortedAllBooking", sortedAllBooking);
 
     // Colors
     let upcomingColor = "#FFA500"; // Orange (Pending)
@@ -215,8 +214,6 @@ function drawChart() {
 
     dataTable.addRows(formattedData);
 
-    console.log('datatable', dataTable);
-    console.log('formateđât', formattedData);
     var options = {
         alternatingRowStyle: false,
         hAxis: {

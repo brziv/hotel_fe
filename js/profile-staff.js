@@ -160,7 +160,7 @@ async function updateProfile() {
 async function changePassword() {
     try {
         const token = localStorage.getItem('token');
-        const username = localStorage.getItem('username');
+        const userId = localStorage.getItem('userId');
         const currentPassword = document.getElementById('current-password').value;
         const newPassword = document.getElementById('new-password').value;
         const confirmPassword = document.getElementById('confirm-password').value;
@@ -176,7 +176,7 @@ async function changePassword() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                username: username,
+                userId: userId,
                 currentPassword: currentPassword,
                 newPassword: newPassword
             })

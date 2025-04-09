@@ -16,64 +16,64 @@
             <div class="card-header bg-primary text-white text-center py-3">
                 <h2 class="mb-0">Booking Rooms</h2>
             </div>
-                <div id="room_list" class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h3 class="text-center mb-0">Room List</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Room Number</th>
-                                        <th>Floor</th>
-                                        <th>Room Type</th>
-                                        <th>Price Per Hour</th>
-                                        <th>CheckIn</th>
-                                        <th>CheckOut</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="room-table-body">
-                                    <!-- Room data will be here -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="text-center mt-3">
-                            <button type="button" id="bt_findroom" class="btn btn-primary">
-                                <i class="fas fa-search me-1"></i> Find Room
-                            </button>
-                        </div>
-                    </div>
+            <div id="room_list" class="card mb-4">
+                <div class="card-header bg-light">
+                    <h3 class="text-center mb-0">Room List</h3>
                 </div>
-
-                <div class="row mb-4">
-                    <div class="col-md-6 mb-3">
-                        <label for="deposit" class="form-label fw-bold">Deposit:</label>
-                        <div class="input-group">
-                            <span class="input-group-text">$</span>
-                            <input type="text" id="deposit" name="deposit" class="form-control">
-                        </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Room Number</th>
+                                    <th>Floor</th>
+                                    <th>Room Type</th>
+                                    <th>Price Per Hour</th>
+                                    <th>CheckIn</th>
+                                    <th>CheckOut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="room-table-body">
+                                <!-- Room data will be here -->
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="total-money" class="form-label fw-bold">Total Money:</label>
-                        <div class="input-group">
-                            <span class="input-group-text">$</span>
-                            <input type="text" id="total-money" name="total-money" class="form-control" value="0" readonly>
-                        </div>
+                    <div class="text-center mt-3">
+                        <button type="button" id="bt_findroom" class="btn btn-primary">
+                            <i class="fas fa-search me-1"></i> Find Room
+                        </button>
                     </div>
-                </div>
-
-                <div class="button-group d-flex justify-content-end gap-2">
-                    <button type="button" id="pre-book" class="btn btn-warning">
-                        <i class="fas fa-clock me-1"></i> Pre-Book
-                    </button>
-                    <button type="button" id="exit" class="btn btn-danger">
-                        <i class="fas fa-times-circle me-1"></i> Exit
-                    </button>
                 </div>
             </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label for="deposit" class="form-label fw-bold">Deposit:</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="text" id="deposit" name="deposit" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="total-money" class="form-label fw-bold">Total Money:</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="text" id="total-money" name="total-money" class="form-control" value="0" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group d-flex justify-content-end gap-2">
+                <button type="button" id="pre-book" class="btn btn-warning">
+                    <i class="fas fa-clock me-1"></i> Pre-Book
+                </button>
+                <button type="button" id="exit" class="btn btn-danger">
+                    <i class="fas fa-times-circle me-1"></i> Exit
+                </button>
+            </div>
         </div>
+    </div>
     </div>
 
     <!-- Modal Find Room -->

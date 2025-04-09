@@ -16,15 +16,15 @@ async function loadFloorList() {
     try {
         const response = await fetch('http://localhost:5222/api/Room/GetFloorList');
         if (!response.ok) throw new Error("Error loading floor data!");
-        
+
         const data = await response.json();
-        
+
         // Lấy select box
         const floorSelect = document.getElementById('floorSelect');
-        
+
         // Xóa tất cả các option hiện tại
         floorSelect.innerHTML = '';
-        
+
         // Thêm các option mới từ dữ liệu API
         if (data && data.data && Array.isArray(data.data)) {
             data.data.forEach(floor => {
@@ -33,12 +33,12 @@ async function loadFloorList() {
                 option.textContent = `Floor ${floor.fFloor}`;
                 floorSelect.appendChild(option);
             });
-            
+
             // Nếu có ít nhất một tầng, gọi fetchBookings để tải dữ liệu
             if (data.data.length > 0) {
                 fetchBookings();
             }
-            else{
+            else {
                 alert("There is no floors")
             }
         }
@@ -136,10 +136,6 @@ function processBookings(bookings) {
         }
     });
 
-    console.log("Upcoming:", upcomingBookings);
-    console.log("Current:", currentBookings);
-    console.log("Past:", pastBookings);
-
     drawChart();
 }
 
@@ -169,7 +165,6 @@ function drawChart() {
     dataTable.addColumn({ type: "datetime", id: "End" });
 
     let sortedAllBooking = [...upcomingBookings, ...currentBookings, ...pastBookings];
-    console.log("sortedAllBooking", sortedAllBooking);
 
     // Colors
     let upcomingColor = "#FFA500"; // Orange (Pending)
@@ -257,8 +252,6 @@ function drawChart() {
 
     dataTable.addRows(formattedData);
 
-    console.log('datatable', dataTable);
-    console.log('formattedData', formattedData);
     var options = {
         alternatingRowStyle: false,
         hAxis: {
@@ -615,12 +608,9 @@ async function showCheckoutModal() {
     // Display information in checkout modal
     document.getElementById('checkout-guest-name').textContent = guestName;
 
-    // Get current time for checkout
-    const now = new Date();
-
     // Find all rooms in currentBookings with the same bookingid
     const checkoutRooms = currentBookings.filter(booking => booking[0] === bookingid);
-    console.log(now);
+
     // Prepare HTML for room information table
     let roomDetailsHTML = '';
     let totalRoomPrice = 0;
@@ -839,8 +829,6 @@ async function confirmCancelBooking() {
         const paymentMethod = document.querySelector('input[name="cancelPaymentMethod"]:checked').value;
         const depositText = document.getElementById('cancelbooking-deposit').textContent;
         const deposit = parseFloat(depositText.replace(/,/g, ''));
-
-        console.log('Cancel booking with ID:', bookingid, 'and payment method:', paymentMethod, 'and deposit:', deposit);
 
         // Call API to cancel booking
         const response = await fetch(`http://localhost:5222/api/Booking/Cancelbooking`, {

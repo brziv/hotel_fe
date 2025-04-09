@@ -1,0 +1,222 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container-fluid {
+    padding: 20px;
+}
+
+/* Card styling */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+}
+
+.card-title {
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* Statistics boxes */
+.stat-box {
+    padding: 15px;
+    border-radius: 6px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stat-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-box h3 {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.stat-box p {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Tabs styling */
+.nav-tabs {
+    border-bottom: 2px solid #dee2e6;
+    margin-bottom: 15px;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #495057;
+    font-weight: 500;
+    padding: 10px 15px;
+    border-radius: 0;
+    margin-right: 5px;
+    transition: all 0.2s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #007bff;
+    background-color: rgba(0, 123, 255, 0.05);
+    border-bottom: 2px solid #a8c7fa;
+}
+
+.nav-tabs .nav-link.active {
+    color: #007bff;
+    background-color: transparent;
+    border-bottom: 2px solid #007bff;
+}
+
+.nav-tabs .badge {
+    margin-left: 5px;
+}
+
+/* Table styling */
+.table-responsive {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    padding: 12px;
+    color: #495057;
+    border-top: none;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    padding: 12px;
+}
+
+/* Status badges */
+.status-badge {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-new {
+    background-color: #e3f2fd;
+    color: #0d6efd;
+}
+
+.status-in-progress {
+    background-color: #fff8e1;
+    color: #ffc107;
+}
+
+.status-completed {
+    background-color: #e8f5e9;
+    color: #4caf50;
+}
+
+/* Action buttons */
+.btn-action {
+    padding: 4px 8px;
+    margin-right: 5px;
+    font-size: 0.75rem;
+    border-radius: 4px;
+}
+
+.btn-view {
+    background-color: #e3f2fd;
+    color: #0d6efd;
+    border: 1px solid #0d6efd;
+}
+
+.btn-view:hover {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.btn-status {
+    background-color: #e8f5e9;
+    color: #4caf50;
+    border: 1px solid #4caf50;
+}
+
+.btn-status:hover {
+    background-color: #4caf50;
+    color: white;
+}
+
+/* Modal styling */
+.modal-content {
+    border-radius: 8px;
+    border: none;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.modal-title {
+    font-weight: 600;
+    color: #333;
+}
+
+.modal-footer {
+    border-top: 1px solid #e9ecef;
+}
+
+/* Detail sections in modal */
+.detail-section {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.detail-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.detail-section h6 {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #495057;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .stat-box h3 {
+        font-size: 1.5rem;
+    }
+    
+    .stat-box p {
+        font-size: 0.8rem;
+    }
+    
+    .table thead th {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .container-fluid {
+        padding: 10px;
+    }
+} 
