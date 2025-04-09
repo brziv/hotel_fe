@@ -28,6 +28,8 @@ EXEC sp_rename 'tbl_BookingRooms.br_BookingRoomsID', 'br_ID', 'COLUMN';
 ALTER TABLE tbl_Products
 ADD p_IsService BIT DEFAULT 0; -- 0 for goods, 1 for services
 
+ALTER TABLE tbl_BookingServices
+ADD bs_Status nvarchar(20) DEFAULT 'Pending';
 
 -- Add a new column to track the user who created the record
 ALTER TABLE [dbo].[tbl_Guests]
@@ -45,4 +47,3 @@ ALTER TABLE [dbo].[tbl_Employees]
 ADD CONSTRAINT [FK_tbl_Employees_AspNetUsers] 
 FOREIGN KEY ([e_UserId]) 
 REFERENCES [dbo].[AspNetUsers] ([Id]);
-
