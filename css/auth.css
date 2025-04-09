@@ -30,7 +30,7 @@ body {
 
 .auth-container {
     width: 100%;
-    max-width: 440px;
+    max-width: 500px;
     animation: fadeIn 0.5s ease-out;
 }
 

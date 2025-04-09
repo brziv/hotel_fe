@@ -229,18 +229,27 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Function to populate employee dropdown
-    function populateEmployeeDropdown() {
-        staffEmployeeSelect.innerHTML = '<option value="">Select an employee</option>';
-        employees.forEach(employee => {
-            const option = document.createElement('option');
-            option.value = employee.eEmployeeId;
-            option.textContent = `${employee.eFirstName} ${employee.eLastName} (${employee.eEmail})`;
-            staffEmployeeSelect.appendChild(option);
-        });
+    async function populateEmployeeDropdown() {
+        try {
+            // Fetch employees without linked accounts
+            const response = await fetch("http://localhost:5222/api/Employee/GetEmployeesWithoutAccounts");
+            const data = await response.json();
+            const availableEmployees = data.data || [];
+
+            staffEmployeeSelect.innerHTML = '<option value="">Select an employee</option>';
+            availableEmployees.forEach(employee => {
+                const option = document.createElement('option');
+                option.value = employee.eEmployeeId;
+                option.textContent = `${employee.eFirstName} ${employee.eLastName} (${employee.eEmail})`;
+                staffEmployeeSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Error populating employee dropdown:", error);
+        }
     }
 
     // Function to add staff account
-    async function addStaffAccount(username, password) {
+    async function addStaffAccount(username, password, employeeId) {
         try {
             const response = await fetch("https://hotel-bed.onrender.com/api/Auth/AddStaff", {
                 method: "POST",
@@ -250,6 +259,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 body: JSON.stringify({
                     Username: username,
                     Password: password,
+                    EmployeeId: employeeId
                 })
             });
 
@@ -259,6 +269,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert("Staff account created successfully!");
                 addStaffModal.hide();
                 staffForm.reset();
+                await fetchEmployees(); // Refresh employee list
+                await populateEmployeeDropdown(); // Refresh dropdown
             } else {
                 alert("Error creating staff account: " + data.msg);
             }

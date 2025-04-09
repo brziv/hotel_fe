@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Services</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/booking-service.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2 class="section-title">Our Service Packages</h2>
+
+        <!-- Selected Booking Display -->
+        <div id="selectedBookingDisplay" class="selected-booking" style="display: none;">
+            <h3>Selected Booking</h3>
+            <div class="selected-booking-details" id="selectedBookingDetails">
+                <!-- Booking details will be displayed here -->
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="toastNotification" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-success text-white">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong class="me-auto">Success</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="toastMessage">
+                    Operation completed successfully!
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="servicePackages">
+            <!-- Data will be filled by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Booking Selection Modal -->
+    <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookingModalLabel">Select Your Booking</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="bookingList">
+                        <!-- Booking cards will be displayed here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Order Modal -->
+    <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orderModalLabel">Order Services</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Left side: Search and Service List -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="serviceSearch"
+                                    placeholder="Search services...">
+                            </div>
+                            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                <table class="table table-hover">
+                                    <thead class="table-primary">
+                                        <tr>
+                                            <th>Service Name</th>
+                                            <th>Price</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="serviceList">
+                                        <!-- Service list will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Right side: Booking Info and Selected Services -->
+                        <div class="col-md-6">
+                            <div class="booking-info mb-3 p-3 bg-light rounded">
+                                <h6 class="mb-2">Booking Information</h6>
+                                <p class="mb-1"><strong>Customer:</strong> <span id="modalCustomerName"></span></p>
+                                <p class="mb-1"><strong>Rooms:</strong> <span id="modalRoomNumbers"></span></p>
+                            </div>
+
+                            <div class="used-services mb-3">
+                                <h6 class="mb-2">Used Services</h6>
+                                <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+                                    <table class="table table-sm table-bordered" id="usedServicesTable">
+                                        <thead class="table-secondary">
+                                            <tr>
+                                                <th>Service Name</th>
+                                                <th>Details</th>
+                                                <th>Price</th>
+                                                <th>Quantity</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Used services will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="selected-services">
+                                <h6 class="mb-2">Selected Services</h6>
+                                <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+                                    <table class="table table-sm table-bordered" id="selectedServicesTable">
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th>Service Name</th>
+                                                <th>Details</th>
+                                                <th>Price</th>
+                                                <th>Quantity</th>
+                                                <th>Total</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Selected services will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="order-total mt-3 p-2 bg-light rounded">
+                                <h6 class="mb-2">Order Summary</h6>
+                                <p class="mb-1">Total Services: <span id="totalServices">0</span></p>
+                                <p class="mb-0">Total Amount: <span id="totalAmount">0</span> USD</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        onclick="resetOrderModal()">Close</button>
+                    <button type="button" class="btn btn-primary" id="confirmOrderBtn" onclick="confirmOrder()">Order
+                        Services</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/booking-service.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

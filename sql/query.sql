@@ -3,7 +3,7 @@ CREATE TABLE tbl_Guests (
     g_GuestID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     g_FirstName NVARCHAR(50) NOT NULL,
     g_LastName NVARCHAR(50) NOT NULL,
-    g_Email NVARCHAR(100) UNIQUE,
+    g_Email NVARCHAR(100),
     g_PhoneNumber NVARCHAR(15) NOT NULL
 );
 go
@@ -69,10 +69,10 @@ CREATE TABLE tbl_Employees (
 );
 go
 -- Table: tbl_Services
-CREATE TABLE tbl_Services (
-    s_ServiceID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-    s_ServiceName NVARCHAR(100) NOT NULL,
-    s_ServiceCostPrice DECIMAL(10,2) NOT NULL,
+CREATE TABLE tbl_ServicePackage (
+    sp_PackageID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    sp_PackageName NVARCHAR(100) NOT NULL,
+    p_ServiceCostPrice DECIMAL(10,2) NOT NULL,
 	s_ServiceSellPrice DECIMAL(10,2) NOT NULL,
 	CONSTRAINT chk_ServicePrice CHECK (s_ServiceSellPrice >= 0 AND s_ServiceCostPrice >= 0)
 );
@@ -99,24 +99,24 @@ CREATE TABLE tbl_Partner (
 );
 
 go
-CREATE TABLE tbl_Goods (
-    g_GoodsID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),  
-    g_GoodsName NVARCHAR(255) NOT NULL,         
-    g_Category NVARCHAR(100),                   
-    g_Quantity INT DEFAULT 0,                  
-    g_Unit NVARCHAR(30),                        --a bottle, a case, a pack...
-	g_CostPrice DECIMAL(10,2) NOT NULL,
-	g_SellingPrice DECIMAL(10,2) NOT NULL,
-	g_Currency NVARCHAR(30) NOT NULL                      ---- USD,USD                         
+CREATE TABLE tbl_Products (
+    p_ProductID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),  
+    p_ProductName NVARCHAR(255) NOT NULL,         
+    p_Category NVARCHAR(100),                   
+    p_Quantity INT DEFAULT 0,                  
+    p_Unit NVARCHAR(30),                        --a bottle, a case, a pack...
+	p_CostPrice DECIMAL(10,2) NOT NULL,
+	p_SellingPrice DECIMAL(10,2) NOT NULL,
+	p_Currency NVARCHAR(30) NOT NULL                      ---- USD,USD                         
 );
 go
-CREATE TABLE tbl_ServiceGoods (
-	sg_ServiceGoodsID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),  
-    sg_ServiceID UNIQUEIDENTIFIER NOT NULL,
-    sg_GoodsID UNIQUEIDENTIFIER NOT NULL,
+CREATE TABLE tbl_PackageDetails (
+	sg_DetailID UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),  
+    sg_PackageID UNIQUEIDENTIFIER NOT NULL,
+    sg_ProductID UNIQUEIDENTIFIER NOT NULL,
     sg_Quantity INT NOT NULL,
-    FOREIGN KEY (sg_ServiceID) REFERENCES tbl_Services(s_ServiceID),
-    FOREIGN KEY (sg_GoodsID) REFERENCES tbl_Goods(g_GoodsID)
+    FOREIGN KEY (sg_PackageID) REFERENCES tbl_ServicePackage(sp_PackageID),
+    FOREIGN KEY (sg_ProductID) REFERENCES tbl_Product(p_ProductID)
 );
 go
 CREATE TABLE tbl_ImportGoods (
