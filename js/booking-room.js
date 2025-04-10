@@ -327,15 +327,18 @@ function calculateTotalMoney() {
         if (checkInValue && checkOutValue) {
             const checkIn = new Date(checkInValue);
             const checkOut = new Date(checkOutValue);
-
-            if (!isNaN(checkIn.getTime()) && !isNaN(checkOut.getTime()) && checkOut > checkIn) {
-                const hours = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60));
-                totalMoney += pricePerHour * hours;
-            }
+            const durationHours = (checkOut - checkIn) / (1000 * 60 * 60);
+            totalMoney += pricePerHour * durationHours;
         }
     });
 
-    document.getElementById("total-money").value = totalMoney.toFixed(2);
+    const totalMoneyElement = document.getElementById("total-money");
+    totalMoneyElement.value = totalMoney.toFixed(2);
+    
+    // Calculate deposit as 20% of total money
+    const depositElement = document.getElementById("deposit");
+    const deposit = totalMoney * 0.2;
+    depositElement.value = deposit.toFixed(2);
 }
 
 document.getElementById("phonenum").addEventListener("input", async function () {
