@@ -4,6 +4,8 @@ let bookingRequests = [];
 let serviceRequests = [];
 let selectedRequest = null;
 let staffId = localStorage.getItem("userId");
+let allServiceRequests = [];
+
 
 // Initialize the page when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -15,15 +17,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Load service requests data
     loadServiceRequests();
-    
-    // Set up event listeners
-    const filterBtn = document.getElementById('filter-btn');
-    if (filterBtn) {
-        filterBtn.addEventListener('click', function() {
-            loadServiceRequests();
-        });
-    }
-    
+    // Gắn bộ lọc
+    document.getElementById('customer-name').addEventListener('input', filterServiceRequests);
+    document.getElementById('room').addEventListener('input', filterServiceRequests);
+    document.getElementById('request-status').addEventListener('change', filterServiceRequests);
+
     // Add event listener for approve request button
     const approveBtn = document.getElementById('approveRequestBtn');
     if (approveBtn) {
@@ -68,7 +66,7 @@ async function loadServiceRequests() {
         
         const data = await response.json();
         serviceRequests = data.data;
-        
+        allServiceRequests = data.data;
         // Sort service requests by createdAt in ascending order
         serviceRequests.sort((a, b) => {
             const dateA = parseDate(a.createdAt);
@@ -174,19 +172,19 @@ function displayServiceRequests(requests) {
 }
 
 // Function to update statistics
-function updateStatistics(requests) {
-    const totalCount = requests.length;
-    const pendingCount = requests.filter(request => request.status === 'Pending').length;
-    const confirmedCount = requests.filter(request => request.status === 'Confirmed').length;
+    function updateStatistics(requests) {
+        const totalCount = requests.length;
+        const pendingCount = requests.filter(request => request.status === 'Pending').length;
+        const confirmedCount = requests.filter(request => request.status === 'Confirmed').length;
 
-    const totalCountElement = document.getElementById('total-count');
-    const pendingCountElement = document.getElementById('pending-count');
-    const confirmedCountElement = document.getElementById('confirmed-count');
-    
-    if (totalCountElement) totalCountElement.textContent = totalCount;
-    if (pendingCountElement) pendingCountElement.textContent = pendingCount;
-    if (confirmedCountElement) confirmedCountElement.textContent = confirmedCount;
-}
+        const totalCountElement = document.getElementById('total-count');
+        const pendingCountElement = document.getElementById('pending-count');
+        const confirmedCountElement = document.getElementById('confirmed-count');
+        
+        if (totalCountElement) totalCountElement.textContent = totalCount;
+        if (pendingCountElement) pendingCountElement.textContent = pendingCount;
+        if (confirmedCountElement) confirmedCountElement.textContent = confirmedCount;
+    }
 
 // Function to show request details in modal
 function showRequestDetails(request) {
@@ -313,3 +311,31 @@ function showErrorMessage(elementId, message) {
         </tr>
     `;
 } 
+function filterServiceRequests() {
+    if (!Array.isArray(allServiceRequests)) {
+        console.warn("allServiceRequests is not an array:", allServiceRequests);
+        return;
+    }
+
+    const nameInput = document.getElementById('customer-name').value.trim().toLowerCase();
+    const roomInput = document.getElementById('room').value.trim().toLowerCase();
+    const statusInput = document.getElementById('request-status').value.toLowerCase();
+
+    const filtered = allServiceRequests.filter(request => {
+        const fullName = request.customerName?.toLowerCase() || '';
+        const room = request.room?.toLowerCase() || '';
+        const status = request.status?.toLowerCase() || '';
+
+        const matchName = fullName.includes(nameInput);
+        const matchRoom = room.includes(roomInput);
+        const matchStatus = statusInput === 'all' || status === statusInput;
+
+        return matchName && matchRoom && matchStatus;
+    });
+
+    displayServiceRequests(filtered);
+    updateStatistics(filtered); // nếu bạn muốn cập nhật thống kê theo bộ lọc
+}
+
+
+
