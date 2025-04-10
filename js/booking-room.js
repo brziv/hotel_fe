@@ -336,6 +336,7 @@ function calculateTotalMoney() {
     });
 
     document.getElementById("total-money").value = totalMoney.toFixed(2);
+    document.getElementById("deposit").value = totalMoney*0.1;
 }
 
 document.getElementById("phonenum").addEventListener("input", async function () {
